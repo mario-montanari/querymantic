@@ -1,0 +1,17 @@
+name: sprint0_smoke
+sprint: 0
+description: >
+  The empty pipeline runs on the sample corpus and produces a valid run.json. The
+  engine slot is populated from the vendored engine; every module slot is null
+  because no module runs yet.
+inputs:
+  - assets/samples/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+expect:
+  - run.json validates against the run-state contract
+  - spektr.input_hash is a 64-character hex digest
+  - spektr.modules_run is empty
+  - engine is an object with a corpus_summary and a non-zero total_keywords
+  - every slot under modules is null
+  - the input hash is identical across two runs on the same input

@@ -1,0 +1,30 @@
+KEYWORD INTELLIGENCE: EXECUTIVE SUMMARY
+followup | 2026-06-03
+
+Demand Opportunity Score: 35.9 / 100
+
+Scope of analysis
+Analysed 174 keywords across 1 language(s) (en) from 6 source(s) (ahrefs, generic, gsc, moz, semrush, ubersuggest).
+Total clusters formed: 45.
+
+What we found
+- 24% of the corpus is AIO-eligible (Google AI Overviews); 1% carries GEO opportunity for generative engines.
+- 60 keywords qualify as quick wins under current thresholds.
+- 45 keywords are in striking distance (positions 4-20 for the client's domain).
+- 23 AIO-eligible keywords show no client presence in the top 10.
+- Action split: 60 to create, 16 to update, 14 to restructure; the rest sit in monitor or ignore.
+
+What we recommend
+- Start with these clusters by demand: running shoes, nike running shoes, trail running shoes.
+- First quick wins to commission: running shoes width chart, how often should i replace running shoes, how to wash running shoes, best running shoes for marathon training under 200, example shoes hours.
+- Plan a content sprint targeting the top 20 quick wins. They are reachable inside one quarter.
+- Refresh and tighten the top 10 striking-distance pages for top-3 lift before pursuing brand-new content.
+- Address the AEO/GEO gap: passage extraction structure, schema markup, llms.txt publication, and AI crawler access.
+
+What we did not analyze
+- Live SERP data (run is offline against a CSV snapshot).
+- Backlink profile (out of scope for this skill).
+- Page-level technical SEO (out of scope; requires site crawl).
+
+Methodology version: 1.0.0
+Confidence note: overall confidence is mixed; some keywords have partial inputs; sort by confidence to separate action targets from research targets.

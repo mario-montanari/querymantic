@@ -1,0 +1,17 @@
+# Normalise line endings to LF in the repository for cross-platform determinism.
+* text=auto eol=lf
+
+# Treat common binary assets as binary so git never rewrites them.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.pptx binary
+*.docx binary
+*.xlsx binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary

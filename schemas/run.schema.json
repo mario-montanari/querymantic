@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mariomontanari.it/spektr/run.schema.json",
+  "title": "Spektr run-state",
+  "description": "Canonical state for one Spektr analysis run, stored as run.json. This schema is the documentary contract. The executable check the pipeline relies on is the structural validator in spektr_core/run_state.py, which uses the standard library only.",
+  "type": "object",
+  "required": ["spektr", "engine", "modules"],
+  "additionalProperties": false,
+  "properties": {
+    "spektr": {
+      "type": "object",
+      "description": "Suite metadata for the run.",
+      "required": [
+        "schema_version",
+        "plugin_version",
+        "generated_at",
+        "input_hash",
+        "inputs",
+        "modules_run"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "description": "Version of this run-state schema."
+        },
+        "plugin_version": {
+          "type": "string",
+          "description": "Version of the plugin that produced the run."
+        },
+        "generated_at": {
+          "type": "string",
+          "description": "ISO 8601 timestamp; may be pinned for reproducible output."
+        },
+        "input_hash": {
+          "type": "string",
+          "description": "Deterministic SHA-256 over the input files.",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "inputs": {
+          "type": "array",
+          "description": "Input file paths used for the run.",
+          "items": { "type": "string" }
+        },
+        "modules_run": {
+          "type": "array",
+          "description": "Names of modules that have populated their slot, in run order.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "entity_web",
+              "fan_out_radar",
+              "demand_pulse",
+              "citation_grid",
+              "click_ceiling",
+              "live_wire",
+              "output_forge"
+            ]
+          }
+        }
+      }
+    },
+    "engine": {
+      "description": "The vendored engine analysis (the engine's analysis.json), or null before the engine runs.",
+      "type": ["object", "null"]
+    },
+    "modules": {
+      "type": "object",
+      "description": "One slot per module; null until that module fills it.",
+      "required": [
+        "entity_web",
+        "fan_out_radar",
+        "demand_pulse",
+        "citation_grid",
+        "click_ceiling",
+        "live_wire",
+        "output_forge"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "entity_web": { "type": ["object", "null"] },
+        "fan_out_radar": { "type": ["object", "null"] },
+        "demand_pulse": { "type": ["object", "null"] },
+        "citation_grid": { "type": ["object", "null"] },
+        "click_ceiling": { "type": ["object", "null"] },
+        "live_wire": { "type": ["object", "null"] },
+        "output_forge": { "type": ["object", "null"] }
+      }
+    }
+  }
+}

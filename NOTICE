@@ -1,0 +1,17 @@
+Spektr
+Copyright (c) 2026 Mario Montanari
+
+This product includes the following bundled component:
+
+1. keyword-intelligence
+   Path: engine/keyword-intelligence/
+   License: MIT (Copyright (c) 2026 Mario Montanari)
+   Role: vendored offline analysis engine. The copy under engine/ is read-only
+   and kept byte-identical to its source. Refresh it only with the sync script
+   at engine/sync_engine.py.
+
+Optional third-party libraries are not bundled in this repository. When a module
+uses one, the suite imports it through a port that degrades when the library is
+absent. Each such dependency, with its own license, will be listed here as it is
+introduced. The core suite and the vendored engine run on the Python standard
+library alone.

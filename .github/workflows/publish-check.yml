@@ -1,0 +1,62 @@
+name: Publish Check
+
+# Runs on every push and pull request to main. Fails the build if a check fails,
+# so broken code or committed secrets never reach the published branch.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks needs the full history
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit pip-audit pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Pre-commit checks (secrets, lint, bandit)
+        run: pre-commit run --all-files --show-diff-on-failure
+
+      - name: Dependency audit
+        run: |
+          if [ -f requirements.txt ]; then
+            pip-audit -r requirements.txt
+          else
+            echo "No requirements.txt: skipping pip-audit. The suite is stdlib-only."
+          fi
+
+      - name: Tests
+        run: |
+          if [ -d evals ] || [ -d tests ] || find . -name 'test_*.py' -o -name '*_test.py' | grep -q .; then
+            pytest -q
+          else
+            echo "No tests found: skipping pytest."
+          fi
+
+      - name: Plugin structure validation (informational)
+        # Informational manifest check for plugin.json and marketplace.json.
+        # The authoritative validation is `claude plugin validate`, run locally.
+        run: npx --yes github:hesreallyhim/claude-code-json-schema . || echo "Informational schema validation: review the output above."

@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "path": "assets\\samples\\ahrefs_export.csv",
+      "rows": 28,
+      "source": "ahrefs",
+      "sha256": "a0935678d664f5a469bf4eee8cf5d0a31281e9edda3bb1ff534aa0ba10fd7d1b"
+    },
+    {
+      "path": "assets\\samples\\generic_export.csv",
+      "rows": 23,
+      "source": "generic",
+      "sha256": "da3334ef406985e381721ca57225053b94db7ddcffdfeaf1f915c317675269f2"
+    },
+    {
+      "path": "assets\\samples\\gsc_export.csv",
+      "rows": 36,
+      "source": "gsc",
+      "sha256": "e160e1f3a2bfe08d859a0e68dc50f57623724a3054eb059a4967d04d3fddeb93"
+    },
+    {
+      "path": "assets\\samples\\moz_export.csv",
+      "rows": 24,
+      "source": "moz",
+      "sha256": "70ee2c8c76892f8cc06013f60126539a23a8794a1a64e4d4f089596eb13783aa"
+    },
+    {
+      "path": "assets\\samples\\semrush_export.csv",
+      "rows": 35,
+      "source": "semrush",
+      "sha256": "e0a1c8f5c0748f810e04de01c50bcac2bb544e089982a704652bf803f0d6cd95"
+    },
+    {
+      "path": "assets\\samples\\ubersuggest_export.csv",
+      "rows": 24,
+      "source": "ubersuggest",
+      "sha256": "dc41be43ceebc3df2d6f79a6b9821102c2a6c08d452a795238df7ebd731242dc"
+    }
+  ],
+  "client_domain": "example-shoes.com",
+  "brand_list": [
+    "example",
+    "example shoes"
+  ]
+}

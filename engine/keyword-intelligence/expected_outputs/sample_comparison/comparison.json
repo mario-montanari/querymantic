@@ -1,0 +1,332 @@
+{
+  "compare_metadata": {
+    "generated": "2026-06-03T13:51:55.196313+00:00",
+    "match_key": "keyword",
+    "top_n": 15,
+    "version_warning": null,
+    "baseline": {
+      "path": "expected_outputs\\sample_run\\analysis.json",
+      "label": "sample",
+      "timestamp": "2026-06-03T12:45:34.416370+00:00",
+      "methodology_version": "1.0.0",
+      "skill_version": "1.0.0",
+      "total_keywords": 170,
+      "duplicate_records_collapsed": 41
+    },
+    "current": {
+      "path": "expected_outputs\\sample_run_followup\\analysis.json",
+      "label": "followup",
+      "timestamp": "2026-06-03T13:35:10.056354+00:00",
+      "methodology_version": "1.0.0",
+      "skill_version": "1.0.0",
+      "total_keywords": 174,
+      "duplicate_records_collapsed": 41
+    }
+  },
+  "corpus": {
+    "demand_opportunity_score": {
+      "baseline": 35.8,
+      "current": 35.9,
+      "delta": 0.1
+    },
+    "total_keywords": {
+      "baseline": 170,
+      "current": 174,
+      "delta": 4
+    },
+    "aio_eligibility_share": {
+      "baseline": 0.235,
+      "current": 0.236,
+      "delta": 0.001
+    },
+    "geo_opportunity_share": {
+      "baseline": 0.006,
+      "current": 0.006,
+      "delta": 0.0
+    },
+    "intent_shift": {
+      "commercial_investigation": {
+        "baseline": 22,
+        "current": 23,
+        "delta": 1
+      },
+      "informational": {
+        "baseline": 116,
+        "current": 120,
+        "delta": 4
+      },
+      "navigational": {
+        "baseline": 8,
+        "current": 8,
+        "delta": 0
+      },
+      "transactional": {
+        "baseline": 24,
+        "current": 23,
+        "delta": -1
+      }
+    }
+  },
+  "quick_wins": {
+    "newly_quick_win": {
+      "count": 5,
+      "keywords": [
+        "best carbon plate running shoes",
+        "comfortable running shoes for standing all day",
+        "running shoes for flat feet and overpronation",
+        "running shoes for flat feet women",
+        "running shoes for nurses"
+      ]
+    },
+    "still_quick_win": {
+      "count": 55,
+      "keywords": [
+        "best running shoes for marathon training under 200",
+        "durable running shoes",
+        "example shoes hours",
+        "example shoes location",
+        "example shoes near me",
+        "how often should i replace running shoes",
+        "how to break in new running shoes",
+        "how to wash running shoes",
+        "midsole running shoes explained",
+        "running shoes anatomy",
+        "running shoes brand guide",
+        "running shoes break in period",
+        "running shoes color options",
+        "running shoes drop explained",
+        "running shoes drying methods",
+        "running shoes fitting tips",
+        "running shoes for backpacking",
+        "running shoes for casual runners",
+        "running shoes for daily training",
+        "running shoes for experienced runners",
+        "running shoes for high arches",
+        "running shoes for long runs",
+        "running shoes for new runners",
+        "running shoes for recovery runs",
+        "running shoes for supination",
+        "running shoes for tempo runs",
+        "running shoes for treadmill",
+        "running shoes for treadmill workouts",
+        "running shoes for ultramarathon training",
+        "running shoes gait analysis",
+        "running shoes guide",
+        "running shoes laces types",
+        "running shoes lacing techniques",
+        "running shoes lifespan",
+        "running shoes maintenance guide",
+        "running shoes mid range options",
+        "running shoes mileage",
+        "running shoes pronation guide",
+        "running shoes recommendations",
+        "running shoes return policy",
+        "running shoes shipping options",
+        "running shoes stack height",
+        "running shoes storage tips",
+        "running shoes that don t cause blisters",
+        "running shoes that last long",
+        "running shoes tips",
+        "running shoes warranty information",
+        "running shoes wear pattern analysis",
+        "running shoes when to replace tips",
+        "running shoes width chart",
+        "running shoes width comparison",
+        "running shoes with wide toe box",
+        "what running shoes should i buy",
+        "when should i replace my running shoes",
+        "why do running shoes wear out"
+      ]
+    },
+    "resolved": {
+      "captured": {
+        "count": 2,
+        "keywords": [
+          "running shoes vs walking shoes",
+          "what is the best running shoe for beginners"
+        ]
+      },
+      "still_climbing": {
+        "count": 0,
+        "keywords": []
+      },
+      "regressed": {
+        "count": 0,
+        "keywords": []
+      },
+      "reclassified": {
+        "count": 0,
+        "keywords": []
+      },
+      "left_corpus": {
+        "count": 0,
+        "keywords": []
+      }
+    }
+  },
+  "scores": {
+    "keywords_in_both": 128,
+    "mean_delta_by_composite": {
+      "main": {
+        "mean_delta": 0.18,
+        "keywords_compared": 128
+      },
+      "quick_win": {
+        "mean_delta": -1.02,
+        "keywords_compared": 128
+      },
+      "strategic": {
+        "mean_delta": 0.0,
+        "keywords_compared": 128
+      },
+      "aeo_defensive": {
+        "mean_delta": 0.0,
+        "keywords_compared": 128
+      }
+    },
+    "mean_main_confidence_delta": 0.0,
+    "top_risers": [
+      {
+        "keyword": "what is the best running shoe for beginners",
+        "baseline": 66.1,
+        "current": 71.0,
+        "delta": 4.9
+      },
+      {
+        "keyword": "running shoes for flat feet",
+        "baseline": 70.8,
+        "current": 75.1,
+        "delta": 4.3
+      },
+      {
+        "keyword": "running shoes vs walking shoes",
+        "baseline": 69.9,
+        "current": 73.9,
+        "delta": 4.0
+      },
+      {
+        "keyword": "marathon running shoes",
+        "baseline": 66.2,
+        "current": 68.9,
+        "delta": 2.7
+      },
+      {
+        "keyword": "running shoes for marathon training",
+        "baseline": 63.6,
+        "current": 66.2,
+        "delta": 2.6
+      },
+      {
+        "keyword": "hoka running shoes",
+        "baseline": 69.8,
+        "current": 71.8,
+        "delta": 2.0
+      },
+      {
+        "keyword": "running shoes review",
+        "baseline": 73.3,
+        "current": 75.3,
+        "delta": 2.0
+      }
+    ],
+    "top_fallers": []
+  },
+  "positions": {
+    "keywords_with_position_in_both": 56,
+    "top_climbers": [
+      {
+        "keyword": "what is the best running shoe for beginners",
+        "baseline_position": 14.0,
+        "current_position": 2.0,
+        "improvement": 12.0
+      },
+      {
+        "keyword": "running shoes for flat feet",
+        "baseline_position": 12.0,
+        "current_position": 3.0,
+        "improvement": 9.0
+      },
+      {
+        "keyword": "running shoes for marathon training",
+        "baseline_position": 18.0,
+        "current_position": 9.0,
+        "improvement": 9.0
+      },
+      {
+        "keyword": "marathon running shoes",
+        "baseline_position": 15.0,
+        "current_position": 7.0,
+        "improvement": 8.0
+      },
+      {
+        "keyword": "running shoes vs walking shoes",
+        "baseline_position": 10.0,
+        "current_position": 3.0,
+        "improvement": 7.0
+      },
+      {
+        "keyword": "hoka running shoes",
+        "baseline_position": 11.0,
+        "current_position": 6.0,
+        "improvement": 5.0
+      },
+      {
+        "keyword": "running shoes review",
+        "baseline_position": 8.0,
+        "current_position": 4.0,
+        "improvement": 4.0
+      }
+    ],
+    "top_decliners": []
+  },
+  "gaps": {
+    "keyword_gap": {
+      "baseline_count": 0,
+      "current_count": 0,
+      "count_delta": 0,
+      "closed_samples": [],
+      "opened_samples": [],
+      "samples_partial": false
+    },
+    "aeo_geo_gap": {
+      "baseline_count": 24,
+      "current_count": 23,
+      "count_delta": -1,
+      "closed_samples": [
+        "what is the best running shoe for beginners"
+      ],
+      "opened_samples": [
+        "hoka clifton 10 review"
+      ],
+      "samples_partial": true
+    },
+    "content_gap_intents": {
+      "added": [],
+      "removed": [],
+      "present_now": [
+        "commercial_investigation",
+        "informational",
+        "navigational",
+        "transactional"
+      ]
+    }
+  },
+  "membership": {
+    "added": {
+      "count": 5,
+      "samples": [
+        "best carbon plate running shoes",
+        "comfortable running shoes for standing all day",
+        "running shoes for flat feet and overpronation",
+        "running shoes for flat feet women",
+        "running shoes for nurses"
+      ]
+    },
+    "dropped": {
+      "count": 1,
+      "samples": [
+        "christmas gift running shoes"
+      ]
+    }
+  }
+}

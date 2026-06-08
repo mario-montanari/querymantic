@@ -1,0 +1,31 @@
+{
+  "inputs": [
+    "assets/samples_followup/"
+  ],
+  "output": "expected_outputs/sample_run_followup/",
+  "label": "followup",
+  "client_domain": "example-shoes.com",
+  "brand_list": "example",
+  "mapping": null,
+  "custom_rules": null,
+  "content_recency": null,
+  "quickwin_volume_min": 100,
+  "quickwin_volume_max": 5000,
+  "quickwin_difficulty_max": 35,
+  "striking_min": 4,
+  "striking_max": 20,
+  "cluster_overlap_min": 0.6,
+  "aio_eligibility_min": 60,
+  "geo_opportunity_min": 60,
+  "seasonality_cv_min": 0.4,
+  "seasonality_cv_strong": 0.7,
+  "long_tail_tokens_min": 5,
+  "volume_reference": 100000,
+  "cannibalization_include_branded": false,
+  "reconciliation": "median",
+  "csv_line_endings": "crlf",
+  "json_only": false,
+  "show_mapping": false,
+  "verbose": false,
+  "quiet": true
+}

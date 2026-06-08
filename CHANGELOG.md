@@ -6,6 +6,22 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 6, Live Wire (opt-in): the `live_wire` module, a capture file contract
+  (`livewire_capture.json`), and paste templates with a guide. It is the only place
+  observed data enters a run, and it never runs by default: it runs only when a
+  capture file is passed with `--livewire`. It reads two optional blocks. The
+  `search_console` block (query, clicks, impressions, ctr, position) overrides Click
+  Ceiling's modelled current clicks with measured clicks and re-anchors the winnable
+  band to the ceiling minus the measured current. The `ai_citations` block (which
+  domains an AI surface cited per query) measures the client's demand-weighted
+  citation share and the competitor split, which Citation Grid can only approximate
+  offline as a within-portfolio expected share. The module is a non-destructive
+  overlay: it writes its own slot, pairing each observed value with the expected one
+  it corresponds to, and leaves the offline slots byte-identical, so expected and
+  observed are never conflated. The CTR parser accepts both the export percent
+  string and the API fraction; queries that do not match the corpus are listed under
+  `unmatched_queries` so a capture's coverage stays visible. Adds a methodology
+  reference, an eval scenario, and pytest coverage.
 - Sprint 5, Click Ceiling: the `click_ceiling` module and a dated CTR-by-position
   table (`data/ctr_table_2026Q2.json`). It estimates the band of winnable monthly
   organic clicks per cluster from the table and the SERP features present, reporting

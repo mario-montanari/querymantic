@@ -1,0 +1,28 @@
+{
+  "livewire_capture": {
+    "version": "1.0",
+    "client_domain": "yourdomain.com",
+    "captured_at": "YYYY-MM-DD",
+    "notes": "",
+    "search_console": {
+      "property": "https://www.yourdomain.com/",
+      "date_range": "YYYY-MM-DD..YYYY-MM-DD",
+      "rows": [
+        {"query": "", "clicks": 0, "impressions": 0, "ctr": 0.0, "position": 0.0}
+      ]
+    },
+    "ai_citations": {
+      "rows": [
+        {
+          "query": "",
+          "surface": "",
+          "observed_on": "YYYY-MM-DD",
+          "citations": [
+            {"domain": "yourdomain.com", "is_client": true},
+            {"domain": "competitor.com", "is_client": false}
+          ]
+        }
+      ]
+    }
+  }
+}

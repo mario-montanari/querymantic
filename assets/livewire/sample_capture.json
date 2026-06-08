@@ -1,0 +1,63 @@
+{
+  "livewire_capture": {
+    "version": "1.0",
+    "client_domain": "example-shoes.com",
+    "captured_at": "2026-06-08",
+    "notes": "Sample capture for the running-shoes corpus. Values mirror the bundled gsc_export.csv (Search Console) and a small set of AI-surface citation observations. CTR is shown both as a fraction and as a percent string to exercise the tolerant parser.",
+    "search_console": {
+      "property": "https://www.example-shoes.com/",
+      "date_range": "2026-03-01..2026-05-31",
+      "rows": [
+        {"query": "running shoes", "clicks": 2840, "impressions": 42500, "ctr": 0.067, "position": 3.2},
+        {"query": "best running shoes", "clicks": 820, "impressions": 15200, "ctr": "5.4%", "position": 5.1},
+        {"query": "running shoes review", "clicks": 420, "impressions": 8200, "ctr": 0.051, "position": 8.4},
+        {"query": "running shoes for women", "clicks": 180, "impressions": 4800, "ctr": 0.038, "position": 8.2},
+        {"query": "running shoes for men", "clicks": 95, "impressions": 3200, "ctr": 0.030, "position": 11.4},
+        {"query": "trail running shoes", "clicks": 310, "impressions": 5400, "ctr": 0.057, "position": 9.1},
+        {"query": "running shoes for flat feet", "clicks": 60, "impressions": 3100, "ctr": 0.019, "position": 12.0}
+      ]
+    },
+    "ai_citations": {
+      "rows": [
+        {
+          "query": "best running shoes",
+          "surface": "perplexity",
+          "observed_on": "2026-05-20",
+          "citations": [
+            {"domain": "example-shoes.com", "is_client": true},
+            {"domain": "competitor1.com", "is_client": false},
+            {"domain": "competitor2.com", "is_client": false}
+          ]
+        },
+        {
+          "query": "running shoes for flat feet",
+          "surface": "ai_overview",
+          "observed_on": "2026-05-21",
+          "citations": [
+            {"domain": "competitor2.com"},
+            {"domain": "competitor1.com"},
+            {"domain": "healthline.com"}
+          ]
+        },
+        {
+          "query": "trail running shoes",
+          "surface": "perplexity",
+          "observed_on": "2026-05-21",
+          "citations": [
+            {"domain": "www.example-shoes.com/trail", "is_client": true},
+            {"domain": "competitor1.com"}
+          ]
+        },
+        {
+          "query": "running shoes review",
+          "surface": "chatgpt",
+          "observed_on": "2026-05-22",
+          "citations": [
+            {"domain": "competitor1.com"},
+            {"domain": "example-shoes.com", "is_client": true}
+          ]
+        }
+      ]
+    }
+  }
+}

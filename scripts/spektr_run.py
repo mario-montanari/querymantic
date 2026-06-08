@@ -69,6 +69,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="optional monthly-series CSV for demand_pulse (wide: keyword + YYYY-MM columns)",
     )
     run_p.add_argument(
+        "--livewire",
+        default=None,
+        help="optional livewire_capture.json with observed Search Console and AI-citation data",
+    )
+    run_p.add_argument(
         "--deterministic-timestamp",
         default=None,
         help="fixed ISO 8601 timestamp for reproducible output",
@@ -94,6 +99,15 @@ def _cmd_run(args: argparse.Namespace) -> int:
         try:
             module_kwargs["demand_pulse"] = {"series": load_series(Path(args.series))}
         except DemandPulseError as exc:
+            _fail(str(exc), as_json=args.json)
+            return 1
+
+    if args.livewire and "live_wire" in args.modules:
+        from modules.live_wire import LiveWireError, load_capture
+
+        try:
+            module_kwargs["live_wire"] = {"capture": load_capture(Path(args.livewire))}
+        except LiveWireError as exc:
             _fail(str(exc), as_json=args.json)
             return 1
 

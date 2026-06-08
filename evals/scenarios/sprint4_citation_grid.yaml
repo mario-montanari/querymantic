@@ -1,0 +1,32 @@
+name: sprint4_citation_grid
+sprint: 4
+description: >
+  Citation Grid estimates how ready each cluster is to be cited by AI answer
+  surfaces and turns the estimate into editorial actions. It runs offline with no
+  content corpus, so it reports an expected citation-readiness (0 to 100) per
+  cluster, an expected within-portfolio share, and a six-component structural
+  signal checklist. The readiness blend uses only signals with a real offline
+  value (engine AIO and GEO eligibility, Fan-Out coverage, Entity Web topical
+  authority, answer-shape density, SERP structure features, and the Demand Pulse
+  trend when present). Two components, InformationGain and SourceCues, need real
+  passage text and are checklist-only offline. It fills the citation_grid slot and
+  leaves the rest of run.json untouched.
+inputs:
+  - assets/samples/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  --modules entity_web fan_out_radar citation_grid
+expect:
+  - run.json validates against the run-state contract
+  - spektr.modules_run is ["entity_web", "fan_out_radar", "citation_grid"]
+  - modules.citation_grid has mode expected and expected_only true
+  - modules.citation_grid reads entity_web and fan_out_radar, not demand_pulse
+  - each cluster carries an expected_readiness between 0 and 100
+  - each cluster carries the full six-component checklist in methodology order
+  - information_gain and source_cues are flagged as requiring passage text
+  - the effective weights of the present readiness inputs sum to one
+  - expected_share is a within-portfolio distribution summing to about 100
+  - a cluster with zero demand contributes zero expected_share
+  - with only the engine scopes the readiness still computes and degrades cleanly
+  - with Demand Pulse present the freshness signal becomes available for moved clusters
+  - two runs on the same input produce an identical citation_grid block

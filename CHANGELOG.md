@@ -6,6 +6,19 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 4, Citation Grid: the `citation_grid` module. It estimates per-cluster
+  citation readiness by AI answer surfaces and turns it into editorial actions,
+  fully offline with no content corpus. Six citability components (Extractability,
+  EntityCoverage, StructuredSignals, InformationGain, FreshnessProxy, SourceCues)
+  drive a structural-signal checklist per cluster; two of them need real passage
+  text and are checklist-only offline. An expected readiness (0 to 100) blends only
+  the signals with an offline value (engine AIO and GEO eligibility, Fan-Out
+  coverage, Entity Web topical authority, answer-shape density, SERP structure
+  features, and the Demand Pulse trend when present), renormalising the weights when
+  an upstream module is absent. An expected share is a within-portfolio,
+  demand-weighted distribution, explicitly labelled expected and never a competitor
+  or observed share (which belong to the Live Wire path). Adds a methodology
+  reference, an eval scenario, and pytest coverage.
 - Sprint 3, Demand Pulse: a stdlib statistics port (Mann-Kendall, Theil-Sen) with
   an optional STL seasonal-strength path behind statsmodels that degrades when the
   package is absent, and the `demand_pulse` module. It classifies each cluster as

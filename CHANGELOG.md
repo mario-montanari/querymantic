@@ -6,6 +6,13 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 2, Fan-Out Radar: a stdlib BM25 index and the `fan_out_radar` module. It
+  generates sub-queries across seven archetypes per cluster, scores expected
+  coverage against the cluster keywords (offline), reports Cover@tau and missing
+  archetypes, and flags gatekeeper queries (central sub-queries with no originating
+  volume). It uses the Entity Web graph when present and degrades without it. The
+  sub-query count is a configurable cap, labelled a secondary estimate. Adds a
+  starter reformulation gazetteer, a methodology reference, and pytest coverage.
 - Sprint 1, Entity Web: an interchangeable entity extractor (default
   `tfidf_position`, an own stdlib scorer; clean-room YAKE left as a declared slot),
   stdlib text utilities (tokenizer, multilingual stop lists, candidate terms), and

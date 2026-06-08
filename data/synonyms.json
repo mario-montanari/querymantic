@@ -1,0 +1,15 @@
+{
+  "_note": "Starter reformulation gazetteer for Fan-Out Radar. Generic SEO modifier synonyms, English. Extend or replace per project and language. Keys and values are lowercase single tokens or short phrases.",
+  "best": ["top", "leading"],
+  "top": ["best"],
+  "cheap": ["affordable", "budget"],
+  "affordable": ["cheap", "budget"],
+  "budget": ["affordable", "cheap"],
+  "buy": ["purchase", "shop"],
+  "review": ["reviews", "rating"],
+  "reviews": ["review", "ratings"],
+  "guide": ["tutorial"],
+  "vs": ["versus"],
+  "women": ["womens", "female"],
+  "men": ["mens", "male"]
+}

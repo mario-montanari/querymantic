@@ -1,0 +1,22 @@
+name: sprint2_fan_out_radar
+sprint: 2
+description: >
+  Fan-Out Radar generates sub-queries across seven archetypes per cluster, scores
+  them against the cluster's keywords with BM25 (expected coverage, offline), and
+  reports Cover@tau, the missing archetypes, and the gatekeeper queries. It fills
+  the fan_out_radar slot and uses the Entity Web graph when present.
+inputs:
+  - assets/samples/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  --modules entity_web fan_out_radar
+expect:
+  - run.json validates against the run-state contract
+  - spektr.modules_run is ["entity_web", "fan_out_radar"]
+  - modules.fan_out_radar.mode is "expected"
+  - the archetype set is exactly the seven archetypes
+  - each cluster reports cover_at_tau between 0 and 1, plus missing_archetypes and gatekeepers
+  - no sub-query equals its cluster head
+  - every gatekeeper has zero originating volume and centrality at or above the threshold
+  - fan_out_radar runs without entity_web by falling back to frequent member tokens
+  - two runs on the same input produce an identical fan_out_radar block

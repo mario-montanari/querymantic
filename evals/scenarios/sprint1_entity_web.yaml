@@ -1,0 +1,21 @@
+name: sprint1_entity_web
+sprint: 1
+description: >
+  Entity Web extracts entities from the keyword corpus with the tfidf_position
+  extractor, attaches demand and ownership, builds a co-occurrence graph, lists the
+  entity gaps, and scores topical authority per cluster. It fills the entity_web
+  slot and leaves the rest of run.json untouched.
+inputs:
+  - assets/samples/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  --modules entity_web --client-domain example-shoes.com
+expect:
+  - run.json validates against the run-state contract
+  - spektr.modules_run is ["entity_web"]
+  - modules.entity_web has summary, entities, graph, entity_gaps, topical_authority
+  - owned_entities plus demand_only_entities equals entities_total
+  - every entity in entity_gaps is unowned
+  - the graph has at most graph_max_nodes nodes
+  - each cluster authority is between 0 and 1
+  - two runs on the same input produce an identical entity_web block

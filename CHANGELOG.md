@@ -6,6 +6,13 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 1, Entity Web: an interchangeable entity extractor (default
+  `tfidf_position`, an own stdlib scorer; clean-room YAKE left as a declared slot),
+  stdlib text utilities (tokenizer, multilingual stop lists, candidate terms), and
+  the `entity_web` module. It extracts entities from the keyword corpus, attaches
+  demand and ownership, builds a co-occurrence graph, lists entity gaps, and scores
+  topical authority per cluster, writing the `entity_web` slot in `run.json`. Adds a
+  methodology reference and pytest coverage.
 - Sprint 0 scaffold: plugin manifest, shared `spektr_core` package (run-state
   contract, engine adapter, pipeline runner), the `run.json` schema, the CLI
   entry point, and stub skill, agent, and command files.

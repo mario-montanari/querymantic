@@ -10,10 +10,14 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from .entity_web import entity_web
+
 ModuleFn = Callable[[dict[str, Any]], dict[str, Any]]
 
-# Name -> module function. Populated by later sprints.
-REGISTRY: dict[str, ModuleFn] = {}
+# Name -> module function. Each entry is a pure step run_state -> run_state'.
+REGISTRY: dict[str, ModuleFn] = {
+    "entity_web": entity_web,
+}
 
 
 def has(name: str) -> bool:

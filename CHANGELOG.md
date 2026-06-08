@@ -6,6 +6,12 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 8 (refinement), per-module skills: the six remaining per-module skills
+  (`entity-web`, `fan-out-radar`, `demand-pulse`, `citation-grid`, `click-ceiling`,
+  `live-wire`), each a lean SKILL.md with a trigger-only description, the CLI invocation,
+  what it writes to `run.json`, and a one-level-deep link to its methodology reference.
+  These join the `output-forge` skill and the `spektr` orchestrator, so every module now
+  has a discoverable skill.
 - Sprint 8 (refinement), determinism proof: `expected_outputs/` now holds a committed,
   regenerable proof that the same input produces the same bytes. Because the vendored
   engine writes a temporary path and its own timestamp into `engine.run_metadata`, the

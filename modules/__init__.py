@@ -16,6 +16,7 @@ from .demand_pulse import demand_pulse
 from .entity_web import entity_web
 from .fan_out_radar import fan_out_radar
 from .live_wire import live_wire
+from .output_forge import output_forge
 
 # A module takes the run-state and returns it. Some modules accept extra keyword
 # options (for example demand_pulse takes an optional ``series``); the pipeline
@@ -30,6 +31,7 @@ REGISTRY: dict[str, ModuleFn] = {
     "citation_grid": citation_grid,
     "click_ceiling": click_ceiling,
     "live_wire": live_wire,
+    "output_forge": output_forge,
 }
 
 

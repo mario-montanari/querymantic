@@ -6,6 +6,24 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 7, Output Forge: the `output_forge` module, an `ooxml` port, a white-label
+  `brand.json`, and a `forge` CLI subcommand. It renders a finished `run.json` into
+  deliverables from one shared, deterministic view: a self-contained HTML dashboard
+  (standard library only, inline SVG charts, no external resource and no content
+  delivery network, always produced), and a slide deck (`python-pptx`), a Word audit
+  (`python-docx`), and an Excel workbook (`openpyxl`), each behind the `ooxml` port and
+  skipped with a recorded reason when its backend is absent. The artifact files are
+  written to an output directory; the run-state gains only the `output_forge` manifest,
+  which lists each artifact with its byte size and SHA-256, the brand fingerprint, the
+  backend availability, and any skipped format, and carries no absolute path. Output is
+  byte-deterministic: every timestamp is pinned to the run timestamp (the OOXML
+  core-properties dates) and the produced OOXML archive is normalised in the port
+  (fixed ZIP-epoch member time, sorted member order), so two renders of the same input
+  match byte for byte. The `forge` subcommand renders from an existing run.json without
+  re-running the engine; adding `output_forge` to `--modules` renders inline in a
+  pipeline run. The Office backends are optional, so a stdlib-only machine still
+  produces the HTML dashboard and a complete manifest. Adds a methodology reference, a
+  per-module skill, an eval scenario, and pytest coverage.
 - Sprint 6, Live Wire (opt-in): the `live_wire` module, a capture file contract
   (`livewire_capture.json`), and paste templates with a guide. It is the only place
   observed data enters a run, and it never runs by default: it runs only when a

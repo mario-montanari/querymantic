@@ -1,0 +1,28 @@
+name: sprint7_output_forge
+sprint: 7
+description: >
+  Output Forge renders the finished run-state into deliverables. The HTML dashboard
+  is always produced, self-contained, and byte-deterministic; the Office formats are
+  produced when their optional backends are installed and skipped with a recorded
+  reason when absent. The run-state gains only the output_forge manifest, which lists
+  each artifact with its size and SHA-256 and carries no absolute path. A white-label
+  brand.json drives the look and authorship.
+inputs:
+  - assets/samples/
+  - forge/templates/brand.json
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  --client-domain example-shoes.com
+  --modules entity_web fan_out_radar citation_grid click_ceiling output_forge
+  --brand forge/templates/brand.json --forge-out forge_output
+  --deterministic-timestamp "2026-06-08T00:00:00+00:00"
+expect:
+  - run.json validates against the run-state contract
+  - spektr.modules_run ends with output_forge
+  - modules.output_forge.mode is "render"
+  - modules.output_forge.artifacts contains an html entry with a 64-character sha256
+  - forge_output/dashboard.html exists and references no external resource (no http, no script tag, no cdn)
+  - on a machine without the Office backends, pptx, docx, and xlsx appear under skipped with a reason
+  - on a machine with the Office backends, deck.pptx, audit.docx, and dashboard.xlsx are produced
+  - the output_forge manifest is identical across two runs on the same input
+  - the dashboard.html bytes are identical across two runs on the same input

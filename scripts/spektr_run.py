@@ -74,6 +74,22 @@ def _build_parser() -> argparse.ArgumentParser:
         help="optional livewire_capture.json with observed Search Console and AI-citation data",
     )
     run_p.add_argument(
+        "--forge-out",
+        default=None,
+        help="output directory for Output Forge artifacts (defaults to a 'forge_output' folder beside run.json)",
+    )
+    run_p.add_argument(
+        "--brand",
+        default=None,
+        help="optional brand.json for white-label Output Forge output",
+    )
+    run_p.add_argument(
+        "--forge-formats",
+        nargs="*",
+        default=None,
+        help="Output Forge formats to render (subset of: html pptx docx xlsx); default renders all available",
+    )
+    run_p.add_argument(
         "--deterministic-timestamp",
         default=None,
         help="fixed ISO 8601 timestamp for reproducible output",
@@ -84,6 +100,15 @@ def _build_parser() -> argparse.ArgumentParser:
     val_p = sub.add_parser("validate", help="validate an existing run.json")
     val_p.add_argument("path", help="path to a run.json file")
     val_p.add_argument("--json", action="store_true", help="emit JSON result")
+
+    forge_p = sub.add_parser("forge", help="render deliverables from an existing run.json")
+    forge_p.add_argument("path", help="path to a run.json file")
+    forge_p.add_argument("--out", default=None, help="output directory for artifacts (default: forge_output beside run.json)")
+    forge_p.add_argument("--brand", default=None, help="optional brand.json for white-label output")
+    forge_p.add_argument("--formats", nargs="*", default=None, help="formats to render (subset of: html pptx docx xlsx)")
+    forge_p.add_argument("--output", default=None, help="where to write the updated run.json (default: in place)")
+    forge_p.add_argument("--json", action="store_true", help="emit JSON summary")
+    forge_p.add_argument("--quiet", action="store_true", help="suppress the summary")
 
     return parser
 
@@ -110,6 +135,28 @@ def _cmd_run(args: argparse.Namespace) -> int:
         except LiveWireError as exc:
             _fail(str(exc), as_json=args.json)
             return 1
+
+    if "output_forge" in args.modules:
+        from modules.output_forge import FORMATS
+        from modules.output_forge.brand import BrandError, load_brand
+
+        forge_kwargs: dict = {}
+        forge_kwargs["out_dir"] = (
+            Path(args.forge_out) if args.forge_out else output.parent / "forge_output"
+        )
+        if args.brand:
+            try:
+                forge_kwargs["brand"] = load_brand(Path(args.brand))
+            except BrandError as exc:
+                _fail(str(exc), as_json=args.json)
+                return 1
+        if args.forge_formats is not None:
+            unknown = [f for f in args.forge_formats if f not in FORMATS]
+            if unknown:
+                _fail(f"unknown --forge-formats value(s): {', '.join(sorted(unknown))}", as_json=args.json)
+                return 1
+            forge_kwargs["formats"] = tuple(args.forge_formats)
+        module_kwargs["output_forge"] = forge_kwargs
 
     try:
         state = pipeline.run_pipeline(
@@ -146,6 +193,12 @@ def _cmd_run(args: argparse.Namespace) -> int:
         print(f"  total keywords: {summary['total_keywords']}")
         ran = ", ".join(summary["modules_run"]) or "(none)"
         print(f"  modules run:    {ran}")
+        forge = (state.get("modules") or {}).get("output_forge")
+        if isinstance(forge, dict):
+            produced = ", ".join(a["format"] for a in forge.get("artifacts", [])) or "(none)"
+            print(f"  forge artifacts: {produced}")
+            for s in forge.get("skipped", []):
+                print(f"    skipped {s['format']}: {s['reason']}")
     return 0
 
 
@@ -174,6 +227,60 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_forge(args: argparse.Namespace) -> int:
+    from modules.output_forge import FORMATS, ModuleError, OutputForgeError, output_forge
+    from modules.output_forge.brand import BrandError, load_brand
+
+    path = Path(args.path)
+    try:
+        state = run_state.load_run_state(path)
+    except run_state.RunStateError as exc:
+        _fail(str(exc), as_json=args.json, path=str(path))
+        return 1
+
+    out_dir = Path(args.out) if args.out else path.parent / "forge_output"
+    brand = None
+    if args.brand:
+        try:
+            brand = load_brand(Path(args.brand))
+        except BrandError as exc:
+            _fail(str(exc), as_json=args.json)
+            return 1
+    formats = tuple(args.formats) if args.formats is not None else ("html", "pptx", "docx", "xlsx")
+    unknown = [f for f in formats if f not in FORMATS]
+    if unknown:
+        _fail(f"unknown --formats value(s): {', '.join(sorted(unknown))}", as_json=args.json)
+        return 1
+
+    try:
+        output_forge(state, out_dir=out_dir, brand=brand, formats=formats)
+    except (ModuleError, OutputForgeError) as exc:
+        _fail(str(exc), as_json=args.json)
+        return 1
+    run_state.mark_module_run(state, "output_forge")
+
+    dest = Path(args.output) if args.output else path
+    run_state.save_run_state(state, dest)
+
+    forge = state["modules"]["output_forge"]
+    summary = {
+        "status": "ok",
+        "run_json": str(dest),
+        "out_dir": str(out_dir),
+        "artifacts": [a["format"] for a in forge["artifacts"]],
+        "skipped": [s["format"] for s in forge["skipped"]],
+    }
+    if args.json:
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+    elif not args.quiet:
+        print(f"Rendered into {out_dir}")
+        print(f"  artifacts: {', '.join(summary['artifacts']) or '(none)'}")
+        for s in forge["skipped"]:
+            print(f"  skipped {s['format']}: {s['reason']}")
+        print(f"  updated:   {dest}")
+    return 0
+
+
 def _fail(message: str, as_json: bool, path: str | None = None) -> None:
     if as_json:
         payload = {"status": "error", "error": message}
@@ -191,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_run(args)
     if args.command == "validate":
         return _cmd_validate(args)
+    if args.command == "forge":
+        return _cmd_forge(args)
     parser.print_help()
     return 1
 

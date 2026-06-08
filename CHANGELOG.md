@@ -6,6 +6,16 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 8 (refinement), determinism proof: `expected_outputs/` now holds a committed,
+  regenerable proof that the same input produces the same bytes. Because the vendored
+  engine writes a temporary path and its own timestamp into `engine.run_metadata`, the
+  full `run.json` is not byte-stable; the parts Spektr owns are. The proof therefore
+  stores a trimmed artifact (`sample_run.trimmed.json`: the `spektr` metadata with a
+  pinned timestamp plus every `modules` slot, with the `engine` block dropped) and the
+  Output Forge HTML dashboard (`sample_dashboard.html`), byte for byte.
+  `scripts/regenerate_expected_outputs.py` rewrites the files or, with `--check`,
+  compares a fresh run against them and exits non-zero on drift. A pytest check makes
+  the byte-equality a CI-enforced guarantee.
 - Sprint 7, Output Forge: the `output_forge` module, an `ooxml` port, a white-label
   `brand.json`, and a `forge` CLI subcommand. It renders a finished `run.json` into
   deliverables from one shared, deterministic view: a self-contained HTML dashboard

@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "name": "Spektr CTR-by-position table",
+    "version": "2026Q2",
+    "generated": "2026-06-08",
+    "device_scope": "mobile",
+    "metric": "organic click-through rate as a fraction (0 to 1)",
+    "beyond_table_position": {
+      "max_position": 20,
+      "floor_ctr": 0.00301,
+      "note": "positions past 20 use the position-20 floor; such ranks earn near-zero clicks now, so their winnable upside is large and correct"
+    },
+    "provenance_states": {
+      "confirmed": "exact value stated in the primary source text",
+      "interpolated": "monotone log-linear fill between two confirmed anchors; not a source value",
+      "extrapolated": "log-linear tail past the last confirmed anchor; not a source value",
+      "derived": "computed from a confirmed source value (here a SISTRIX position-1 layout CTR), not a directly stated factor"
+    },
+    "sources": [
+      {
+        "id": "sistrix_2020",
+        "author": "Johannes Beus",
+        "publisher": "SISTRIX",
+        "title": "Why (almost) everything you knew about Google CTR is no longer valid",
+        "url": "https://www.sistrix.com/blog/why-almost-everything-you-knew-about-google-ctr-is-no-longer-valid/",
+        "published": "2020-07-14",
+        "dataset": "80M+ keywords, billions of results, mobile",
+        "accessed": "2026-06-08"
+      },
+      {
+        "id": "seer_2025",
+        "author": "Seer Interactive",
+        "title": "AI Overviews impact on Google CTR, September 2025 update",
+        "url": "https://www.seerinteractive.com/insights/aio-impact-on-google-ctr-september-2025-update",
+        "scope": "3,119 informational queries, 42 organizations, Jun 2024 to Sep 2025",
+        "accessed": "2026-06-08"
+      }
+    ],
+    "limits": [
+      "A single curve is a crude approximation; CTR varies by intent, brand, device, and industry. Reported as a band, never a single number.",
+      "Advanced Web Ranking publishes a fuller position 1 to 20 curve but serves it from a JavaScript chart, so its per-position numbers were not capturable; SISTRIX anchors are used instead.",
+      "Positions 4 to 9 and 11 to 20 are filled by formula, not by the source.",
+      "SERP-feature factors are derived from SISTRIX position-1 layout CTRs and applied as the single strongest suppression among present features, not multiplied, to avoid compounding uncertainty.",
+      "Features without a confirmed value (paa, local_pack, video, news, images, sitelinks-as-suppressor) carry factor 1.0 and are marked unmeasured; the band absorbs the unknown."
+    ]
+  },
+  "positions": {
+    "1": {
+      "ctr": 0.285,
+      "provenance": "confirmed",
+      "basis": "sistrix_2020 average mobile curve, stated in article text"
+    },
+    "2": {
+      "ctr": 0.157,
+      "provenance": "confirmed",
+      "basis": "sistrix_2020 average mobile curve, stated in article text"
+    },
+    "3": {
+      "ctr": 0.11,
+      "provenance": "confirmed",
+      "basis": "sistrix_2020 average mobile curve, stated in article text"
+    },
+    "4": {
+      "ctr": 0.08902,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "5": {
+      "ctr": 0.07204,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "6": {
+      "ctr": 0.05829,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "7": {
+      "ctr": 0.04717,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "8": {
+      "ctr": 0.03818,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "9": {
+      "ctr": 0.03089,
+      "provenance": "interpolated",
+      "basis": "monotone log-linear between confirmed positions 3 and 10"
+    },
+    "10": {
+      "ctr": 0.025,
+      "provenance": "confirmed",
+      "basis": "sistrix_2020 average mobile curve, stated in article text"
+    },
+    "11": {
+      "ctr": 0.02023,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "12": {
+      "ctr": 0.01637,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "13": {
+      "ctr": 0.01325,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "14": {
+      "ctr": 0.01072,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "15": {
+      "ctr": 0.00868,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "16": {
+      "ctr": 0.00702,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "17": {
+      "ctr": 0.00568,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "18": {
+      "ctr": 0.0046,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "19": {
+      "ctr": 0.00372,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    },
+    "20": {
+      "ctr": 0.00301,
+      "provenance": "extrapolated",
+      "basis": "log-linear tail extended from confirmed position 10 (no upper anchor)"
+    }
+  },
+  "serp_feature_factors": {
+    "featured_snippet": {
+      "factor": 0.8175,
+      "provenance": "derived",
+      "basis": "SISTRIX position-1 with featured snippet 23.3% over average 28.5% (the 5.3pp drop)"
+    },
+    "shopping": {
+      "factor": 0.4807,
+      "provenance": "derived",
+      "basis": "SISTRIX position-1 with Google Shopping 13.7% over average 28.5%"
+    },
+    "knowledge_panel": {
+      "factor": 0.586,
+      "provenance": "derived",
+      "basis": "SISTRIX position-1 with Knowledge Panel 16.7% over average 28.5%"
+    },
+    "paa": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "no confirmed value; no penalty applied, band absorbs the unknown"
+    },
+    "local_pack": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "no confirmed value; no penalty applied"
+    },
+    "video": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "no confirmed value; no penalty applied"
+    },
+    "news": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "no confirmed value; no penalty applied"
+    },
+    "images": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "no confirmed value; no penalty applied"
+    },
+    "sitelinks": {
+      "factor": 1.0,
+      "provenance": "unmeasured",
+      "basis": "SISTRIX shows a position-1 boost for sitelinks (branded/navigational regime); not applied as a suppressor by default"
+    }
+  },
+  "ai_overview": {
+    "organic_ctr_multiplier": 0.39,
+    "provenance": "confirmed",
+    "source": "seer_2025",
+    "basis": "organic CTR on AI-Overview queries fell 61% (1.76% to 0.61%); 1 - 0.61 = 0.39",
+    "cited_recovery_max": 1.35,
+    "cited_recovery_basis": "pages cited inside an AI Overview earned 35% more organic clicks than uncited pages on the same SERP",
+    "scope": "informational queries, 42 organizations; do not generalise verbatim to commercial intent"
+  }
+}

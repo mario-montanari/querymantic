@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .citation_grid import citation_grid
+from .click_ceiling import click_ceiling
 from .demand_pulse import demand_pulse
 from .entity_web import entity_web
 from .fan_out_radar import fan_out_radar
@@ -26,6 +27,7 @@ REGISTRY: dict[str, ModuleFn] = {
     "fan_out_radar": fan_out_radar,
     "demand_pulse": demand_pulse,
     "citation_grid": citation_grid,
+    "click_ceiling": click_ceiling,
 }
 
 

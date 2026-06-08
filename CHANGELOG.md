@@ -6,6 +6,20 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 5, Click Ceiling: the `click_ceiling` module and a dated CTR-by-position
+  table (`data/ctr_table_2026Q2.json`). It estimates the band of winnable monthly
+  organic clicks per cluster from the table and the SERP features present, reporting
+  a band and never a single number. The table carries per-cell provenance: confirmed
+  anchor positions from a published CTR study, formula-filled interpolated and
+  extrapolated cells, and derived SERP-feature factors; a rank on a non-confirmed
+  cell widens the band. Per keyword the estimate is volume times CTR(rank, features),
+  applying the single strongest SERP suppression rather than a product, and on
+  AI-Overview queries the measured organic-CTR suppression, recovered on the
+  optimistic endpoint by the Citation Grid readiness. Demand Pulse trend, Entity Web
+  topical authority, and Fan-Out coverage sharpen the band when present, each
+  recorded per cluster as an auditable adjuster; the module degrades to the engine
+  metrics alone. A run-level summary totals the winnable band and splits it by
+  intent. Adds a methodology reference, an eval scenario, and pytest coverage.
 - Sprint 4, Citation Grid: the `citation_grid` module. It estimates per-cluster
   citation readiness by AI answer surfaces and turns it into editorial actions,
   fully offline with no content corpus. Six citability components (Extractability,

@@ -1,0 +1,31 @@
+name: sprint5_click_ceiling
+sprint: 5
+description: >
+  Click Ceiling estimates the band of winnable monthly organic clicks per cluster
+  from a dated CTR-by-position table and the SERP features present. It reports a
+  band, never a single number, because a single CTR curve is a crude approximation
+  and the realistic target rank is itself a range. The bundled table carries
+  per-cell provenance (confirmed SISTRIX anchors, interpolated and extrapolated
+  fills, derived SERP-feature factors); a rank on a non-confirmed cell widens the
+  band. AI-Overview queries apply the measured organic-CTR suppression, recovered
+  on the optimistic endpoint by the Citation Grid readiness. Demand Pulse, Entity
+  Web, and Fan-Out Radar sharpen the band when present. It fills the click_ceiling
+  slot and leaves the rest of run.json untouched.
+inputs:
+  - assets/samples/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  --modules entity_web fan_out_radar citation_grid click_ceiling
+expect:
+  - run.json validates against the run-state contract
+  - spektr.modules_run ends with click_ceiling
+  - modules.click_ceiling has mode expected and expected_only true
+  - the ctr_table block names the dated table and its sources
+  - each cluster reports a winnable_band [low, high] with low <= high
+  - each cluster reports a ceiling_band equal to current clicks plus the winnable band
+  - the run-level summary totals the winnable band and splits it by intent
+  - a keyword with no rank is unranked, contributes zero current clicks, full upside
+  - AI-Overview keywords carry suppression and recover with citation readiness
+  - prior-slot adjusters are recorded per cluster with factor and basis
+  - with only the engine data the band still computes and degrades cleanly
+  - two runs on the same input produce an identical click_ceiling block

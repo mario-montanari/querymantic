@@ -61,7 +61,12 @@ def _build_parser() -> argparse.ArgumentParser:
         "--modules",
         nargs="*",
         default=[],
-        help="modules to run, in order (none available in the scaffold)",
+        help="modules to run, in order",
+    )
+    run_p.add_argument(
+        "--series",
+        default=None,
+        help="optional monthly-series CSV for demand_pulse (wide: keyword + YYYY-MM columns)",
     )
     run_p.add_argument(
         "--deterministic-timestamp",
@@ -81,6 +86,17 @@ def _build_parser() -> argparse.ArgumentParser:
 def _cmd_run(args: argparse.Namespace) -> int:
     inputs = [Path(p) for p in args.inputs]
     output = Path(args.output)
+
+    module_kwargs: dict[str, dict] = {}
+    if args.series and "demand_pulse" in args.modules:
+        from modules.demand_pulse import DemandPulseError, load_series
+
+        try:
+            module_kwargs["demand_pulse"] = {"series": load_series(Path(args.series))}
+        except DemandPulseError as exc:
+            _fail(str(exc), as_json=args.json)
+            return 1
+
     try:
         state = pipeline.run_pipeline(
             PLUGIN_ROOT,
@@ -91,6 +107,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             brand_list=args.brand_list,
             modules_to_run=tuple(args.modules),
             generated_at=args.deterministic_timestamp,
+            module_kwargs=module_kwargs,
         )
     except (pipeline.PipelineError, run_state.RunStateError) as exc:
         _fail(str(exc), as_json=args.json)

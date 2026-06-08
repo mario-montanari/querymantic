@@ -63,12 +63,15 @@ def run_pipeline(
     brand_list: str = "",
     modules_to_run: tuple[str, ...] = (),
     generated_at: str | None = None,
+    module_kwargs: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run the full pipeline and write ``run.json`` to ``output``.
 
     ``modules_to_run`` names the modules to apply, in order. Unknown names raise
     before any work begins. ``generated_at`` can be pinned for reproducible
-    output.
+    output. ``module_kwargs`` maps a module name to extra keyword arguments for it
+    (for example ``{"demand_pulse": {"series": parsed}}``); modules that take no
+    extra options simply receive none.
     """
     import modules as module_registry
 
@@ -101,7 +104,8 @@ def run_pipeline(
 
     for name in modules_to_run:
         module_fn = module_registry.get(name)
-        state = module_fn(state)
+        extra = (module_kwargs or {}).get(name, {})
+        state = module_fn(state, **extra)
         run_state.mark_module_run(state, name)
 
     run_state.save_run_state(state, output)

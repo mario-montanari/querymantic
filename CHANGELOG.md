@@ -6,6 +6,16 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 3, Demand Pulse: a stdlib statistics port (Mann-Kendall, Theil-Sen) with
+  an optional STL seasonal-strength path behind statsmodels that degrades when the
+  package is absent, and the `demand_pulse` module. It classifies each cluster as
+  rising, declining, seasonal, flat, or unknown from a monthly volume series, with
+  the trend statistics, a momentum ratio, and a marker-derived seasonal flag kept
+  separate from the series-based state. The canonical state carries volume only, so
+  the series is an optional second input (a wide `keyword` plus `YYYY-MM` CSV, wired
+  through a new `--series` option and a generic per-module argument channel in the
+  pipeline); without it every cluster is unknown. Adds a sample series, a
+  methodology reference, an eval scenario, and pytest coverage.
 - Sprint 2, Fan-Out Radar: a stdlib BM25 index and the `fan_out_radar` module. It
   generates sub-queries across seven archetypes per cluster, scores expected
   coverage against the cluster keywords (offline), reports Cover@tau and missing

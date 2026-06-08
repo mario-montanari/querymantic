@@ -10,15 +10,20 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from .demand_pulse import demand_pulse
 from .entity_web import entity_web
 from .fan_out_radar import fan_out_radar
 
-ModuleFn = Callable[[dict[str, Any]], dict[str, Any]]
+# A module takes the run-state and returns it. Some modules accept extra keyword
+# options (for example demand_pulse takes an optional ``series``); the pipeline
+# passes those through ``module_kwargs``, so the callable signature is left open.
+ModuleFn = Callable[..., dict[str, Any]]
 
 # Name -> module function. Each entry is a pure step run_state -> run_state'.
 REGISTRY: dict[str, ModuleFn] = {
     "entity_web": entity_web,
     "fan_out_radar": fan_out_radar,
+    "demand_pulse": demand_pulse,
 }
 
 

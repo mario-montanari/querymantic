@@ -59,4 +59,5 @@ jobs:
       - name: Plugin structure validation (informational)
         # Informational manifest check for plugin.json and marketplace.json.
         # The authoritative validation is `claude plugin validate`, run locally.
-        run: npx --yes github:hesreallyhim/claude-code-json-schema . || echo "Informational schema validation: review the output above."
+        run: |
+          npx --yes github:hesreallyhim/claude-code-json-schema . || echo "Informational schema validation: review the output above."

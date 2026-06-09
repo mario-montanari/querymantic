@@ -6,6 +6,33 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 ## [Unreleased]
 
 ### Added
+- Sprint 8 (refinement), Italian as the fifth language: a new `language_layer`
+  module that corrects Italian keywords the bundled four-language engine misreads.
+  The engine votes Italian to English or French and flattens its intent to
+  informational, because its function-word, diacritic, and intent tables hold no
+  Italian. Language Layer runs first, before the analysis modules, so they read
+  corrected values. It re-detects Italian with a conservative, strictly-greater
+  vote over the engine's own (recovered from the engine's confidence), and
+  overrides intent only on positive Italian lexical evidence (a marker or question
+  pronoun), mirroring the engine's exact weights; when no Italian marker fires the
+  engine intent is kept, since it may carry a signal from a provided intent column.
+  It recomputes the corpus `by_language` and `by_intent` and each cluster's
+  dominant intent in the produced state, and records every change with the cue that
+  fired in its own `language_layer` audit slot. The vendored engine package is
+  never edited. A corpus in one of the four supported languages is left untouched
+  (verified zero changes on the English sample). The Italian lexicon lives as data
+  in `data/gazetteer/it.json`; Italian entity-extraction stopwords were added to
+  `spektr_core/text/stopwords.py`. Ships an Italian sample at `assets/samples/it/`,
+  the `references/language-layer.md` methodology, and the `language-layer` skill.
+
+### Changed
+- Run-state schema bumped from 0.1.0 to 0.2.0: a new `language_layer` module slot,
+  listed first in `MODULE_KEYS` and the schema enums because it leads the run order.
+  The committed determinism proof in `expected_outputs/` was regenerated with
+  `language_layer` first; on the English sample it is a no-op, so only the new slot
+  and the schema version change.
+
+### Added (earlier this sprint)
 - Sprint 8 (refinement), per-module skills: the six remaining per-module skills
   (`entity-web`, `fan-out-radar`, `demand-pulse`, `citation-grid`, `click-ceiling`,
   `live-wire`), each a lean SKILL.md with a trigger-only description, the CLI invocation,

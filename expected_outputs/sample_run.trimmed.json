@@ -15606,6 +15606,32 @@
         "total_gatekeepers": 69
       }
     },
+    "language_layer": {
+      "intent_changes": [],
+      "language": "it",
+      "language_changes": [],
+      "rules": {
+        "detection": "strictly-greater Italian vote over the engine vote; declared language (confidence 1.0) untouched",
+        "diacritic_vote": 2,
+        "gazetteer": "it.json",
+        "intent_override": "only on positive Italian lexical evidence (marker or question pronoun); otherwise the engine intent is kept"
+      },
+      "summary": {
+        "by_intent": {
+          "commercial_investigation": 22,
+          "informational": 116,
+          "navigational": 8,
+          "transactional": 24
+        },
+        "by_language": {
+          "en": 170
+        },
+        "detected_italian": 0,
+        "intent_reclassified": 0,
+        "keywords_total": 170,
+        "language_reclassified": 0
+      }
+    },
     "live_wire": null,
     "output_forge": {
       "artifacts": [
@@ -15662,6 +15688,7 @@
       "C:/Claude/030-spektr-intelligence-suite/spektr/assets/samples/ubersuggest_export.csv"
     ],
     "modules_run": [
+      "language_layer",
       "entity_web",
       "fan_out_radar",
       "citation_grid",
@@ -15669,6 +15696,6 @@
       "output_forge"
     ],
     "plugin_version": "0.1.0",
-    "schema_version": "0.1.0"
+    "schema_version": "0.2.0"
   }
 }

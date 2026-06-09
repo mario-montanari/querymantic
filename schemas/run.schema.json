@@ -48,6 +48,7 @@
           "items": {
             "type": "string",
             "enum": [
+              "language_layer",
               "entity_web",
               "fan_out_radar",
               "demand_pulse",
@@ -68,6 +69,7 @@
       "type": "object",
       "description": "One slot per module; null until that module fills it.",
       "required": [
+        "language_layer",
         "entity_web",
         "fan_out_radar",
         "demand_pulse",
@@ -78,6 +80,7 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "language_layer": { "type": ["object", "null"] },
         "entity_web": { "type": ["object", "null"] },
         "fan_out_radar": { "type": ["object", "null"] },
         "demand_pulse": { "type": ["object", "null"] },

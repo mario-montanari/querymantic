@@ -27,11 +27,14 @@ from pathlib import Path
 from typing import Any
 
 # The run-state schema version. Bump on any change to the run.json shape.
-SCHEMA_VERSION = "0.1.0"
+# 0.2.0 added the language_layer slot (the Italian fifth-language correction).
+SCHEMA_VERSION = "0.2.0"
 
-# Module slots, in the approved build order. Every run.json carries all of them;
-# a slot stays None until its module runs.
+# Module slots, in the approved run order. Every run.json carries all of them;
+# a slot stays None until its module runs. language_layer leads because it corrects
+# the engine's language and intent before the analysis modules read them.
 MODULE_KEYS: tuple[str, ...] = (
+    "language_layer",
     "entity_web",
     "fan_out_radar",
     "demand_pulse",

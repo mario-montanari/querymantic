@@ -35,7 +35,7 @@ from spektr_core import pipeline  # noqa: E402
 # The fixed inputs that define the committed proof. Changing any of these changes
 # the expected bytes, so they live here as the single source of truth.
 FIXED_TIMESTAMP = "2026-06-08T00:00:00+00:00"
-MODULES = ("entity_web", "fan_out_radar", "citation_grid", "click_ceiling", "output_forge")
+MODULES = ("language_layer", "entity_web", "fan_out_radar", "citation_grid", "click_ceiling", "output_forge")
 CLIENT_DOMAIN = "example-shoes.com"
 BRAND_LIST = "hoka,nike,brooks"
 

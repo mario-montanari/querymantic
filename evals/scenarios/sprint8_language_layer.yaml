@@ -1,0 +1,31 @@
+name: sprint8_language_layer
+sprint: 8
+description: >
+  Language Layer corrects Italian keywords that the bundled four-language engine
+  misreads. The engine votes Italian to English or French (its function-word and
+  diacritic tables hold no Italian) and flattens intent to informational (its
+  intent markers are keyed by the four supported languages with an English
+  fallback), unless an intent column is present. The layer runs first, before the
+  analysis modules, so they read corrected values. It re-detects Italian with a
+  conservative, strictly-greater vote over the engine's, overrides intent only on
+  positive Italian lexical evidence, recomputes the corpus and cluster aggregates,
+  and records every change with its cue in the language_layer slot. A corpus in
+  one of the four supported languages is left untouched. The Italian lexicon is
+  data (data/gazetteer/it.json); the entity-extraction stopwords gain Italian too.
+inputs:
+  - assets/samples/it/
+command: >
+  python scripts/spektr_run.py run --inputs assets/samples/it/ --output run.json
+  --modules language_layer entity_web fan_out_radar citation_grid click_ceiling
+expect:
+  - run.json validates against the run-state contract at schema 0.2.0
+  - spektr.modules_run begins with language_layer
+  - the engine alone tags no keyword Italian and flattens intent to informational
+  - with the layer, corpus_summary.by_language reports Italian for most keywords
+  - a telegraphic content-only Italian phrase stays as the engine read it
+  - prezzo maps to transactional, migliori and recensioni to commercial, accedi to navigational
+  - a keyword detected Italian by function words only keeps the engine intent
+  - corpus_summary by_language and by_intent and each cluster dominant_intent are recomputed
+  - the language_layer slot lists each change with the exact cue that fired
+  - an English corpus is untouched: detected_italian is zero and the slot lists are empty
+  - two runs on the same input produce an identical language_layer block

@@ -1,0 +1,50 @@
+{
+  "language": "it",
+  "version": "1.0",
+  "description": "Italian lexical resource for the language_layer module. language_cues and question_pronouns feed the Italian language-detection vote; intent_markers and question_pronouns drive the Italian intent classification. The structure mirrors the engine's in-code tables (STOP_WORDS, QUESTION_PRONOUNS, INTENT_MARKERS) but lives as data so a sixth language is a file drop, not a code change.",
+  "diacritics": "àèéìíîòóùú",
+  "language_cues": [
+    "il", "lo", "la", "le", "gli", "un", "uno", "una",
+    "di", "del", "dello", "della", "dei", "degli", "delle",
+    "da", "dal", "dallo", "dalla", "dai", "dagli", "dalle",
+    "nel", "nello", "nella", "nei", "negli", "nelle",
+    "sul", "sullo", "sulla", "sui", "sugli", "sulle",
+    "col", "coi", "per", "tra", "fra", "con", "su", "in",
+    "che", "chi", "come", "dove", "quando", "perché", "perche",
+    "quale", "quali", "quanto", "quanti", "quante", "cosa",
+    "più", "piu", "meno", "molto", "anche", "senza", "sotto", "sopra",
+    "questo", "questa", "questi", "queste", "quello", "quella", "quelli", "quelle",
+    "mio", "mia", "tuo", "tua", "suo", "sua", "nostro", "vostro", "loro",
+    "sono", "essere", "avere", "hanno",
+    "prezzo", "prezzi", "costo", "comprare", "compra", "acquistare", "acquisto",
+    "offerta", "offerte", "sconto", "sconti", "vendita", "spedizione", "economico",
+    "migliori", "migliore", "recensione", "recensioni", "confronto", "paragone",
+    "alternativa", "alternative", "opinioni", "guida", "significato", "scegliere",
+    "differenza", "differenze", "esempi", "esempio", "tutorial",
+    "accedi", "accesso", "registrati", "clienti", "sito"
+  ],
+  "question_pronouns": [
+    "come", "cosa", "cos'è", "cos'e", "perché", "perche",
+    "quando", "dove", "quale", "quali", "chi", "quanto", "quanti", "quante"
+  ],
+  "intent_markers": {
+    "transactional": [
+      "prezzo", "prezzi", "costo", "comprare", "compra", "acquistare",
+      "acquisto", "offerta", "offerte", "sconto", "sconti", "vendita",
+      "spedizione", "economico"
+    ],
+    "commercial": [
+      "migliori", "migliore", "recensione", "recensioni", "confronto",
+      "paragone", "vs", "alternativa", "alternative", "opinioni", "top"
+    ],
+    "informational": [
+      "come", "cosa", "cos'è", "cos'e", "perché", "perche", "quando", "dove",
+      "quale", "quali", "chi", "quanto", "quanti", "quante",
+      "guida", "significato", "tutorial", "esempi", "esempio",
+      "differenza", "differenze"
+    ],
+    "navigational": [
+      "login", "accedi", "accesso", "sito", "area clienti", "registrati"
+    ]
+  }
+}

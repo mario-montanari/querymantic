@@ -3,7 +3,9 @@
 Each module is a pure function ``run_state -> run_state'`` that fills its own slot
 in ``run_state['modules']``. Modules register here by name so the pipeline can
 look them up without importing each one directly. The Sprint 0 scaffold ships an
-empty registry; sprints 1 to 7 add one entry each, in the approved order.
+empty registry; sprints 1 to 7 add one entry each, and Sprint 8 adds
+``language_layer``, which leads the run order because it corrects the engine's
+language and intent before the analysis modules read them.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ from .click_ceiling import click_ceiling
 from .demand_pulse import demand_pulse
 from .entity_web import entity_web
 from .fan_out_radar import fan_out_radar
+from .language_layer import language_layer
 from .live_wire import live_wire
 from .output_forge import output_forge
 
@@ -25,6 +28,7 @@ ModuleFn = Callable[..., dict[str, Any]]
 
 # Name -> module function. Each entry is a pure step run_state -> run_state'.
 REGISTRY: dict[str, ModuleFn] = {
+    "language_layer": language_layer,
     "entity_web": entity_web,
     "fan_out_radar": fan_out_radar,
     "demand_pulse": demand_pulse,

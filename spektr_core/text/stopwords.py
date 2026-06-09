@@ -7,8 +7,7 @@ phrases without removing meaningful modifiers such as "best" or "cheap", which
 carry commercial intent.
 
 The lists are basic and extensible, not a linguistic resource. A caller can pass
-extra stopwords to the tokenizer for a specific corpus. Italian is added when the
-suite gains its fifth language.
+extra stopwords to the tokenizer for a specific corpus.
 """
 
 from __future__ import annotations
@@ -39,11 +38,21 @@ para con sin en sobre bajo este esta estos estas mi tu su nuestro vuestro yo tu 
 ella nosotros que quien como cuando donde por que no si es son ser haber muy mas
 """.split()
 
+_IT = """
+il lo la gli le un uno una di del dello della dei degli delle da dal dallo dalla
+dai dagli dalle in nel nello nella nei negli nelle con col coi su sul sullo sulla sui
+sugli sulle per tra fra ed od ma anche se che chi come dove quando perché perche più piu
+meno molto poco questo questa questi queste quello quella quelli quelle mio mia tuo tua
+suo sua nostro vostro loro non ci si ne già gia ancora senza sotto sopra contro sono ho
+hai ha hanno essere avere vs versus
+""".split()
+
 STOPWORDS: dict[str, frozenset[str]] = {
     "en": frozenset(_EN),
     "fr": frozenset(_FR),
     "de": frozenset(_DE),
     "es": frozenset(_ES),
+    "it": frozenset(_IT),
 }
 
 # Used when a keyword's language is unknown or unsupported: the union of all lists,

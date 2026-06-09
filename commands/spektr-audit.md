@@ -12,8 +12,10 @@ client domain for gap analysis.
 Steps:
 
 1. If `$1` is a directory, list its CSV/TSV files with Glob.
-2. Run the pipeline with every available module, in order:
-   `python scripts/spektr_run.py run --inputs $1 --output run.json --client-domain $2 --modules entity_web fan_out_radar demand_pulse citation_grid click_ceiling`.
+2. Run the pipeline with every available module, in order. `language_layer` leads so
+   any Italian keyword is corrected before the analysis modules read it (it is a no-op
+   on a corpus in another language):
+   `python scripts/spektr_run.py run --inputs $1 --output run.json --client-domain $2 --modules language_layer entity_web fan_out_radar demand_pulse citation_grid click_ceiling`.
    Drop `--client-domain` if `$2` is empty. Drop any module name the build does not
    yet register; the CLI rejects unknown modules, so request only modules that exist.
 3. Read `run.json` and produce an audit summary: corpus size, demand opportunity,

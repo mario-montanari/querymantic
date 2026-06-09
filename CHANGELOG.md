@@ -13,8 +13,9 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   `PUBLISHING.md` checklist sets the ordered pre-publication gates (plugin
   validation, secrets and lint and Python security, dependency audit, tests, and
   the by-hand content checks). `requirements-optional.txt` names the optional
-  libraries so pip-audit and Dependabot can resolve them (versions left to pin
-  before publishing). A local `scripts/publish.ps1` runs every gate and pushes
+  libraries pinned to their current PyPI releases so pip-audit and Dependabot can
+  resolve them (python-pptx 1.0.2, python-docx 1.2.0, openpyxl 3.1.5,
+  statsmodels 0.14.6). A local `scripts/publish.ps1` runs every gate and pushes
   only when all pass; it stays inert until run.
 
 ### Changed (tooling)

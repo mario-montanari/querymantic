@@ -4,15 +4,14 @@
 # power. Each is imported through a port that degrades when the library is
 # absent (see NOTICE for licenses and the module that uses each one).
 #
-# Versions are intentionally left unpinned here and are marked [to verify]:
-# pin them against the current PyPI release before publishing, and record the
-# pinned versions. pip-audit and Dependabot still resolve the names without a
-# pin.
+# Versions are pinned to the current PyPI release (read 2026-06-09). Dependabot
+# raises a pull request when a newer release ships; pip-audit checks the pinned
+# set for known advisories.
 
 # Output Forge deliverables (spektr_core/ports/ooxml.py)
-python-pptx   # MIT  -- .pptx slide deck        [pin to verify]
-python-docx   # MIT  -- .docx audit document    [pin to verify]
-openpyxl      # MIT  -- .xlsx workbook           [pin to verify]
+python-pptx==1.0.2     # MIT  -- .pptx slide deck
+python-docx==1.2.0     # MIT  -- .docx audit document
+openpyxl==3.1.5        # MIT  -- .xlsx workbook
 
 # Demand Pulse optional STL seasonal path (spektr_core/ports/stats.py)
-statsmodels   # BSD-3-Clause -- STL decomposition [pin to verify]
+statsmodels==0.14.6    # BSD-3-Clause -- STL decomposition

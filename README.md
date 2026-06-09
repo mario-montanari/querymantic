@@ -3,9 +3,9 @@
 Offline keyword and demand intelligence for Claude Code and Claude Cowork.
 
 You drop in your keyword exports. Querymantic reads them, runs a deterministic analysis,
-and writes one structured file you can build on. No external API, no account, no data
-leaving your machine. The numbers come from your files and you can trace every one of
-them back to a row.
+and writes one structured file you can build on. Nothing leaves your machine: no
+external API and no account. The numbers come from your files and you can trace every
+one of them back to a row.
 
 Most keyword tools hand you a spreadsheet and call it research. A spreadsheet is not a
 strategy. Querymantic is built around the questions that actually decide a project: what

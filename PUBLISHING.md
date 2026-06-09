@@ -59,9 +59,8 @@ These are project rules that no tool enforces, so check them yourself:
 - **NOTICE is current.** Every optional library the code imports is listed in
   `NOTICE` with its license. If a new library was added, or one was removed, the
   NOTICE must match the imports.
-- **No internal references leak.** Public files cite primary sources only. They
-  never name the internal framework, the research notes, or the verification
-  ledger.
+- **No internal references leak.** Public files cite primary sources only and
+  reference no internal working notes.
 - **Least-privilege agents.** Each file under `agents/` declares only the tools
   it needs, nothing wider.
 - **Sample data only.** The repository ships sample exports under

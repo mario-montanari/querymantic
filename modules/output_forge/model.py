@@ -28,7 +28,11 @@ _ROUND = 4
 
 
 def _round(value: Any) -> Any:
-    return round(float(value), _ROUND) if isinstance(value, (int, float)) and not isinstance(value, bool) else value
+    return (
+        round(float(value), _ROUND)
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else value
+    )
 
 
 def _slot(state: dict[str, Any], name: str) -> dict[str, Any] | None:
@@ -36,7 +40,9 @@ def _slot(state: dict[str, Any], name: str) -> dict[str, Any] | None:
     return slot if isinstance(slot, dict) else None
 
 
-def _by_cluster(slot: dict[str, Any] | None, key: str = "clusters") -> dict[int, dict[str, Any]]:
+def _by_cluster(
+    slot: dict[str, Any] | None, key: str = "clusters"
+) -> dict[int, dict[str, Any]]:
     out: dict[int, dict[str, Any]] = {}
     if not slot:
         return out
@@ -47,7 +53,9 @@ def _by_cluster(slot: dict[str, Any] | None, key: str = "clusters") -> dict[int,
     return out
 
 
-def _authority_by_cluster(entity_web: dict[str, Any] | None) -> dict[int, dict[str, Any]]:
+def _authority_by_cluster(
+    entity_web: dict[str, Any] | None,
+) -> dict[int, dict[str, Any]]:
     out: dict[int, dict[str, Any]] = {}
     if not entity_web:
         return out
@@ -102,8 +110,16 @@ def _clusters(state: dict[str, Any]) -> list[dict[str, Any]]:
     pulse = _by_cluster(_slot(state, "demand_pulse"))
 
     live = _slot(state, "live_wire")
-    observed_clicks = _by_cluster((live or {}).get("overrides", {}).get("click_ceiling")) if live else {}
-    observed_cites = _by_cluster((live or {}).get("overrides", {}).get("citation_grid")) if live else {}
+    observed_clicks = (
+        _by_cluster((live or {}).get("overrides", {}).get("click_ceiling"))
+        if live
+        else {}
+    )
+    observed_cites = (
+        _by_cluster((live or {}).get("overrides", {}).get("citation_grid"))
+        if live
+        else {}
+    )
 
     rows: list[dict[str, Any]] = []
     for idx, cluster in enumerate(engine_clusters):
@@ -119,13 +135,17 @@ def _clusters(state: dict[str, Any]) -> list[dict[str, Any]]:
         if idx in fan_out:
             cov = fan_out[idx].get("coverage") or {}
             row["cover_at_tau"] = _round(cov.get("cover_at_tau"))
-            row["missing_archetypes"] = list(fan_out[idx].get("missing_archetypes") or [])
+            row["missing_archetypes"] = list(
+                fan_out[idx].get("missing_archetypes") or []
+            )
         if idx in citation:
             row["expected_readiness"] = _round(citation[idx].get("expected_readiness"))
             row["expected_share"] = _round(citation[idx].get("expected_share"))
         if idx in ceiling:
             band = ceiling[idx].get("winnable_band") or []
-            row["winnable_band"] = [int(band[0]), int(band[1])] if len(band) == 2 else None
+            row["winnable_band"] = (
+                [int(band[0]), int(band[1])] if len(band) == 2 else None
+            )
             row["current_clicks_estimate"] = ceiling[idx].get("current_clicks_estimate")
             row["ai_overview_share"] = _round(ceiling[idx].get("ai_overview_share"))
         if idx in pulse:
@@ -138,7 +158,9 @@ def _clusters(state: dict[str, Any]) -> list[dict[str, Any]]:
             if isinstance(ob, list) and len(ob) == 2:
                 row["observed_winnable_band"] = [int(ob[0]), int(ob[1])]
         if idx in observed_cites:
-            row["observed_citation_share"] = _round(observed_cites[idx].get("observed_citation_share"))
+            row["observed_citation_share"] = _round(
+                observed_cites[idx].get("observed_citation_share")
+            )
         rows.append(row)
 
     rows.sort(key=lambda r: (-(r.get("volume_total") or 0), r["cluster_index"]))
@@ -155,15 +177,23 @@ def _winnable(state: dict[str, Any]) -> dict[str, Any] | None:
     for intent, payload in sorted(by_intent.items()):
         band = (payload or {}).get("winnable_band") or []
         if len(band) == 2:
-            intent_rows.append({"intent": intent, "winnable_band": [int(band[0]), int(band[1])]})
+            intent_rows.append(
+                {"intent": intent, "winnable_band": [int(band[0]), int(band[1])]}
+            )
     band = summary.get("winnable_band") or []
     out: dict[str, Any] = {
-        "portfolio_winnable_band": [int(band[0]), int(band[1])] if len(band) == 2 else None,
+        "portfolio_winnable_band": [int(band[0]), int(band[1])]
+        if len(band) == 2
+        else None,
         "current_clicks_estimate": summary.get("current_clicks_estimate"),
         "by_intent": intent_rows,
     }
     live = _slot(state, "live_wire")
-    sc = (live or {}).get("overrides", {}).get("click_ceiling", {}).get("portfolio") if live else None
+    sc = (
+        (live or {}).get("overrides", {}).get("click_ceiling", {}).get("portfolio")
+        if live
+        else None
+    )
     if isinstance(sc, dict) and "observed_current_clicks" in sc:
         out["observed_current_clicks"] = sc.get("observed_current_clicks")
         ob = sc.get("observed_winnable_band")
@@ -191,11 +221,13 @@ def _gaps(state: dict[str, Any]) -> list[dict[str, Any]]:
         return []
     gaps = []
     for g in ew.get("entity_gaps") or []:
-        gaps.append({
-            "entity": str(g.get("entity", "")),
-            "demand_volume": g.get("demand_volume"),
-            "suggested_cluster_head": str(g.get("suggested_cluster_head", "")),
-        })
+        gaps.append(
+            {
+                "entity": str(g.get("entity", "")),
+                "demand_volume": g.get("demand_volume"),
+                "suggested_cluster_head": str(g.get("suggested_cluster_head", "")),
+            }
+        )
     gaps.sort(key=lambda r: (-(r.get("demand_volume") or 0), r["entity"]))
     return gaps[:TOP_GAPS]
 
@@ -218,7 +250,11 @@ def _observed(state: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def _provenance(state: dict[str, Any], readiness: dict[str, Any] | None, winnable: dict[str, Any] | None) -> list[str]:
+def _provenance(
+    state: dict[str, Any],
+    readiness: dict[str, Any] | None,
+    winnable: dict[str, Any] | None,
+) -> list[str]:
     notes: list[str] = []
     if readiness is not None:
         notes.append(

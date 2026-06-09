@@ -101,12 +101,29 @@ def _build_parser() -> argparse.ArgumentParser:
     val_p.add_argument("path", help="path to a run.json file")
     val_p.add_argument("--json", action="store_true", help="emit JSON result")
 
-    forge_p = sub.add_parser("forge", help="render deliverables from an existing run.json")
+    forge_p = sub.add_parser(
+        "forge", help="render deliverables from an existing run.json"
+    )
     forge_p.add_argument("path", help="path to a run.json file")
-    forge_p.add_argument("--out", default=None, help="output directory for artifacts (default: forge_output beside run.json)")
-    forge_p.add_argument("--brand", default=None, help="optional brand.json for white-label output")
-    forge_p.add_argument("--formats", nargs="*", default=None, help="formats to render (subset of: html pptx docx xlsx)")
-    forge_p.add_argument("--output", default=None, help="where to write the updated run.json (default: in place)")
+    forge_p.add_argument(
+        "--out",
+        default=None,
+        help="output directory for artifacts (default: forge_output beside run.json)",
+    )
+    forge_p.add_argument(
+        "--brand", default=None, help="optional brand.json for white-label output"
+    )
+    forge_p.add_argument(
+        "--formats",
+        nargs="*",
+        default=None,
+        help="formats to render (subset of: html pptx docx xlsx)",
+    )
+    forge_p.add_argument(
+        "--output",
+        default=None,
+        help="where to write the updated run.json (default: in place)",
+    )
     forge_p.add_argument("--json", action="store_true", help="emit JSON summary")
     forge_p.add_argument("--quiet", action="store_true", help="suppress the summary")
 
@@ -153,7 +170,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         if args.forge_formats is not None:
             unknown = [f for f in args.forge_formats if f not in FORMATS]
             if unknown:
-                _fail(f"unknown --forge-formats value(s): {', '.join(sorted(unknown))}", as_json=args.json)
+                _fail(
+                    f"unknown --forge-formats value(s): {', '.join(sorted(unknown))}",
+                    as_json=args.json,
+                )
                 return 1
             forge_kwargs["formats"] = tuple(args.forge_formats)
         module_kwargs["output_forge"] = forge_kwargs
@@ -195,7 +215,9 @@ def _cmd_run(args: argparse.Namespace) -> int:
         print(f"  modules run:    {ran}")
         forge = (state.get("modules") or {}).get("output_forge")
         if isinstance(forge, dict):
-            produced = ", ".join(a["format"] for a in forge.get("artifacts", [])) or "(none)"
+            produced = (
+                ", ".join(a["format"] for a in forge.get("artifacts", [])) or "(none)"
+            )
             print(f"  forge artifacts: {produced}")
             for s in forge.get("skipped", []):
                 print(f"    skipped {s['format']}: {s['reason']}")
@@ -228,7 +250,12 @@ def _cmd_validate(args: argparse.Namespace) -> int:
 
 
 def _cmd_forge(args: argparse.Namespace) -> int:
-    from modules.output_forge import FORMATS, ModuleError, OutputForgeError, output_forge
+    from modules.output_forge import (
+        FORMATS,
+        ModuleError,
+        OutputForgeError,
+        output_forge,
+    )
     from modules.output_forge.brand import BrandError, load_brand
 
     path = Path(args.path)
@@ -246,10 +273,17 @@ def _cmd_forge(args: argparse.Namespace) -> int:
         except BrandError as exc:
             _fail(str(exc), as_json=args.json)
             return 1
-    formats = tuple(args.formats) if args.formats is not None else ("html", "pptx", "docx", "xlsx")
+    formats = (
+        tuple(args.formats)
+        if args.formats is not None
+        else ("html", "pptx", "docx", "xlsx")
+    )
     unknown = [f for f in formats if f not in FORMATS]
     if unknown:
-        _fail(f"unknown --formats value(s): {', '.join(sorted(unknown))}", as_json=args.json)
+        _fail(
+            f"unknown --formats value(s): {', '.join(sorted(unknown))}",
+            as_json=args.json,
+        )
         return 1
 
     try:

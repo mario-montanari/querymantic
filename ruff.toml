@@ -1,0 +1,10 @@
+# Ruff configuration for Spektr.
+#
+# The vendored engine under engine/ is read-only and kept byte-identical to its
+# source, so ruff never touches it. Generated runs under runs/ are excluded too.
+extend-exclude = ["engine", "runs"]
+
+[lint.per-file-ignores]
+# The eval tests insert the plugin root on sys.path before importing the
+# modules under test, so module-level imports after that line are intentional.
+"evals/**" = ["E402"]

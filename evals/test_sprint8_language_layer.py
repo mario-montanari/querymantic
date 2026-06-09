@@ -49,7 +49,9 @@ def test_engine_misreads_italian_baseline(tmp_path: Path) -> None:
     """With no module, the engine tags no keyword Italian and cannot read Italian markers."""
     state = _run(tmp_path, IT_SAMPLES, ())
     engine = state["engine"]
-    assert "it" not in engine["corpus_summary"]["by_language"]  # the engine has no Italian
+    assert (
+        "it" not in engine["corpus_summary"]["by_language"]
+    )  # the engine has no Italian
     by_kw = {
         k["keyword"]: k["enrichment"]["intent_vector"]["query_type"]
         for k in engine["keywords"]
@@ -70,13 +72,18 @@ def test_language_layer_detects_italian(tmp_path: Path) -> None:
     assert corpus["by_language"].get("it", 0) >= 13
     assert slot["summary"]["detected_italian"] >= 13
     # The telegraphic, function-word-free phrase is left as the engine read it.
-    stayed = {c for k in state["engine"]["keywords"] if k["language"] != "it" for c in [k["keyword"]]}
+    stayed = {
+        c
+        for k in state["engine"]["keywords"]
+        if k["language"] != "it"
+        for c in [k["keyword"]]
+    }
     assert "scarpe running uomo" in stayed
 
 
 def test_detection_is_strictly_greater_and_conservative() -> None:
     """The engine vote is recovered from confidence; ties keep the engine."""
-    assert _engine_vote_score(0.4) == 0   # no-signal default
+    assert _engine_vote_score(0.4) == 0  # no-signal default
     assert _engine_vote_score(0.65) == 1
     assert _engine_vote_score(0.8) == 2
     assert _engine_vote_score(0.95) == 3
@@ -135,7 +142,9 @@ def test_aggregates_recomputed(tmp_path: Path) -> None:
     assert engine["corpus_summary"]["by_intent"] == dict(expected_intent)
     for cluster in engine["clusters"]:
         members = cluster["members"]
-        intents = [keywords[i]["enrichment"]["intent_vector"]["query_type"] for i in members]
+        intents = [
+            keywords[i]["enrichment"]["intent_vector"]["query_type"] for i in members
+        ]
         intents = [x for x in intents if x]
         expected = Counter(intents).most_common(1)[0][0] if intents else "unknown"
         assert cluster["dominant_intent"] == expected
@@ -168,11 +177,21 @@ def test_english_corpus_extraction_unchanged_by_layer(tmp_path: Path) -> None:
 def test_audit_slot_contract(tmp_path: Path) -> None:
     state = _run(tmp_path, IT_SAMPLES, ("language_layer",))
     slot = state["modules"]["language_layer"]
-    assert set(slot) >= {"language", "summary", "language_changes", "intent_changes", "rules"}
+    assert set(slot) >= {
+        "language",
+        "summary",
+        "language_changes",
+        "intent_changes",
+        "rules",
+    }
     assert slot["language"] == "it"
     assert set(slot["summary"]) >= {
-        "keywords_total", "detected_italian", "language_reclassified",
-        "intent_reclassified", "by_language", "by_intent",
+        "keywords_total",
+        "detected_italian",
+        "language_reclassified",
+        "intent_reclassified",
+        "by_language",
+        "by_intent",
     }
     for change in slot["intent_changes"]:
         assert change["cue"] is not None  # every intent change names its cue

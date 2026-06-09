@@ -93,7 +93,10 @@ def _norm(text: str) -> str:
 
 def _config(params: dict[str, Any] | None) -> dict[str, Any]:
     weights = dict(DEFAULT_WEIGHTS)
-    cfg: dict[str, Any] = {"weights": weights, "max_checklist_examples": MAX_CHECKLIST_EXAMPLES}
+    cfg: dict[str, Any] = {
+        "weights": weights,
+        "max_checklist_examples": MAX_CHECKLIST_EXAMPLES,
+    }
     if params:
         if isinstance(params.get("weights"), dict):
             for key, value in params["weights"].items():
@@ -104,11 +107,15 @@ def _config(params: dict[str, Any] | None) -> dict[str, Any]:
     return cfg
 
 
-def _cluster_members(cluster: dict[str, Any], keywords: list[dict[str, Any]]) -> list[int]:
+def _cluster_members(
+    cluster: dict[str, Any], keywords: list[dict[str, Any]]
+) -> list[int]:
     return [m for m in (cluster.get("members") or []) if 0 <= m < len(keywords)]
 
 
-def _cluster_demand(cluster: dict[str, Any], members: list[int], keywords: list[dict[str, Any]]) -> int:
+def _cluster_demand(
+    cluster: dict[str, Any], members: list[int], keywords: list[dict[str, Any]]
+) -> int:
     total = cluster.get("volume_total")
     if isinstance(total, (int, float)) and total >= 0:
         return int(total)
@@ -136,7 +143,9 @@ def _has_structure_feature(keyword: dict[str, Any]) -> bool:
     return any(f in features for f in STRUCTURE_FEATURES)
 
 
-def _eligibility_value(members: list[int], keywords: list[dict[str, Any]]) -> float | None:
+def _eligibility_value(
+    members: list[int], keywords: list[dict[str, Any]]
+) -> float | None:
     """Mean AIO eligibility score (0 to 1) across the cluster's keywords.
 
     The engine's ``aio_eligibility`` scope already scores 0 to 100 whether a query
@@ -161,25 +170,33 @@ def _eligibility_value(members: list[int], keywords: list[dict[str, Any]]) -> fl
     return round(sum(scores) / len(scores), 6)
 
 
-def _extractability_value(members: list[int], keywords: list[dict[str, Any]]) -> float | None:
+def _extractability_value(
+    members: list[int], keywords: list[dict[str, Any]]
+) -> float | None:
     if not members:
         return None
     answer_shaped = sum(1 for m in members if _is_answer_shaped(keywords[m]))
     return round(answer_shaped / len(members), 6)
 
 
-def _structured_value(members: list[int], keywords: list[dict[str, Any]]) -> float | None:
+def _structured_value(
+    members: list[int], keywords: list[dict[str, Any]]
+) -> float | None:
     if not members:
         return None
     with_feature = sum(1 for m in members if _has_structure_feature(keywords[m]))
     return round(with_feature / len(members), 6)
 
 
-def _entity_coverage_value(index: int, authority_by_cluster: dict[int, float]) -> float | None:
+def _entity_coverage_value(
+    index: int, authority_by_cluster: dict[int, float]
+) -> float | None:
     return authority_by_cluster.get(index)
 
 
-def _query_family_value(index: int, coverage_by_cluster: dict[int, float]) -> float | None:
+def _query_family_value(
+    index: int, coverage_by_cluster: dict[int, float]
+) -> float | None:
     return coverage_by_cluster.get(index)
 
 
@@ -190,13 +207,17 @@ def _freshness_value(index: int, state_by_cluster: dict[int, str]) -> float | No
     return FRESH_STATES.get(state)
 
 
-def _blend(values: dict[str, float | None], weights: dict[str, float]) -> tuple[float, dict[str, Any]]:
+def _blend(
+    values: dict[str, float | None], weights: dict[str, float]
+) -> tuple[float, dict[str, Any]]:
     """Weighted mean over the inputs that have a value, renormalising the weights.
 
     Returns the readiness on a 0 to 100 scale and a per-input record of value,
     weight, and effective (renormalised) weight, so the figure is fully auditable.
     """
-    present = {k: v for k, v in values.items() if v is not None and weights.get(k, 0) > 0}
+    present = {
+        k: v for k, v in values.items() if v is not None and weights.get(k, 0) > 0
+    }
     total_weight = sum(weights[k] for k in present)
     inputs: dict[str, Any] = {}
     readiness = 0.0
@@ -204,7 +225,11 @@ def _blend(values: dict[str, float | None], weights: dict[str, float]) -> tuple[
         weight = weights.get(key, 0.0)
         value = values[key]
         available = key in present
-        effective = round(weights[key] / total_weight, 6) if (available and total_weight) else 0.0
+        effective = (
+            round(weights[key] / total_weight, 6)
+            if (available and total_weight)
+            else 0.0
+        )
         if available:
             readiness += value * effective
         inputs[key] = {
@@ -232,14 +257,20 @@ def _checklist(
     # 1. Extractability: open sections with a short direct answer to the questions
     # this cluster's demand already asks.
     questions = sorted(
-        {keywords[m].get("keyword", "") for m in members if _is_answer_shaped(keywords[m])}
+        {
+            keywords[m].get("keyword", "")
+            for m in members
+            if _is_answer_shaped(keywords[m])
+        }
     )
     items.append(
         {
             "component": "extractability",
             "requires": "offline",
             "action": "Open each section with a self-contained answer of 25 words or fewer, before the detail.",
-            "basis": "answer-shaped queries in the cluster" if questions else "no answer-shaped query detected; add question-form subheadings",
+            "basis": "answer-shaped queries in the cluster"
+            if questions
+            else "no answer-shaped query detected; add question-form subheadings",
             "examples": questions[:limit],
         }
     )
@@ -270,7 +301,9 @@ def _checklist(
             "component": "structured_signals",
             "requires": "offline",
             "action": "Add a table or ordered list and at least one explicit statistic with its unit.",
-            "basis": "SERP features present for this cluster" if rewarded else "no structured SERP feature detected; structure still aids passage extraction",
+            "basis": "SERP features present for this cluster"
+            if rewarded
+            else "no structured SERP feature detected; structure still aids passage extraction",
             "examples": rewarded[:limit],
         }
     )
@@ -392,7 +425,9 @@ def _demand_state_by_cluster(state: dict[str, Any]) -> dict[int, str]:
     return out
 
 
-def citation_grid(state: dict[str, Any], params: dict[str, Any] | None = None) -> dict[str, Any]:
+def citation_grid(
+    state: dict[str, Any], params: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Compute the expected citation layer and write it to the run-state."""
     engine = state.get("engine")
     if not isinstance(engine, dict):
@@ -463,7 +498,11 @@ def citation_grid(state: dict[str, Any], params: dict[str, Any] | None = None) -
         report["expected_share"] = round(100 * w / total, 4) if total else 0.0
 
     readiness_values = [r["expected_readiness"] for r in reports]
-    mean_readiness = round(sum(readiness_values) / len(readiness_values), 4) if readiness_values else 0.0
+    mean_readiness = (
+        round(sum(readiness_values) / len(readiness_values), 4)
+        if readiness_values
+        else 0.0
+    )
 
     state["modules"]["citation_grid"] = {
         "mode": "expected",
@@ -472,9 +511,7 @@ def citation_grid(state: dict[str, Any], params: dict[str, Any] | None = None) -
             "weights": {k: round(v, 6) for k, v in weights.items()},
             "max_checklist_examples": limit,
         },
-        "components": [
-            {"name": name, "offline": kind} for name, kind in COMPONENTS
-        ],
+        "components": [{"name": name, "offline": kind} for name, kind in COMPONENTS],
         "reads": {
             "entity_web": bool(authority_by_cluster or entity_for_cluster),
             "fan_out_radar": bool(fan_out_for_cluster),
@@ -496,7 +533,9 @@ def citation_grid(state: dict[str, Any], params: dict[str, Any] | None = None) -
             "clusters": len(reports),
             "mean_expected_readiness": mean_readiness,
             "scored_components": sum(1 for _, kind in COMPONENTS if kind == "scored"),
-            "checklist_only_components": sum(1 for _, kind in COMPONENTS if kind == "checklist_only"),
+            "checklist_only_components": sum(
+                1 for _, kind in COMPONENTS if kind == "checklist_only"
+            ),
         },
         "clusters": reports,
     }

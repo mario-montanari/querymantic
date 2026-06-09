@@ -48,12 +48,24 @@ def test_committed_files_exist() -> None:
 def test_trimmed_has_modules_and_no_engine() -> None:
     import json
 
-    data = json.loads((EXPECTED_DIR / "sample_run.trimmed.json").read_text(encoding="utf-8"))
-    assert set(data) == {"spektr", "modules"}, "the engine block must be dropped from the proof"
+    data = json.loads(
+        (EXPECTED_DIR / "sample_run.trimmed.json").read_text(encoding="utf-8")
+    )
+    assert set(data) == {"spektr", "modules"}, (
+        "the engine block must be dropped from the proof"
+    )
     assert data["spektr"]["generated_at"] == "2026-06-08T00:00:00+00:00"
     # Every offline module ran and filled its slot.
-    for name in ("entity_web", "fan_out_radar", "citation_grid", "click_ceiling", "output_forge"):
-        assert data["modules"][name] is not None, f"{name} slot should be populated in the proof"
+    for name in (
+        "entity_web",
+        "fan_out_radar",
+        "citation_grid",
+        "click_ceiling",
+        "output_forge",
+    ):
+        assert data["modules"][name] is not None, (
+            f"{name} slot should be populated in the proof"
+        )
     # The HTML artifact is recorded in the manifest with a digest.
     arts = data["modules"]["output_forge"]["artifacts"]
     assert any(a["format"] == "html" and len(a["sha256"]) == 64 for a in arts)

@@ -46,7 +46,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-_CTR_TABLE_PATH = Path(__file__).resolve().parent.parent / "data" / "ctr_table_2026Q2.json"
+_CTR_TABLE_PATH = (
+    Path(__file__).resolve().parent.parent / "data" / "ctr_table_2026Q2.json"
+)
 
 # Realistic target-rank range for the winnable band. Rank 1 is the optimistic
 # ceiling; rank 3 is the conservative reachable target. Never worse than the
@@ -153,7 +155,9 @@ def _position_cell(position: int, table: dict[str, Any]) -> tuple[float, str]:
     return float(cell["ctr"]), provenance
 
 
-def _suppression_factor(features: list[str], table: dict[str, Any]) -> tuple[float, str | None]:
+def _suppression_factor(
+    features: list[str], table: dict[str, Any]
+) -> tuple[float, str | None]:
     """Strongest (smallest) derived suppression among present SERP features.
 
     Returns (factor, feature_name) or (1.0, None) when no suppressing feature is
@@ -252,7 +256,9 @@ def _demand_state_by_cluster(state: dict[str, Any]) -> dict[int, str]:
 # --- per-keyword and per-cluster computation --------------------------------
 
 
-def _cluster_members(cluster: dict[str, Any], keywords: list[dict[str, Any]]) -> list[int]:
+def _cluster_members(
+    cluster: dict[str, Any], keywords: list[dict[str, Any]]
+) -> list[int]:
     return [m for m in (cluster.get("members") or []) if 0 <= m < len(keywords)]
 
 
@@ -325,40 +331,52 @@ def _apply_cluster_adjusters(
         adj = cfg["demand_adj"][state_label]
         win_low *= adj["low"]
         win_high *= adj["high"]
-        drivers.append({
-            "adjuster": "demand_pulse",
-            "basis": f"demand state {state_label}",
-            "low_factor": round(adj["low"], 4),
-            "high_factor": round(adj["high"], 4),
-        })
+        drivers.append(
+            {
+                "adjuster": "demand_pulse",
+                "basis": f"demand state {state_label}",
+                "low_factor": round(adj["low"], 4),
+                "high_factor": round(adj["high"], 4),
+            }
+        )
 
     if authority is not None:
         floor = cfg["authority_floor"]
         cred = floor + (1.0 - floor) * authority
         win_high *= cred
-        drivers.append({
-            "adjuster": "entity_web_authority",
-            "basis": f"topical authority {round(authority, 4)}",
-            "low_factor": 1.0,
-            "high_factor": round(cred, 4),
-        })
+        drivers.append(
+            {
+                "adjuster": "entity_web_authority",
+                "basis": f"topical authority {round(authority, 4)}",
+                "low_factor": 1.0,
+                "high_factor": round(cred, 4),
+            }
+        )
 
-    if coverage is not None and ai_share > AI_HEAVY_SHARE and coverage < LOW_COVERAGE_TAU:
+    if (
+        coverage is not None
+        and ai_share > AI_HEAVY_SHARE
+        and coverage < LOW_COVERAGE_TAU
+    ):
         floor = cfg["coverage_floor"]
         trim = floor + (1.0 - floor) * coverage
         win_high *= trim
-        drivers.append({
-            "adjuster": "fan_out_coverage",
-            "basis": f"AI-heavy cluster (share {round(ai_share, 2)}) with low coverage {round(coverage, 4)}",
-            "low_factor": 1.0,
-            "high_factor": round(trim, 4),
-        })
+        drivers.append(
+            {
+                "adjuster": "fan_out_coverage",
+                "basis": f"AI-heavy cluster (share {round(ai_share, 2)}) with low coverage {round(coverage, 4)}",
+                "low_factor": 1.0,
+                "high_factor": round(trim, 4),
+            }
+        )
 
     win_low, win_high = min(win_low, win_high), max(win_low, win_high)
     return win_low, win_high, drivers
 
 
-def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -> dict[str, Any]:
+def click_ceiling(
+    state: dict[str, Any], params: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Compute the winnable-clicks band layer and write it to the run-state."""
     engine = state.get("engine")
     if not isinstance(engine, dict):
@@ -372,7 +390,11 @@ def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -
     table_path = None
     if params and isinstance(params.get("ctr_table_path"), str):
         table_path = Path(params["ctr_table_path"])
-    table = params["ctr_table"] if (params and isinstance(params.get("ctr_table"), dict)) else load_ctr_table(table_path)
+    table = (
+        params["ctr_table"]
+        if (params and isinstance(params.get("ctr_table"), dict))
+        else load_ctr_table(table_path)
+    )
     limit = cfg["max_driver_examples"]
 
     readiness_by_cluster = _readiness_by_cluster(state)
@@ -392,7 +414,9 @@ def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -
 
         bands = [
             band
-            for band in (_keyword_band(keywords[m], table, cfg, readiness) for m in members)
+            for band in (
+                _keyword_band(keywords[m], table, cfg, readiness) for m in members
+            )
             if band is not None
         ]
         raw_low = sum(b["winnable_low"] for b in bands)
@@ -414,7 +438,9 @@ def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -
         # Provenance mix of the member ranks, so the band's confidence is visible.
         prov_mix: dict[str, int] = {}
         for b in bands:
-            prov_mix[b["position_provenance"]] = prov_mix.get(b["position_provenance"], 0) + 1
+            prov_mix[b["position_provenance"]] = (
+                prov_mix.get(b["position_provenance"], 0) + 1
+            )
 
         top = sorted(bands, key=lambda b: b["winnable_high"], reverse=True)[:limit]
         top_examples = [
@@ -422,7 +448,10 @@ def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -
                 "keyword": b["keyword"],
                 "volume": b["volume"],
                 "position": b["position"],
-                "winnable_band": [int(round(b["winnable_low"])), int(round(b["winnable_high"]))],
+                "winnable_band": [
+                    int(round(b["winnable_low"])),
+                    int(round(b["winnable_high"])),
+                ],
                 "suppressor": b["suppressor"],
                 "ai_overview": b["ai_overview"],
             }
@@ -436,20 +465,24 @@ def click_ceiling(state: dict[str, Any], params: dict[str, Any] | None = None) -
 
         current_i = int(round(current))
         winnable = [int(round(adj_low)), int(round(adj_high))]
-        reports.append({
-            "cluster_index": index,
-            "head": cluster.get("head", ""),
-            "dominant_intent": intent,
-            "members_scored": len(bands),
-            "current_clicks_estimate": current_i,
-            "ceiling_band": [current_i + winnable[0], current_i + winnable[1]],
-            "winnable_band": winnable,
-            "ai_overview_share": round(ai_share, 4),
-            "citation_readiness": round(readiness, 4) if index in readiness_by_cluster else None,
-            "position_provenance_mix": prov_mix,
-            "adjusters": drivers,
-            "top_opportunities": top_examples,
-        })
+        reports.append(
+            {
+                "cluster_index": index,
+                "head": cluster.get("head", ""),
+                "dominant_intent": intent,
+                "members_scored": len(bands),
+                "current_clicks_estimate": current_i,
+                "ceiling_band": [current_i + winnable[0], current_i + winnable[1]],
+                "winnable_band": winnable,
+                "ai_overview_share": round(ai_share, 4),
+                "citation_readiness": round(readiness, 4)
+                if index in readiness_by_cluster
+                else None,
+                "position_provenance_mix": prov_mix,
+                "adjusters": drivers,
+                "top_opportunities": top_examples,
+            }
+        )
         total_low += adj_low
         total_high += adj_high
         total_current += current

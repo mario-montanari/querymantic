@@ -1,0 +1,18 @@
+# Optional libraries for Spektr. The core suite and the vendored engine run on
+# the Python standard library alone, so there is NO requirements.txt for the
+# core. Install the libraries below only if you want the optional features they
+# power. Each is imported through a port that degrades when the library is
+# absent (see NOTICE for licenses and the module that uses each one).
+#
+# Versions are intentionally left unpinned here and are marked [to verify]:
+# pin them against the current PyPI release before publishing, and record the
+# pinned versions. pip-audit and Dependabot still resolve the names without a
+# pin.
+
+# Output Forge deliverables (spektr_core/ports/ooxml.py)
+python-pptx   # MIT  -- .pptx slide deck        [pin to verify]
+python-docx   # MIT  -- .docx audit document    [pin to verify]
+openpyxl      # MIT  -- .xlsx workbook           [pin to verify]
+
+# Demand Pulse optional STL seasonal path (spektr_core/ports/stats.py)
+statsmodels   # BSD-3-Clause -- STL decomposition [pin to verify]

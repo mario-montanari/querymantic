@@ -26,7 +26,11 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from spektr_core.entity_extractor import DEFAULT_EXTRACTOR, DEFAULT_MIN_DF, get_extractor
+from spektr_core.entity_extractor import (
+    DEFAULT_EXTRACTOR,
+    DEFAULT_MIN_DF,
+    get_extractor,
+)
 
 # A keyword counts as owned when the analysed domain ranks at this position or better.
 # Twenty covers the first two result pages, a reasonable "has visibility" threshold.
@@ -76,9 +80,7 @@ def entity_web(state: dict[str, Any]) -> dict[str, Any]:
     extractor = get_extractor(DEFAULT_EXTRACTOR)
     raw = extractor(documents, min_df=DEFAULT_MIN_DF, max_ngram=MAX_NGRAM)
 
-    cluster_heads = {
-        i: c.get("head", "") for i, c in enumerate(clusters)
-    }
+    cluster_heads = {i: c.get("head", "") for i, c in enumerate(clusters)}
 
     # Enrich every extracted term with demand, ownership, and cluster spread.
     entities: list[dict[str, Any]] = []

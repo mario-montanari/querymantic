@@ -35,7 +35,14 @@ from spektr_core import pipeline  # noqa: E402
 # The fixed inputs that define the committed proof. Changing any of these changes
 # the expected bytes, so they live here as the single source of truth.
 FIXED_TIMESTAMP = "2026-06-08T00:00:00+00:00"
-MODULES = ("language_layer", "entity_web", "fan_out_radar", "citation_grid", "click_ceiling", "output_forge")
+MODULES = (
+    "language_layer",
+    "entity_web",
+    "fan_out_radar",
+    "citation_grid",
+    "click_ceiling",
+    "output_forge",
+)
 CLIENT_DOMAIN = "example-shoes.com"
 BRAND_LIST = "hoka,nike,brooks"
 
@@ -60,7 +67,9 @@ def _build(work_dir: Path) -> tuple[bytes, bytes]:
         module_kwargs={"output_forge": {"out_dir": forge_dir, "brand": brand}},
     )
     trimmed = {"spektr": state["spektr"], "modules": state["modules"]}
-    trimmed_bytes = (json.dumps(trimmed, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    trimmed_bytes = (
+        json.dumps(trimmed, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
     html_bytes = (forge_dir / "dashboard.html").read_bytes()
     return trimmed_bytes, html_bytes
 
@@ -103,8 +112,14 @@ def check() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Regenerate or check the determinism proof.")
-    parser.add_argument("--check", action="store_true", help="compare against committed files instead of writing")
+    parser = argparse.ArgumentParser(
+        description="Regenerate or check the determinism proof."
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="compare against committed files instead of writing",
+    )
     args = parser.parse_args(argv)
     return check() if args.check else regenerate()
 

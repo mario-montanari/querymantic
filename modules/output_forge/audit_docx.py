@@ -40,7 +40,9 @@ def _table(doc, headers: list[str], rows: list[list[str]]) -> None:
             cells[i].text = value
 
 
-def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, timestamp: datetime) -> None:
+def render_audit(
+    view: dict[str, Any], brand: dict[str, Any], out_path: Path, timestamp: datetime
+) -> None:
     """Render the Word audit to ``out_path``. Requires python-docx."""
     from docx import Document
     from docx.shared import Pt, RGBColor
@@ -51,7 +53,9 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
 
     heading = doc.add_heading(title_text, level=0)
     for run in heading.runs:
-        run.font.color.rgb = RGBColor.from_string(brand["colors"]["primary"].lstrip("#"))
+        run.font.color.rgb = RGBColor.from_string(
+            brand["colors"]["primary"].lstrip("#")
+        )
     sub = doc.add_paragraph(f"{brand['name']} | {brand['tagline']}")
     for run in sub.runs:
         run.font.size = Pt(11)
@@ -61,13 +65,20 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
     corpus = view["corpus"]
     doc.add_heading("Demand overview", level=1)
     doc.add_paragraph(f"Keywords analysed: {_fmt_int(corpus['total_keywords'])}")
-    doc.add_paragraph(f"AI Overview eligible: {_fmt_pct(corpus['aio_eligibility_share'])}")
-    doc.add_paragraph(f"Generative-engine opportunity: {_fmt_pct(corpus['geo_opportunity_share'])}")
+    doc.add_paragraph(
+        f"AI Overview eligible: {_fmt_pct(corpus['aio_eligibility_share'])}"
+    )
+    doc.add_paragraph(
+        f"Generative-engine opportunity: {_fmt_pct(corpus['geo_opportunity_share'])}"
+    )
     doc.add_paragraph(f"Demand opportunity score: {corpus['demand_opportunity_score']}")
     _table(
         doc,
         ["Search intent", "Keywords"],
-        [[r["intent"].replace("_", " "), str(r["count"])] for r in corpus["intent_split"]],
+        [
+            [r["intent"].replace("_", " "), str(r["count"])]
+            for r in corpus["intent_split"]
+        ],
     )
 
     # Winnable clicks.
@@ -86,7 +97,10 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
         _table(
             doc,
             ["Intent", "Winnable clicks (band)"],
-            [[r["intent"].replace("_", " "), _fmt_band(r["winnable_band"])] for r in winnable["by_intent"]],
+            [
+                [r["intent"].replace("_", " "), _fmt_band(r["winnable_band"])]
+                for r in winnable["by_intent"]
+            ],
         )
 
     # Citation readiness.
@@ -112,7 +126,11 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
         ]
         for c in view["top_clusters"]
     ]
-    _table(doc, ["Cluster", "Volume", "Intent", "Authority", "Readiness", "Winnable clicks"], cluster_rows)
+    _table(
+        doc,
+        ["Cluster", "Volume", "Intent", "Authority", "Readiness", "Winnable clicks"],
+        cluster_rows,
+    )
 
     # Entity gaps.
     gaps = view.get("gaps") or []
@@ -121,7 +139,14 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
         _table(
             doc,
             ["Entity", "Demand", "Suggested cluster"],
-            [[g["entity"], _fmt_int(g.get("demand_volume")), str(g.get("suggested_cluster_head"))] for g in gaps],
+            [
+                [
+                    g["entity"],
+                    _fmt_int(g.get("demand_volume")),
+                    str(g.get("suggested_cluster_head")),
+                ]
+                for g in gaps
+            ],
         )
 
     # Observed citations.
@@ -136,7 +161,10 @@ def render_audit(view: dict[str, Any], brand: dict[str, Any], out_path: Path, ti
         _table(
             doc,
             ["Domain", "Citation share"],
-            [[d["domain"], _fmt_pct(d["share"], scale=1.0)] for d in obs.get("competitor_split", [])],
+            [
+                [d["domain"], _fmt_pct(d["share"], scale=1.0)]
+                for d in obs.get("competitor_split", [])
+            ],
         )
 
     # How to read.

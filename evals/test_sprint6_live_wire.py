@@ -74,7 +74,9 @@ def test_load_capture_parses_both_blocks() -> None:
     assert cap["client_domain"] == "example-shoes.com"
     assert len(cap["search_console"]["rows"]) == 7
     # The percent-string CTR is normalised to a fraction at parse time.
-    best = next(r for r in cap["search_console"]["rows"] if r["query"] == "best running shoes")
+    best = next(
+        r for r in cap["search_console"]["rows"] if r["query"] == "best running shoes"
+    )
     assert best["ctr"] == pytest.approx(0.054)
     assert "perplexity" in cap["ai_citations"]["surfaces"]
 
@@ -112,7 +114,9 @@ def test_live_wire_contract(tmp_path: Path) -> None:
 def test_search_console_override_and_reanchor(tmp_path: Path) -> None:
     state = _run(tmp_path, FULL_STACK)
     lw = state["modules"]["live_wire"]
-    cc_by_cluster = {c["cluster_index"]: c for c in state["modules"]["click_ceiling"]["clusters"]}
+    cc_by_cluster = {
+        c["cluster_index"]: c for c in state["modules"]["click_ceiling"]["clusters"]
+    }
     sc = lw["overrides"]["click_ceiling"]
     assert sc["total_sc_rows"] == 7
     assert sc["matched_queries"] >= 1
@@ -127,7 +131,10 @@ def test_search_console_override_and_reanchor(tmp_path: Path) -> None:
         # The winnable band is re-anchored: ceiling minus the measured current.
         exp_low = max(0, ceiling[0] - obs_current)
         exp_high = max(0, ceiling[1] - obs_current)
-        assert row["observed_winnable_band"] == [min(exp_low, exp_high), max(exp_low, exp_high)]
+        assert row["observed_winnable_band"] == [
+            min(exp_low, exp_high),
+            max(exp_low, exp_high),
+        ]
 
 
 # --- AI citations override --------------------------------------------------
@@ -139,7 +146,9 @@ def test_ai_citation_share_and_split(tmp_path: Path) -> None:
     port = cg["portfolio"]
     assert port["observed_queries"] == 4
     # Client share plus every competitor share sums to 100 (rounding aside).
-    total = port["observed_citation_share"] + sum(d["share"] for d in port["competitor_split"])
+    total = port["observed_citation_share"] + sum(
+        d["share"] for d in port["competitor_split"]
+    )
     assert total == pytest.approx(100.0, abs=0.5)
     # The competitor domains observed in the capture are surfaced.
     domains = {d["domain"] for d in port["competitor_split"]}

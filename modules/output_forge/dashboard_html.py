@@ -31,7 +31,11 @@ def _esc(value: Any) -> str:
 
 
 def _fmt_int(value: Any) -> str:
-    return f"{int(value):,}" if isinstance(value, (int, float)) and not isinstance(value, bool) else "n/a"
+    return (
+        f"{int(value):,}"
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else "n/a"
+    )
 
 
 def _fmt_pct(value: Any, scale: float = 100.0) -> str:
@@ -119,7 +123,7 @@ def _band_chart(rows: list[tuple[str, int, int]], colors: dict[str, str]) -> str
 
 
 def _section(title: str, body: str) -> str:
-    return f'<section><h2>{_esc(title)}</h2>{body}</section>'
+    return f"<section><h2>{_esc(title)}</h2>{body}</section>"
 
 
 def _corpus_section(view: dict[str, Any], colors: dict[str, str]) -> str:
@@ -133,14 +137,17 @@ def _corpus_section(view: dict[str, Any], colors: dict[str, str]) -> str:
         for label, sub in (
             (_fmt_int(corpus["total_keywords"]), "keywords"),
             (_fmt_pct(corpus["aio_eligibility_share"]), "AI Overview eligible"),
-            (_fmt_pct(corpus["geo_opportunity_share"]), "generative-engine opportunity"),
+            (
+                _fmt_pct(corpus["geo_opportunity_share"]),
+                "generative-engine opportunity",
+            ),
             (str(corpus["demand_opportunity_score"]), "demand opportunity score"),
         )
     )
     return _section(
         "Demand overview",
         f'<div class="cards">{cards}</div>'
-        f'<h3>Search intent</h3>{_bar_chart(rows, colors)}',
+        f"<h3>Search intent</h3>{_bar_chart(rows, colors)}",
     )
 
 
@@ -149,19 +156,23 @@ def _winnable_section(view: dict[str, Any], colors: dict[str, str]) -> str:
     if not winnable:
         return ""
     rows = [
-        (r["intent"].replace("_", " "), int(r["winnable_band"][0]), int(r["winnable_band"][1]))
+        (
+            r["intent"].replace("_", " "),
+            int(r["winnable_band"][0]),
+            int(r["winnable_band"][1]),
+        )
         for r in winnable["by_intent"]
     ]
     headline = (
         f'<p class="headline">Portfolio winnable clicks per month: '
-        f'<strong>{_fmt_band(winnable.get("portfolio_winnable_band"))}</strong> '
-        f'(modelled current {_fmt_int(winnable.get("current_clicks_estimate"))}).</p>'
+        f"<strong>{_fmt_band(winnable.get('portfolio_winnable_band'))}</strong> "
+        f"(modelled current {_fmt_int(winnable.get('current_clicks_estimate'))}).</p>"
     )
     if "observed_current_clicks" in winnable:
         headline += (
             f'<p class="observed">Observed current clicks (Live Wire): '
-            f'<strong>{_fmt_int(winnable.get("observed_current_clicks"))}</strong>; '
-            f'observed winnable band {_fmt_band(winnable.get("observed_winnable_band"))}.</p>'
+            f"<strong>{_fmt_int(winnable.get('observed_current_clicks'))}</strong>; "
+            f"observed winnable band {_fmt_band(winnable.get('observed_winnable_band'))}.</p>"
         )
     return _section("Winnable clicks", headline + _band_chart(rows, colors))
 
@@ -171,15 +182,19 @@ def _readiness_section(view: dict[str, Any], colors: dict[str, str]) -> str:
     if not readiness:
         return ""
     rows = [
-        (c["head"], float(c.get("expected_readiness") or 0.0), f'{c.get("expected_readiness")}')
+        (
+            c["head"],
+            float(c.get("expected_readiness") or 0.0),
+            f"{c.get('expected_readiness')}",
+        )
         for c in view["top_clusters"]
         if "expected_readiness" in c
     ]
     note = (
         f'<p class="headline">Mean expected readiness: '
-        f'<strong>{readiness["mean_expected_readiness"]}</strong> out of 100, '
-        f'across {readiness["scored_components"]} scored components '
-        f'({readiness["checklist_only_components"]} checklist-only).</p>'
+        f"<strong>{readiness['mean_expected_readiness']}</strong> out of 100, "
+        f"across {readiness['scored_components']} scored components "
+        f"({readiness['checklist_only_components']} checklist-only).</p>"
     )
     return _section("AI-citation readiness (expected)", note + _bar_chart(rows, colors))
 
@@ -187,8 +202,14 @@ def _readiness_section(view: dict[str, Any], colors: dict[str, str]) -> str:
 def _clusters_table(view: dict[str, Any]) -> str:
     has_obs = any("observed_current_clicks" in c for c in view["clusters"])
     head_cells = [
-        "Cluster", "Size", "Volume", "Intent", "Authority",
-        "Cover@tau", "Readiness", "Winnable clicks",
+        "Cluster",
+        "Size",
+        "Volume",
+        "Intent",
+        "Authority",
+        "Cover@tau",
+        "Readiness",
+        "Winnable clicks",
     ]
     if has_obs:
         head_cells.append("Observed clicks")
@@ -206,11 +227,17 @@ def _clusters_table(view: dict[str, Any]) -> str:
             _fmt_band(c.get("winnable_band")),
         ]
         if has_obs:
-            cells.append(_fmt_int(c["observed_current_clicks"]) if "observed_current_clicks" in c else "n/a")
-        body_rows.append("<tr>" + "".join(f"<td>{cell}</td>" for cell in cells) + "</tr>")
+            cells.append(
+                _fmt_int(c["observed_current_clicks"])
+                if "observed_current_clicks" in c
+                else "n/a"
+            )
+        body_rows.append(
+            "<tr>" + "".join(f"<td>{cell}</td>" for cell in cells) + "</tr>"
+        )
     return _section(
         "Clusters by demand",
-        f'<table><thead><tr>{header}</tr></thead><tbody>{"".join(body_rows)}</tbody></table>',
+        f"<table><thead><tr>{header}</tr></thead><tbody>{''.join(body_rows)}</tbody></table>",
     )
 
 
@@ -219,14 +246,14 @@ def _gaps_section(view: dict[str, Any]) -> str:
     if not gaps:
         return ""
     rows = "".join(
-        f'<tr><td>{_esc(g["entity"])}</td><td>{_fmt_int(g.get("demand_volume"))}</td>'
-        f'<td>{_esc(g.get("suggested_cluster_head"))}</td></tr>'
+        f"<tr><td>{_esc(g['entity'])}</td><td>{_fmt_int(g.get('demand_volume'))}</td>"
+        f"<td>{_esc(g.get('suggested_cluster_head'))}</td></tr>"
         for g in gaps
     )
     return _section(
         "Entity gaps",
-        f'<table><thead><tr><th>Entity</th><th>Demand</th><th>Suggested cluster</th></tr></thead>'
-        f'<tbody>{rows}</tbody></table>',
+        f"<table><thead><tr><th>Entity</th><th>Demand</th><th>Suggested cluster</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table>",
     )
 
 
@@ -235,17 +262,17 @@ def _observed_section(view: dict[str, Any]) -> str:
     if not obs:
         return ""
     split = "".join(
-        f'<tr><td>{_esc(d["domain"])}</td><td>{_fmt_pct(d["share"], scale=1.0)}</td></tr>'
+        f"<tr><td>{_esc(d['domain'])}</td><td>{_fmt_pct(d['share'], scale=1.0)}</td></tr>"
         for d in obs.get("competitor_split", [])
     )
     surfaces = ", ".join(obs.get("surfaces") or []) or "n/a"
     return _section(
         "Observed citations (Live Wire)",
         f'<p class="headline">Observed client citation share: '
-        f'<strong>{_fmt_pct(obs.get("observed_citation_share"), scale=1.0)}</strong> '
-        f'on surfaces: {_esc(surfaces)}.</p>'
-        f'<table><thead><tr><th>Domain</th><th>Citation share</th></tr></thead>'
-        f'<tbody>{split}</tbody></table>',
+        f"<strong>{_fmt_pct(obs.get('observed_citation_share'), scale=1.0)}</strong> "
+        f"on surfaces: {_esc(surfaces)}.</p>"
+        f"<table><thead><tr><th>Domain</th><th>Citation share</th></tr></thead>"
+        f"<tbody>{split}</tbody></table>",
     )
 
 
@@ -290,23 +317,25 @@ def render_html(view: dict[str, Any], brand: dict[str, Any]) -> bytes:
     header = view["header"]
     title = header["label"] or f"{brand['name']} keyword and demand audit"
 
-    body = "".join([
-        _corpus_section(view, colors),
-        _winnable_section(view, colors),
-        _readiness_section(view, colors),
-        _clusters_table(view),
-        _gaps_section(view),
-        _observed_section(view),
-        _provenance_section(view),
-    ])
+    body = "".join(
+        [
+            _corpus_section(view, colors),
+            _winnable_section(view, colors),
+            _readiness_section(view, colors),
+            _clusters_table(view),
+            _gaps_section(view),
+            _observed_section(view),
+            _provenance_section(view),
+        ]
+    )
 
     meta = (
-        f'<footer><p>{_esc(brand["footer"])}</p>'
-        f'<p>{_esc(brand["name"])}'
-        + (f' &middot; {_esc(brand["contact"])}' if brand.get("contact") else "")
-        + f' &middot; generated {_esc(header["generated_at"])}'
-        f' &middot; input hash {_esc(header["input_hash"][:12])}'
-        f' &middot; plugin {_esc(header["plugin_version"])}</p></footer>'
+        f"<footer><p>{_esc(brand['footer'])}</p>"
+        f"<p>{_esc(brand['name'])}"
+        + (f" &middot; {_esc(brand['contact'])}" if brand.get("contact") else "")
+        + f" &middot; generated {_esc(header['generated_at'])}"
+        f" &middot; input hash {_esc(header['input_hash'][:12])}"
+        f" &middot; plugin {_esc(header['plugin_version'])}</p></footer>"
     )
 
     doc = (

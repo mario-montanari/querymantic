@@ -52,7 +52,9 @@ class BrandError(Exception):
 
 def _validate_color(key: str, value: Any) -> str:
     if not isinstance(value, str) or not _HEX.match(value.strip()):
-        raise BrandError(f"colors.{key} must be a hex colour like '#1f3a5f', got {value!r}")
+        raise BrandError(
+            f"colors.{key} must be a hex colour like '#1f3a5f', got {value!r}"
+        )
     return value.strip().lower()
 
 
@@ -70,7 +72,15 @@ def resolve_brand(raw: dict[str, Any] | None) -> dict[str, Any]:
         raise BrandError("brand config must be a JSON object")
 
     author_given = isinstance(raw.get("author"), str) and raw["author"].strip() != ""
-    for field in ("name", "tagline", "author", "contact", "footer", "font_family", "logo"):
+    for field in (
+        "name",
+        "tagline",
+        "author",
+        "contact",
+        "footer",
+        "font_family",
+        "logo",
+    ):
         if field in raw and raw[field] is not None:
             if not isinstance(raw[field], str):
                 raise BrandError(f"brand.{field} must be a string")

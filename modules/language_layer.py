@@ -46,7 +46,9 @@ from pathlib import Path
 from typing import Any
 
 # The Italian lexical resource. Kept as data so a sixth language is a file drop.
-_GAZETTEER_PATH = Path(__file__).resolve().parent.parent / "data" / "gazetteer" / "it.json"
+_GAZETTEER_PATH = (
+    Path(__file__).resolve().parent.parent / "data" / "gazetteer" / "it.json"
+)
 
 # A char vote, mirroring the engine's diacritic weight (a present cue counts 2).
 _DIACRITIC_VOTE = 2
@@ -95,7 +97,9 @@ def load_gazetteer(path: Path | None = None) -> dict[str, Any]:
     markers = data["intent_markers"]
     for axis in ("transactional", "commercial", "informational", "navigational"):
         if axis not in markers:
-            raise LanguageLayerError(f"gazetteer intent_markers missing '{axis}': {target}")
+            raise LanguageLayerError(
+                f"gazetteer intent_markers missing '{axis}': {target}"
+            )
     if path is None:
         _GAZETTEER_CACHE = data
     return data
@@ -113,7 +117,9 @@ def _engine_vote_score(confidence: float) -> int:
     return round((confidence - 0.5) / 0.15)
 
 
-def _italian_language_score(keyword: str, vocab: frozenset[str], diacritics: str) -> int:
+def _italian_language_score(
+    keyword: str, vocab: frozenset[str], diacritics: str
+) -> int:
     """Italian vote: one per cue token, plus a diacritic char vote."""
     tokens = keyword.split()
     score = sum(1 for tok in tokens if tok in vocab)
@@ -183,7 +189,9 @@ def _italian_intent(
     return query_type, confidence, fired_cue
 
 
-def language_layer(state: dict[str, Any], *, gazetteer: dict[str, Any] | None = None) -> dict[str, Any]:
+def language_layer(
+    state: dict[str, Any], *, gazetteer: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Correct Italian language and intent in the run-state and write the audit slot."""
     engine = state.get("engine")
     if not isinstance(engine, dict):
@@ -213,7 +221,9 @@ def language_layer(state: dict[str, Any], *, gazetteer: dict[str, Any] | None = 
 
         engine_lang = record.get("language") or "unknown"
         engine_conf = record.get("language_confidence")
-        engine_conf = float(engine_conf) if isinstance(engine_conf, (int, float)) else 0.4
+        engine_conf = (
+            float(engine_conf) if isinstance(engine_conf, (int, float)) else 0.4
+        )
 
         # A declared language (engine confidence 1.0) is authoritative; leave it.
         if engine_conf >= 1.0:
@@ -256,11 +266,19 @@ def language_layer(state: dict[str, Any], *, gazetteer: dict[str, Any] | None = 
         if fired_cue is None:
             continue  # no Italian marker fired; keep the engine intent
 
-        vec = (enrichment or {}).get("intent_vector") if isinstance(enrichment, dict) else None
+        vec = (
+            (enrichment or {}).get("intent_vector")
+            if isinstance(enrichment, dict)
+            else None
+        )
         if not isinstance(vec, dict):
             continue
         old_intent = vec.get("query_type")
-        old_conf = enrichment.get("intent_confidence") if isinstance(enrichment, dict) else None
+        old_conf = (
+            enrichment.get("intent_confidence")
+            if isinstance(enrichment, dict)
+            else None
+        )
         vec["query_type"] = new_intent
         vec["funnel_stage"] = _FUNNEL_MAP[new_intent]
         if isinstance(enrichment, dict):
@@ -271,7 +289,9 @@ def language_layer(state: dict[str, Any], *, gazetteer: dict[str, Any] | None = 
                 "keyword": record.get("keyword", ""),
                 "from": old_intent,
                 "to": new_intent,
-                "confidence_from": round(float(old_conf), 4) if isinstance(old_conf, (int, float)) else None,
+                "confidence_from": round(float(old_conf), 4)
+                if isinstance(old_conf, (int, float))
+                else None,
                 "confidence_to": new_intent_conf,
                 "cue": fired_cue,
             }
@@ -309,7 +329,9 @@ def _counter_by_language(keywords: list[dict[str, Any]]) -> Counter:
 
 def _counter_by_intent(keywords: list[dict[str, Any]]) -> Counter:
     return Counter(
-        ((kw.get("enrichment") or {}).get("intent_vector") or {}).get("query_type", "unknown")
+        ((kw.get("enrichment") or {}).get("intent_vector") or {}).get(
+            "query_type", "unknown"
+        )
         for kw in keywords
         if isinstance(kw, dict)
     )
@@ -330,9 +352,13 @@ def _recompute_aggregates(engine: dict[str, Any]) -> None:
                 continue
             members = cluster.get("members") or []
             intents = [
-                ((keywords[i].get("enrichment") or {}).get("intent_vector") or {}).get("query_type")
+                ((keywords[i].get("enrichment") or {}).get("intent_vector") or {}).get(
+                    "query_type"
+                )
                 for i in members
-                if isinstance(i, int) and 0 <= i < len(keywords) and isinstance(keywords[i], dict)
+                if isinstance(i, int)
+                and 0 <= i < len(keywords)
+                and isinstance(keywords[i], dict)
             ]
             intents = [x for x in intents if x]
             cluster["dominant_intent"] = (

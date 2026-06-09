@@ -5,6 +5,28 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 
 ## [Unreleased]
 
+### Added (publish kit)
+- Publish kit and license attributions. `NOTICE` now lists the optional
+  third-party libraries the suite imports through degrading ports (python-pptx,
+  python-docx, openpyxl under MIT; statsmodels under BSD-3-Clause), each with its
+  role and source; none are bundled and the core stays standard-library only. A
+  `PUBLISHING.md` checklist sets the ordered pre-publication gates (plugin
+  validation, secrets and lint and Python security, dependency audit, tests, and
+  the by-hand content checks). `requirements-optional.txt` names the optional
+  libraries so pip-audit and Dependabot can resolve them (versions left to pin
+  before publishing). A local `scripts/publish.ps1` runs every gate and pushes
+  only when all pass; it stays inert until run.
+
+### Changed (tooling)
+- Tooling configuration so the publish gates are green and never touch the
+  vendored engine: a `ruff.toml` that excludes `engine/` and `runs/`, and a
+  top-level `exclude` in `.pre-commit-config.yaml` so no hook (ruff fixes,
+  bandit, formatters) rewrites the read-only engine in CI. The Spektr-authored
+  Python (modules, core, scripts, evals) was run through `ruff format` and its
+  lint findings cleared. Verified after: ruff check and ruff format clean,
+  bandit clean at the configured level, 73 tests still green including the
+  determinism proof.
+
 ### Added
 - Sprint 8 (refinement), Italian as the fifth language: a new `language_layer`
   module that corrects Italian keywords the bundled four-language engine misreads.

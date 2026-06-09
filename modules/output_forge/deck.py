@@ -31,7 +31,9 @@ def _rgb(color_hex: str):
 def _add_title(slide, text: str, brand: dict[str, Any], top_in: float = 0.4) -> None:
     from pptx.util import Inches, Pt
 
-    box = slide.shapes.add_textbox(Inches(0.6), Inches(top_in), Inches(11.5), Inches(1.0))
+    box = slide.shapes.add_textbox(
+        Inches(0.6), Inches(top_in), Inches(11.5), Inches(1.0)
+    )
     frame = box.text_frame
     frame.word_wrap = True
     run = frame.paragraphs[0].add_run()
@@ -41,7 +43,14 @@ def _add_title(slide, text: str, brand: dict[str, Any], top_in: float = 0.4) -> 
     run.font.color.rgb = _rgb(brand["colors"]["primary"])
 
 
-def _add_paragraph(frame, text: str, brand: dict[str, Any], size: int = 16, bold: bool = False, color: str | None = None) -> None:
+def _add_paragraph(
+    frame,
+    text: str,
+    brand: dict[str, Any],
+    size: int = 16,
+    bold: bool = False,
+    color: str | None = None,
+) -> None:
     from pptx.util import Pt
 
     para = frame.add_paragraph()
@@ -69,7 +78,10 @@ def _overview_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
     lines = [
         (f"Keywords analysed: {_fmt_int(corpus['total_keywords'])}", True),
         (f"AI Overview eligible: {_fmt_pct(corpus['aio_eligibility_share'])}", False),
-        (f"Generative-engine opportunity: {_fmt_pct(corpus['geo_opportunity_share'])}", False),
+        (
+            f"Generative-engine opportunity: {_fmt_pct(corpus['geo_opportunity_share'])}",
+            False,
+        ),
         (f"Demand opportunity score: {corpus['demand_opportunity_score']}", False),
     ]
     first = True
@@ -84,9 +96,21 @@ def _overview_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
             first = False
         else:
             _add_paragraph(frame, text, brand, size=18, bold=bold)
-    _add_paragraph(frame, "Search intent split:", brand, size=15, bold=True, color=brand["colors"]["secondary"])
+    _add_paragraph(
+        frame,
+        "Search intent split:",
+        brand,
+        size=15,
+        bold=True,
+        color=brand["colors"]["secondary"],
+    )
     for row in corpus["intent_split"]:
-        _add_paragraph(frame, f"  {row['intent'].replace('_', ' ')}: {row['count']}", brand, size=14)
+        _add_paragraph(
+            frame,
+            f"  {row['intent'].replace('_', ' ')}: {row['count']}",
+            brand,
+            size=14,
+        )
 
 
 def _winnable_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
@@ -106,19 +130,34 @@ def _winnable_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
 
     run.font.size = Pt(20)
     run.font.bold = True
-    _add_paragraph(frame, f"Modelled current clicks: {_fmt_int(winnable.get('current_clicks_estimate'))}", brand, size=15)
+    _add_paragraph(
+        frame,
+        f"Modelled current clicks: {_fmt_int(winnable.get('current_clicks_estimate'))}",
+        brand,
+        size=15,
+    )
     if "observed_current_clicks" in winnable:
         _add_paragraph(
             frame,
             f"Observed current clicks (Live Wire): {_fmt_int(winnable.get('observed_current_clicks'))}",
-            brand, size=15, color=brand["colors"]["accent"],
+            brand,
+            size=15,
+            color=brand["colors"]["accent"],
         )
-    _add_paragraph(frame, "By intent:", brand, size=15, bold=True, color=brand["colors"]["secondary"])
+    _add_paragraph(
+        frame,
+        "By intent:",
+        brand,
+        size=15,
+        bold=True,
+        color=brand["colors"]["secondary"],
+    )
     for row in winnable["by_intent"]:
         _add_paragraph(
             frame,
             f"  {row['intent'].replace('_', ' ')}: {_fmt_band(row['winnable_band'])}",
-            brand, size=14,
+            brand,
+            size=14,
         )
 
 
@@ -130,7 +169,12 @@ def _clusters_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
     rows = view["top_clusters"][:10]
     headers = ["Cluster", "Volume", "Intent", "Readiness", "Winnable clicks"]
     table_shape = slide.shapes.add_table(
-        len(rows) + 1, len(headers), Inches(0.6), Inches(1.6), Inches(12.0), Inches(0.4 * (len(rows) + 1))
+        len(rows) + 1,
+        len(headers),
+        Inches(0.6),
+        Inches(1.6),
+        Inches(12.0),
+        Inches(0.4 * (len(rows) + 1)),
     )
     table = table_shape.table
     for col, text in enumerate(headers):
@@ -178,7 +222,9 @@ def _provenance_slide(prs, view: dict[str, Any], brand: dict[str, Any]) -> None:
             _add_paragraph(frame, f"- {note}", brand, size=14)
 
 
-def render_deck(view: dict[str, Any], brand: dict[str, Any], out_path: Path, timestamp: datetime) -> None:
+def render_deck(
+    view: dict[str, Any], brand: dict[str, Any], out_path: Path, timestamp: datetime
+) -> None:
     """Render the branded deck to ``out_path``. Requires python-pptx."""
     from pptx import Presentation
     from pptx.util import Inches, Pt
@@ -192,7 +238,9 @@ def render_deck(view: dict[str, Any], brand: dict[str, Any], out_path: Path, tim
     header = view["header"]
     title_text = header["label"] or f"{brand['name']} keyword and demand audit"
     _add_title(title_slide, title_text, brand, top_in=2.6)
-    sub = title_slide.shapes.add_textbox(Inches(0.6), Inches(3.7), Inches(11.5), Inches(1.0)).text_frame
+    sub = title_slide.shapes.add_textbox(
+        Inches(0.6), Inches(3.7), Inches(11.5), Inches(1.0)
+    ).text_frame
     srun = sub.paragraphs[0].add_run()
     srun.text = f"{brand['name']} | {brand['tagline']}"
     srun.font.size = Pt(16)

@@ -115,7 +115,11 @@ def load_series(path: Path) -> dict[str, Any]:
             keyword_col = i
             break
 
-    period_cols = [(i, name.strip()) for i, name in enumerate(header) if _PERIOD_RE.match(name.strip())]
+    period_cols = [
+        (i, name.strip())
+        for i, name in enumerate(header)
+        if _PERIOD_RE.match(name.strip())
+    ]
     if len(period_cols) < 2:
         raise DemandPulseError(
             f"series file needs at least two YYYY-MM columns: {path}"
@@ -189,7 +193,10 @@ def _classify(
     seasonal_strength: float | None,
     cfg: dict[str, Any],
 ) -> str:
-    if seasonal_strength is not None and seasonal_strength >= cfg["seasonal_strength_min"]:
+    if (
+        seasonal_strength is not None
+        and seasonal_strength >= cfg["seasonal_strength_min"]
+    ):
         return "seasonal"
     p_value = mk.get("p_value")
     slope = ts.get("slope", 0.0)
@@ -301,7 +308,9 @@ def demand_pulse(
     seasonal_markers = 0
     with_series = 0
     for index, cluster in enumerate(clusters):
-        report = _analyse_cluster(index, cluster, keywords, periods, by_keyword, cfg, caps)
+        report = _analyse_cluster(
+            index, cluster, keywords, periods, by_keyword, cfg, caps
+        )
         reports.append(report)
         state_counts[report["state"]] += 1
         if report["seasonal_marker"]:

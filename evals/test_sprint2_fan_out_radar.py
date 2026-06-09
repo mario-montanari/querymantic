@@ -45,7 +45,7 @@ def _run(tmp: Path, modules: tuple[str, ...]) -> dict:
 
 
 def test_fan_out_contract(tmp_path: Path) -> None:
-    state = _run(tmp_path, ("entity_web", "fan_out_radar"))
+    _run(tmp_path, ("entity_web", "fan_out_radar"))
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
     assert loaded["spektr"]["modules_run"] == ["entity_web", "fan_out_radar"]

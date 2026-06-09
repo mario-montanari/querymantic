@@ -70,7 +70,9 @@ def _sha256_of(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _render_ooxml(fmt: str, view: dict[str, Any], brand: dict[str, Any], out_path: Path, ts: datetime) -> None:
+def _render_ooxml(
+    fmt: str, view: dict[str, Any], brand: dict[str, Any], out_path: Path, ts: datetime
+) -> None:
     if fmt == "pptx":
         from .deck import render_deck
 
@@ -106,7 +108,9 @@ def output_forge(
 
     unknown = [f for f in formats if f not in FORMATS]
     if unknown:
-        raise OutputForgeError(f"unknown output format(s): {', '.join(sorted(unknown))}")
+        raise OutputForgeError(
+            f"unknown output format(s): {', '.join(sorted(unknown))}"
+        )
 
     engine = state.get("engine")
     if not isinstance(engine, dict) or not engine.get("clusters"):
@@ -136,24 +140,33 @@ def output_forge(
         else:
             backend = _OOXML_FORMATS[fmt]
             if not capabilities.get(backend, False):
-                skipped.append({"format": fmt, "reason": f"backend not installed ({backend})"})
+                skipped.append(
+                    {"format": fmt, "reason": f"backend not installed ({backend})"}
+                )
                 continue
             try:
                 _render_ooxml(fmt, view, resolved_brand, out_file, ts)
             except Exception as exc:  # a backend failure must not lose the rest
-                skipped.append({"format": fmt, "reason": f"{type(exc).__name__}: {exc}"})
+                skipped.append(
+                    {"format": fmt, "reason": f"{type(exc).__name__}: {exc}"}
+                )
                 continue
-        artifacts.append({
-            "format": fmt,
-            "filename": FORMATS[fmt],
-            "bytes": out_file.stat().st_size,
-            "sha256": _sha256_of(out_file),
-        })
+        artifacts.append(
+            {
+                "format": fmt,
+                "filename": FORMATS[fmt],
+                "bytes": out_file.stat().st_size,
+                "sha256": _sha256_of(out_file),
+            }
+        )
 
     state["modules"]["output_forge"] = {
         "mode": "render",
         "generated_at": state.get("spektr", {}).get("generated_at", ""),
-        "brand": {"name": resolved_brand["name"], "fingerprint": brand_fingerprint(resolved_brand)},
+        "brand": {
+            "name": resolved_brand["name"],
+            "fingerprint": brand_fingerprint(resolved_brand),
+        },
         "backends": capabilities,
         "formats_requested": sorted(formats),
         "artifacts": artifacts,
@@ -171,7 +184,11 @@ def output_forge(
 
 def _is_resolved(brand: dict[str, Any] | None) -> bool:
     """True when ``brand`` is already a resolved brand mapping (has a colours block)."""
-    return isinstance(brand, dict) and isinstance(brand.get("colors"), dict) and "primary" in brand["colors"]
+    return (
+        isinstance(brand, dict)
+        and isinstance(brand.get("colors"), dict)
+        and "primary" in brand["colors"]
+    )
 
 
 __all__ = ["output_forge", "ModuleError", "OutputForgeError", "FORMATS"]

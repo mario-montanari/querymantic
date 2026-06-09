@@ -19,7 +19,6 @@ if str(PLUGIN_ROOT) not in sys.path:
 from modules.citation_grid import (  # noqa: E402
     COMPONENTS,
     DEFAULT_WEIGHTS,
-    citation_grid,
 )
 from modules.demand_pulse import load_series  # noqa: E402
 from spektr_core import pipeline, run_state  # noqa: E402
@@ -59,7 +58,14 @@ def test_citation_grid_contract(tmp_path: Path) -> None:
     assert cg["reads"]["entity_web"] is True
     assert cg["reads"]["fan_out_radar"] is True
     assert cg["reads"]["demand_pulse"] is False
-    for key in ("params", "components", "positioning_note", "method_note", "summary", "clusters"):
+    for key in (
+        "params",
+        "components",
+        "positioning_note",
+        "method_note",
+        "summary",
+        "clusters",
+    ):
         assert key in cg
     assert cg["clusters"]
     # The six components are reported in methodology order, two checklist-only.

@@ -68,9 +68,7 @@ def tfidf_position_extract(
         if df < min_df:
             continue
         idf = math.log(total_docs / df)
-        position_factor = sum(
-            1.0 / (1 + idx) for idx in best_index[term].values()
-        ) / df
+        position_factor = sum(1.0 / (1 + idx) for idx in best_index[term].values()) / df
         score = df * position_factor
         results[term] = {
             "tf": tf[term],
@@ -110,6 +108,4 @@ def get_extractor(name: str) -> ExtractorFn:
         return EXTRACTORS[name]
     except KeyError as exc:
         known = ", ".join(sorted(EXTRACTORS)) or "(none)"
-        raise KeyError(
-            f"unknown extractor {name!r}; available: {known}"
-        ) from exc
+        raise KeyError(f"unknown extractor {name!r}; available: {known}") from exc

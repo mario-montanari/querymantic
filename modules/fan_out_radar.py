@@ -77,9 +77,7 @@ def _load_synonyms() -> dict[str, list[str]]:
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
     return {
-        k: v
-        for k, v in data.items()
-        if not k.startswith("_") and isinstance(v, list)
+        k: v for k, v in data.items() if not k.startswith("_") and isinstance(v, list)
     }
 
 
@@ -142,7 +140,11 @@ def fan_out_radar(state: dict[str, Any]) -> dict[str, Any]:
         coverage_values.append(report["coverage"]["cover_at_tau"])
         total_gatekeepers += len(report["gatekeepers"])
 
-    mean_coverage = round(sum(coverage_values) / len(coverage_values), 4) if coverage_values else 0.0
+    mean_coverage = (
+        round(sum(coverage_values) / len(coverage_values), 4)
+        if coverage_values
+        else 0.0
+    )
 
     state["modules"]["fan_out_radar"] = {
         "params": {
@@ -284,7 +286,9 @@ def _analyse_cluster(
 
 
 def _dominant_language(members: list[int], keywords: list[dict[str, Any]]) -> str:
-    langs = [keywords[m].get("language", "") for m in members if keywords[m].get("language")]
+    langs = [
+        keywords[m].get("language", "") for m in members if keywords[m].get("language")
+    ]
     if not langs:
         return "en"
     return Counter(langs).most_common(1)[0][0]

@@ -94,7 +94,9 @@ def mann_kendall(values: Sequence[float]) -> dict[str, Any]:
     tau = round(s / pairs, _ROUND) if pairs else None
 
     if var_s <= 0:
-        base.update({"s": s, "var_s": round(var_s, _ROUND), "tau": tau, "direction": direction})
+        base.update(
+            {"s": s, "var_s": round(var_s, _ROUND), "tau": tau, "direction": direction}
+        )
         return base
 
     if s > 0:
@@ -126,7 +128,11 @@ def theil_sen(values: Sequence[float]) -> dict[str, Any]:
     """
     n = len(values)
     if n < 2:
-        return {"n": n, "slope": 0.0, "intercept": round(float(values[0]), _ROUND) if n else 0.0}
+        return {
+            "n": n,
+            "slope": 0.0,
+            "intercept": round(float(values[0]), _ROUND) if n else 0.0,
+        }
 
     slopes: list[float] = []
     for i in range(n - 1):
@@ -134,7 +140,11 @@ def theil_sen(values: Sequence[float]) -> dict[str, Any]:
             slopes.append((values[j] - values[i]) / (j - i))
     slope = statistics.median(slopes)
     intercept = statistics.median([values[k] - slope * k for k in range(n)])
-    return {"n": n, "slope": round(slope, _ROUND), "intercept": round(intercept, _ROUND)}
+    return {
+        "n": n,
+        "slope": round(slope, _ROUND),
+        "intercept": round(intercept, _ROUND),
+    }
 
 
 def stl_strength(values: Sequence[float], period: int) -> dict[str, Any]:

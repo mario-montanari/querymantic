@@ -1,5 +1,11 @@
 # Pin the hook versions here. To refresh: run `pre-commit autoupdate` once inside
 # the repo, then `pre-commit install`.
+
+# The vendored engine is read-only and kept byte-identical to its source, and
+# runs/ holds generated output. No hook (ruff --fix, bandit, the formatters)
+# may touch either, so they are excluded from every hook below.
+exclude: '^(engine/|runs/)'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0

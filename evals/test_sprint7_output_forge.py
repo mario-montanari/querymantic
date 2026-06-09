@@ -23,7 +23,12 @@ if str(PLUGIN_ROOT) not in sys.path:
 
 from modules.live_wire import load_capture  # noqa: E402
 from modules.output_forge import OutputForgeError, output_forge  # noqa: E402
-from modules.output_forge.brand import BrandError, brand_fingerprint, load_brand, resolve_brand  # noqa: E402
+from modules.output_forge.brand import (
+    BrandError,
+    brand_fingerprint,
+    load_brand,
+    resolve_brand,
+)  # noqa: E402
 from modules.output_forge.dashboard_html import render_html  # noqa: E402
 from modules.output_forge.model import build_view  # noqa: E402
 from spektr_core import pipeline, run_state  # noqa: E402
@@ -39,7 +44,10 @@ OFFLINE_STACK = ("entity_web", "fan_out_radar", "citation_grid", "click_ceiling"
 def _run(tmp: Path, modules: tuple[str, ...], with_capture: bool = False) -> dict:
     kwargs: dict = {}
     if "output_forge" in modules:
-        kwargs["output_forge"] = {"out_dir": tmp / "forge", "brand": load_brand(BRAND_FILE)}
+        kwargs["output_forge"] = {
+            "out_dir": tmp / "forge",
+            "brand": load_brand(BRAND_FILE),
+        }
     if "live_wire" in modules and with_capture:
         kwargs["live_wire"] = {"capture": load_capture(SAMPLE_CAPTURE)}
     return pipeline.run_pipeline(
@@ -98,7 +106,9 @@ def test_view_has_sections(tmp_path: Path) -> None:
 
 
 def test_view_folds_in_observed(tmp_path: Path) -> None:
-    state = _run(tmp_path, OFFLINE_STACK + ("live_wire", "output_forge"), with_capture=True)
+    state = _run(
+        tmp_path, OFFLINE_STACK + ("live_wire", "output_forge"), with_capture=True
+    )
     view = build_view(state)
     assert view["observed"] is not None
     assert view["observed"]["observed_citation_share"] > 0
@@ -135,7 +145,7 @@ def test_html_is_deterministic(tmp_path: Path) -> None:
 
 
 def test_output_forge_contract(tmp_path: Path) -> None:
-    state = _run(tmp_path, OFFLINE_STACK + ("output_forge",))
+    _run(tmp_path, OFFLINE_STACK + ("output_forge",))
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
     assert loaded["spektr"]["modules_run"][-1] == "output_forge"
@@ -166,8 +176,11 @@ def test_output_forge_contract(tmp_path: Path) -> None:
 
 def test_output_forge_rejects_unknown_format(tmp_path: Path) -> None:
     state = pipeline.run_pipeline(
-        PLUGIN_ROOT, [SAMPLES], tmp_path / "run.json",
-        modules_to_run=(), generated_at=FIXED_TIMESTAMP,
+        PLUGIN_ROOT,
+        [SAMPLES],
+        tmp_path / "run.json",
+        modules_to_run=(),
+        generated_at=FIXED_TIMESTAMP,
     )
     with pytest.raises(OutputForgeError):
         output_forge(state, out_dir=tmp_path / "forge", formats=("html", "pdf"))
@@ -175,8 +188,11 @@ def test_output_forge_rejects_unknown_format(tmp_path: Path) -> None:
 
 def test_html_only_skips_nothing(tmp_path: Path) -> None:
     state = pipeline.run_pipeline(
-        PLUGIN_ROOT, [SAMPLES], tmp_path / "run.json",
-        modules_to_run=(), generated_at=FIXED_TIMESTAMP,
+        PLUGIN_ROOT,
+        [SAMPLES],
+        tmp_path / "run.json",
+        modules_to_run=(),
+        generated_at=FIXED_TIMESTAMP,
     )
     output_forge(state, out_dir=tmp_path / "forge", formats=("html",))
     forge = state["modules"]["output_forge"]
@@ -233,5 +249,6 @@ def test_output_forge_deterministic(tmp_path: Path) -> None:
     # The whole manifest is byte-stable, including every artifact digest.
     assert a["modules"]["output_forge"] == b["modules"]["output_forge"]
     # And the HTML file bytes match.
-    assert (tmp_path / "a" / "forge" / "dashboard.html").read_bytes() == \
-        (tmp_path / "b" / "forge" / "dashboard.html").read_bytes()
+    assert (tmp_path / "a" / "forge" / "dashboard.html").read_bytes() == (
+        tmp_path / "b" / "forge" / "dashboard.html"
+    ).read_bytes()

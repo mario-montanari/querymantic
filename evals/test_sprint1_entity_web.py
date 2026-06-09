@@ -63,7 +63,10 @@ def test_entity_web_contract_on_samples(tmp_path: Path) -> None:
 
     summary = ew["summary"]
     assert summary["entities_total"] == len(ew["entities"])
-    assert summary["owned_entities"] + summary["demand_only_entities"] == summary["entities_total"]
+    assert (
+        summary["owned_entities"] + summary["demand_only_entities"]
+        == summary["entities_total"]
+    )
     assert summary["gap_count"] == len(ew["entity_gaps"])
 
     # Every gap entity is genuinely unowned.

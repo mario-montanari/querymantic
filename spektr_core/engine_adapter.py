@@ -67,7 +67,9 @@ def run_engine(
 
     if work_dir is None:
         with tempfile.TemporaryDirectory(prefix="spektr-engine-") as tmp:
-            return _invoke(root, analyze_py, inputs, Path(tmp), label, client_domain, brand_list)
+            return _invoke(
+                root, analyze_py, inputs, Path(tmp), label, client_domain, brand_list
+            )
     work_dir.mkdir(parents=True, exist_ok=True)
     return _invoke(root, analyze_py, inputs, work_dir, label, client_domain, brand_list)
 
@@ -118,9 +120,7 @@ def _invoke(
 
     if completed.returncode != 0:
         detail = completed.stderr.strip() or completed.stdout.strip() or "no output"
-        raise EngineError(
-            f"engine exited with code {completed.returncode}: {detail}"
-        )
+        raise EngineError(f"engine exited with code {completed.returncode}: {detail}")
 
     analysis_path = out_dir / "analysis.json"
     if not analysis_path.is_file():

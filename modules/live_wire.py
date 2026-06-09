@@ -68,7 +68,7 @@ def _norm_domain(domain: str) -> str:
     value = domain.strip().lower()
     for prefix in ("https://", "http://"):
         if value.startswith(prefix):
-            value = value[len(prefix):]
+            value = value[len(prefix) :]
     value = value.split("/", 1)[0]
     if value.startswith("www."):
         value = value[4:]
@@ -142,13 +142,15 @@ def _parse_search_console(block: Any, path: Path) -> dict[str, Any]:
         position = _to_float(row.get("position"))
         if clicks < 0 or impressions < 0:
             raise LiveWireError(f"{path}: search_console row {i} has a negative count")
-        rows.append({
-            "query": query,
-            "clicks": clicks,
-            "impressions": impressions,
-            "ctr": ctr if (ctr is None or 0.0 <= ctr <= 1.0) else None,
-            "position": position,
-        })
+        rows.append(
+            {
+                "query": query,
+                "clicks": clicks,
+                "impressions": impressions,
+                "ctr": ctr if (ctr is None or 0.0 <= ctr <= 1.0) else None,
+                "position": position,
+            }
+        )
     return {"date_range": str(block.get("date_range", "")), "rows": rows}
 
 
@@ -296,7 +298,9 @@ def _search_console_override(
             unmatched.append(row["query"])
             continue
         matched += 1
-        bucket = agg.setdefault(ci, {"clicks": 0.0, "impressions": 0.0, "pos_weight": 0.0, "matched": 0.0})
+        bucket = agg.setdefault(
+            ci, {"clicks": 0.0, "impressions": 0.0, "pos_weight": 0.0, "matched": 0.0}
+        )
         bucket["clicks"] += row["clicks"]
         bucket["matched"] += 1
         if row["position"] is not None and row["impressions"] > 0:
@@ -313,7 +317,11 @@ def _search_console_override(
     for ci in sorted(agg):
         bucket = agg[ci]
         observed_current = bucket["clicks"]
-        avg_position = round(bucket["pos_weight"] / bucket["impressions"], 2) if bucket["impressions"] > 0 else None
+        avg_position = (
+            round(bucket["pos_weight"] / bucket["impressions"], 2)
+            if bucket["impressions"] > 0
+            else None
+        )
         cc_row = cc_by_cluster.get(ci)
         entry: dict[str, Any] = {
             "cluster_index": ci,
@@ -332,7 +340,10 @@ def _search_console_override(
             obs_low, obs_high = min(obs_low, obs_high), max(obs_low, obs_high)
             entry["expected_current_clicks"] = int(exp_current)
             entry["expected_winnable_band"] = [int(exp_band[0]), int(exp_band[1])]
-            entry["observed_winnable_band"] = [int(round(obs_low)), int(round(obs_high))]
+            entry["observed_winnable_band"] = [
+                int(round(obs_low)),
+                int(round(obs_high)),
+            ]
             port_exp_current += float(exp_current)
             port_exp_low += float(exp_band[0])
             port_exp_high += float(exp_band[1])
@@ -345,8 +356,14 @@ def _search_console_override(
     }
     if cc_by_cluster:
         portfolio["expected_current_clicks"] = int(round(port_exp_current))
-        portfolio["expected_winnable_band"] = [int(round(port_exp_low)), int(round(port_exp_high))]
-        portfolio["observed_winnable_band"] = [int(round(port_obs_low)), int(round(port_obs_high))]
+        portfolio["expected_winnable_band"] = [
+            int(round(port_exp_low)),
+            int(round(port_exp_high)),
+        ]
+        portfolio["observed_winnable_band"] = [
+            int(round(port_obs_low)),
+            int(round(port_obs_high)),
+        ]
 
     return {
         "total_sc_rows": len(sc["rows"]),
@@ -361,7 +378,9 @@ def _search_console_override(
 # --- AI citations override --------------------------------------------------
 
 
-def _competitor_split(weights: dict[str, float], total: float, limit: int) -> list[dict[str, Any]]:
+def _competitor_split(
+    weights: dict[str, float], total: float, limit: int
+) -> list[dict[str, Any]]:
     """Competitor domains by demand-weighted citation share, longest tail folded."""
     rows = [
         {"domain": dom, "share": round(100.0 * wt / total, 4)}
@@ -430,21 +449,37 @@ def _ai_citations_override(
 
     portfolio = {
         "observed_queries": observed_queries,
-        "observed_citation_share": round(100.0 * port_weights.get(_CLIENT_KEY, 0.0) / port_total, 4) if port_total else 0.0,
-        "competitor_split": _competitor_split(port_weights, port_total, MAX_COMPETITORS) if port_total else [],
+        "observed_citation_share": round(
+            100.0 * port_weights.get(_CLIENT_KEY, 0.0) / port_total, 4
+        )
+        if port_total
+        else 0.0,
+        "competitor_split": _competitor_split(port_weights, port_total, MAX_COMPETITORS)
+        if port_total
+        else [],
     }
 
     reports: list[dict[str, Any]] = []
     for ci in sorted(cluster_weights):
         total = cluster_total.get(ci, 0.0)
         weights = cluster_weights[ci]
-        reports.append({
-            "cluster_index": ci,
-            "head": clusters[ci].get("head", ""),
-            "observed_citation_share": round(100.0 * weights.get(_CLIENT_KEY, 0.0) / total, 4) if total else 0.0,
-            "expected_share": round(expected_share[ci], 4) if ci in expected_share else None,
-            "competitor_split": _competitor_split(weights, total, MAX_COMPETITORS) if total else [],
-        })
+        reports.append(
+            {
+                "cluster_index": ci,
+                "head": clusters[ci].get("head", ""),
+                "observed_citation_share": round(
+                    100.0 * weights.get(_CLIENT_KEY, 0.0) / total, 4
+                )
+                if total
+                else 0.0,
+                "expected_share": round(expected_share[ci], 4)
+                if ci in expected_share
+                else None,
+                "competitor_split": _competitor_split(weights, total, MAX_COMPETITORS)
+                if total
+                else [],
+            }
+        )
 
     return {
         "surfaces": ai["surfaces"],
@@ -457,7 +492,9 @@ def _ai_citations_override(
 # --- entry point ------------------------------------------------------------
 
 
-def live_wire(state: dict[str, Any], capture: dict[str, Any] | None = None) -> dict[str, Any]:
+def live_wire(
+    state: dict[str, Any], capture: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Write the observed overlay to the run-state from a parsed capture.
 
     ``capture`` is the mapping returned by ``load_capture``. Without it the module
@@ -480,7 +517,10 @@ def live_wire(state: dict[str, Any], capture: dict[str, Any] | None = None) -> d
     expected_share = _expected_share_by_cluster(state)
 
     overrides: dict[str, Any] = {}
-    capture_summary: dict[str, Any] = {"client_domain": client_domain, "version": capture.get("version", "")}
+    capture_summary: dict[str, Any] = {
+        "client_domain": client_domain,
+        "version": capture.get("version", ""),
+    }
 
     if "search_console" in capture:
         sc = capture["search_console"]
@@ -498,7 +538,13 @@ def live_wire(state: dict[str, Any], capture: dict[str, Any] | None = None) -> d
     if "ai_citations" in capture:
         ai = capture["ai_citations"]
         overrides["citation_grid"] = _ai_citations_override(
-            ai, client_domain, keywords, clusters, norm_to_kw, kw_to_cluster, expected_share
+            ai,
+            client_domain,
+            keywords,
+            clusters,
+            norm_to_kw,
+            kw_to_cluster,
+            expected_share,
         )
         capture_summary["ai_citations"] = {
             "present": True,

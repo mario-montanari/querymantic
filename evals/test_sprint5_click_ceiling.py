@@ -19,7 +19,6 @@ if str(PLUGIN_ROOT) not in sys.path:
 
 from modules.click_ceiling import (  # noqa: E402
     _ctr,
-    click_ceiling,
     load_ctr_table,
 )
 from spektr_core import pipeline, run_state  # noqa: E402
@@ -136,10 +135,18 @@ def test_ctr_table_provenance_and_monotonicity() -> None:
     table = load_ctr_table()
     positions = table["positions"]
     # The SISTRIX anchors carry their exact published values and are confirmed.
-    assert positions["1"]["ctr"] == 0.285 and positions["1"]["provenance"] == "confirmed"
-    assert positions["2"]["ctr"] == 0.157 and positions["2"]["provenance"] == "confirmed"
-    assert positions["3"]["ctr"] == 0.110 and positions["3"]["provenance"] == "confirmed"
-    assert positions["10"]["ctr"] == 0.025 and positions["10"]["provenance"] == "confirmed"
+    assert (
+        positions["1"]["ctr"] == 0.285 and positions["1"]["provenance"] == "confirmed"
+    )
+    assert (
+        positions["2"]["ctr"] == 0.157 and positions["2"]["provenance"] == "confirmed"
+    )
+    assert (
+        positions["3"]["ctr"] == 0.110 and positions["3"]["provenance"] == "confirmed"
+    )
+    assert (
+        positions["10"]["ctr"] == 0.025 and positions["10"]["provenance"] == "confirmed"
+    )
     # Gap cells are marked as filled, never as source values.
     assert positions["5"]["provenance"] == "interpolated"
     assert positions["15"]["provenance"] == "extrapolated"

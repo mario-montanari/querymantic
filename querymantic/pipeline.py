@@ -73,7 +73,18 @@ def run_pipeline(
     (for example ``{"demand_pulse": {"series": parsed}}``); modules that take no
     extra options simply receive none.
     """
-    import modules as module_registry
+    # Deferred and anchored to the plugin root on purpose. The modules package imports
+    # back into querymantic, so importing it at module top would be circular; and a
+    # bare ``import modules`` would resolve off the current working directory. Putting
+    # plugin_root on sys.path first makes it resolve to this plugin's registry no
+    # matter where the process started.
+    import importlib
+    import sys
+
+    root = str(plugin_root)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    module_registry = importlib.import_module("modules")
 
     for name in modules_to_run:
         if not module_registry.has(name):

@@ -55,7 +55,10 @@ def interactive_available() -> bool:
 
 
 def _load_plotly_js() -> str:
-    return vendored_plotly_path().read_text(encoding="utf-8")
+    # Read as bytes then decode, so universal-newline translation cannot rewrite the
+    # vendored bundle's line endings and make the inlined script differ between a CRLF
+    # and an LF checkout. That keeps the interactive HTML byte-stable across machines.
+    return vendored_plotly_path().read_bytes().decode("utf-8")
 
 
 def _intent_chart(view: dict[str, Any], colors: dict[str, str]) -> dict[str, Any]:
@@ -99,7 +102,11 @@ def _readiness_chart(view: dict[str, Any], colors: dict[str, str]) -> dict[str, 
 
 
 def _winnable_chart(view: dict[str, Any], colors: dict[str, str]) -> dict[str, Any]:
-    rows = view["winnable"]["by_intent"]
+    rows = [
+        r
+        for r in view["winnable"]["by_intent"]
+        if isinstance(r.get("winnable_band"), list) and len(r["winnable_band"]) == 2
+    ]
     labels = [r["intent"].replace("_", " ") for r in rows]
     lows = [int(r["winnable_band"][0]) for r in rows]
     spans = [int(r["winnable_band"][1]) - int(r["winnable_band"][0]) for r in rows]
@@ -254,7 +261,9 @@ def _band_label(band: Any) -> str:
 
 def _plot_data(view: dict[str, Any], colors: dict[str, str]) -> dict[str, Any]:
     """The chart specs Plotly draws, keyed by container id. Only present charts."""
-    data: dict[str, Any] = {"plot-intent": _intent_chart(view, colors)}
+    data: dict[str, Any] = {}
+    if view["corpus"]["intent_split"]:
+        data["plot-intent"] = _intent_chart(view, colors)
     if view.get("winnable"):
         data["plot-winnable"] = _winnable_chart(view, colors)
     if view.get("readiness") and any(

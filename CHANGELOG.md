@@ -176,4 +176,4 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 - Continuous integration and pre-commit configuration for secret scanning,
   linting, and dependency audit.
 
-[Unreleased]: https://example.invalid/querymantic/compare
+[Unreleased]: https://github.com/mario-montanari/querymantic/commits/main

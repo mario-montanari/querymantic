@@ -94,14 +94,29 @@ def test_interactive_html_is_deterministic(tmp_path: Path) -> None:
     assert render_interactive_html(view, brand) == render_interactive_html(view, brand)
 
 
+def test_json_island_escapes_hostile_input() -> None:
+    # Directly feed the escape a payload that tries to close the script tag.
+    from modules.output_forge.dashboard_interactive import _json_island
+
+    out = _json_island({"label": "</script><script>alert(1)</script>"})
+    assert "<" not in out
+    assert "\\u003c" in out
+
+
 def test_data_island_cannot_close_the_script_tag(tmp_path: Path) -> None:
-    # Any "<" in a chart label must be escaped so it cannot break out of the island.
+    # Inject a hostile chart label into the view and confirm no "<" survives in the
+    # island, so a keyword containing "</script>" cannot break out of it.
     state = _run(tmp_path, OFFLINE_STACK)
-    html = render_interactive_html(build_view(state), resolve_brand(None)).decode(
-        "utf-8"
-    )
+    view = build_view(state)
+    hostile = "</script><script>alert(1)</script>"
+    assert view["corpus"]["intent_split"], "sample must have intent rows to inject into"
+    view["corpus"]["intent_split"][0]["intent"] = hostile
+    if view["top_clusters"]:
+        view["top_clusters"][0]["head"] = hostile
+    html = render_interactive_html(view, resolve_brand(None)).decode("utf-8")
     island = html.split('id="querymantic-plotdata">', 1)[1].split("</script>", 1)[0]
     assert "<" not in island
+    assert "\\u003c" in island
 
 
 # --- Output Forge wiring ----------------------------------------------------

@@ -160,6 +160,13 @@ def _config(params: dict[str, Any] | None) -> dict[str, Any]:
         for key in cfg:
             if key in params:
                 cfg[key] = params[key]
+    # An STL period below 2 is not a seasonal cycle; the strength estimator would
+    # report itself unavailable and silently downgrade classification, so reject it
+    # rather than accept a value that quietly disables seasonality.
+    if int(cfg["stl_period"]) < 2:
+        raise ModuleError("stl_period must be an integer of 2 or more")
+    if int(cfg["momentum_window"]) < 1:
+        raise ModuleError("momentum_window must be an integer of 1 or more")
     return cfg
 
 

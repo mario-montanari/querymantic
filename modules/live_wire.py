@@ -136,8 +136,15 @@ def _parse_search_console(block: Any, path: Path) -> dict[str, Any]:
         query = str(row.get("query", "")).strip()
         if not query:
             raise LiveWireError(f"{path}: search_console row {i} has no query")
-        clicks = _to_float(row.get("clicks")) or 0.0
-        impressions = _to_float(row.get("impressions")) or 0.0
+        clicks = _to_float(row.get("clicks"))
+        impressions = _to_float(row.get("impressions"))
+        # clicks and impressions are measured fields, not optional. A missing value
+        # must not silently become a measured zero (that would understate current
+        # clicks and overstate the re-anchored winnable band), so reject it.
+        if clicks is None or impressions is None:
+            raise LiveWireError(
+                f"{path}: search_console row {i} needs numeric clicks and impressions"
+            )
         ctr = _to_float(row.get("ctr"))
         position = _to_float(row.get("position"))
         if clicks < 0 or impressions < 0:
@@ -332,6 +339,9 @@ def _search_console_override(
         }
         port_obs += observed_current
         if cc_row is not None:
+            # Re-anchor against Click Ceiling's integer ceiling band. Clicks are whole
+            # events, so the integer band is the right domain here; the subtraction
+            # loses no meaningful precision.
             ceiling = cc_row.get("ceiling_band") or [0, 0]
             exp_current = cc_row.get("current_clicks_estimate", 0)
             exp_band = cc_row.get("winnable_band") or [0, 0]
@@ -418,6 +428,7 @@ def _ai_citations_override(
     cluster_total: dict[int, float] = {}
     observed_queries = 0
     unmatched: list[str] = []
+    explicit_client = False
 
     for row in ai["rows"]:
         kwidx = norm_to_kw.get(_norm(row["query"]))
@@ -438,6 +449,8 @@ def _ai_citations_override(
             is_client = c.get("is_client")
             if is_client is None:
                 is_client = _is_client_domain(c["domain"], client_domain)
+            elif is_client:
+                explicit_client = True
             key = _CLIENT_KEY if is_client else _norm_domain(c["domain"])
             port_weights[key] = port_weights.get(key, 0.0) + per
             if ci is not None:
@@ -447,8 +460,14 @@ def _ai_citations_override(
         if ci is not None:
             cluster_total[ci] = cluster_total.get(ci, 0.0) + weight
 
+    # The client share is only meaningful if the client could be identified, either
+    # from a non-empty client_domain or from an explicit is_client flag on a citation.
+    # Without that, a 0 share is "unknown", not a measured zero, so say so rather than
+    # report a confident 0 next to a competitor split that sums to 100.
+    client_identified = bool(client_domain) or explicit_client
     portfolio = {
         "observed_queries": observed_queries,
+        "client_identified": client_identified,
         "observed_citation_share": round(
             100.0 * port_weights.get(_CLIENT_KEY, 0.0) / port_total, 4
         )
@@ -481,11 +500,19 @@ def _ai_citations_override(
             }
         )
 
+    warnings: list[str] = []
+    if not client_identified:
+        warnings.append(
+            "client could not be identified (no client_domain and no is_client flag); "
+            "the observed client citation share reads 0 but is undetermined"
+        )
+
     return {
         "surfaces": ai["surfaces"],
         "portfolio": portfolio,
         "clusters": reports,
         "unmatched_queries": sorted(set(unmatched)),
+        "warnings": warnings,
     }
 
 

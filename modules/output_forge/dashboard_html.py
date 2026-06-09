@@ -8,9 +8,10 @@ no network. That makes it the floor the suite degrades to when the Office backen
 are absent, and it is byte-reproducible because every value comes from the
 deterministic view and the only timestamp shown is the pinned run timestamp.
 
-A future enhancement may mount interactive Plotly charts from a vendored, pinned
-copy of plotly.js; that copy is not bundled yet, so the inline-SVG charts stand on
-their own. The methodology reference records this.
+An opt-in sibling renderer (``dashboard_interactive``) mounts interactive Plotly
+charts from a vendored, pinned copy of plotly.js. This renderer stays the script-free
+inline-SVG floor: it never loads Plotly, so its self-containment and determinism hold
+regardless of the interactive variant. The methodology reference records both.
 """
 
 from __future__ import annotations

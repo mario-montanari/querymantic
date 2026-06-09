@@ -145,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="compare against committed files instead of writing",
+        help="prove determinism by building twice and comparing the two fresh runs, without writing",
     )
     args = parser.parse_args(argv)
     return check() if args.check else regenerate()

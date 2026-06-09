@@ -1,5 +1,5 @@
 {
-  "_note": "Starter reformulation gazetteer for Fan-Out Radar. Generic SEO modifier synonyms, English. Extend or replace per project and language. Keys and values are lowercase single tokens or short phrases.",
+  "_note": "Starter reformulation synonym table for Fan-Out Radar. Generic SEO modifier synonyms, English. Extend or replace per project and language. Keys and values are lowercase single tokens or short phrases.",
   "best": ["top", "leading"],
   "top": ["best"],
   "cheap": ["affordable", "budget"],

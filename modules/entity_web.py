@@ -213,14 +213,20 @@ def _topical_authority(
         if not members:
             continue
         in_cluster = [e for e in entities if members & set(e["support"])]
-        # These are sums of per-entity demand, not cluster search volume: a
-        # high-volume keyword contributes to every entity it contains. The ratio is
-        # the meaningful figure; the absolute sums only weight it.
-        entity_demand = sum(e["demand_volume"] for e in in_cluster)
-        owned_entity_demand = sum(e["demand_volume"] for e in in_cluster if e["owned"])
+        # These are sums of per-entity demand, NOT cluster search volume: a
+        # high-volume keyword contributes to every entity it contains, so the same
+        # volume is counted once per entity. The authority ratio is the meaningful
+        # figure; the absolute sums only weight it. The keys carry a "_weight" suffix
+        # so the numbers are not misread as raw search volume.
+        entity_demand_weight = sum(e["demand_volume"] for e in in_cluster)
+        owned_entity_demand_weight = sum(
+            e["demand_volume"] for e in in_cluster if e["owned"]
+        )
         owned_entities = sum(1 for e in in_cluster if e["owned"])
         authority = (
-            round(owned_entity_demand / entity_demand, 4) if entity_demand else 0.0
+            round(owned_entity_demand_weight / entity_demand_weight, 4)
+            if entity_demand_weight
+            else 0.0
         )
         out.append(
             {
@@ -229,9 +235,9 @@ def _topical_authority(
                 "authority": authority,
                 "owned_entities": owned_entities,
                 "total_entities": len(in_cluster),
-                "owned_entity_demand": owned_entity_demand,
-                "entity_demand": entity_demand,
+                "owned_entity_demand_weight": owned_entity_demand_weight,
+                "entity_demand_weight": entity_demand_weight,
             }
         )
-    out.sort(key=lambda c: (-c["entity_demand"], c["cluster_index"]))
+    out.sort(key=lambda c: (-c["entity_demand_weight"], c["cluster_index"]))
     return out

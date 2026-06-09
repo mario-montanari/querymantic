@@ -80,10 +80,15 @@ _GAZETTEER_CACHE: dict[str, Any] | None = None
 
 
 def load_gazetteer(path: Path | None = None) -> dict[str, Any]:
-    """Load and lightly validate the Italian gazetteer, with a small cache."""
+    """Load and lightly validate the Italian gazetteer, with a small cache.
+
+    The cache holds the canonical data and every call returns an independent deep
+    copy, so a caller that mutates the result cannot corrupt the cached resource for
+    later runs in the same process.
+    """
     global _GAZETTEER_CACHE
     if path is None and _GAZETTEER_CACHE is not None:
-        return _GAZETTEER_CACHE
+        return json.loads(json.dumps(_GAZETTEER_CACHE))
     target = path or _GAZETTEER_PATH
     try:
         data = json.loads(target.read_text(encoding="utf-8"))
@@ -102,6 +107,7 @@ def load_gazetteer(path: Path | None = None) -> dict[str, Any]:
             )
     if path is None:
         _GAZETTEER_CACHE = data
+        return json.loads(json.dumps(data))
     return data
 
 

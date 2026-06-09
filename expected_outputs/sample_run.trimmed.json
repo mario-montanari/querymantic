@@ -9945,406 +9945,406 @@
         {
           "authority": 0.9962,
           "cluster_index": 0,
-          "entity_demand": 7378820,
+          "entity_demand_weight": 7378820,
           "head": "running shoes",
           "owned_entities": 46,
-          "owned_entity_demand": 7350820,
+          "owned_entity_demand_weight": 7350820,
           "total_entities": 52
         },
         {
           "authority": 1.0,
           "cluster_index": 2,
-          "entity_demand": 6764730,
+          "entity_demand_weight": 6764730,
           "head": "trail running shoes",
           "owned_entities": 10,
-          "owned_entity_demand": 6764730,
+          "owned_entity_demand_weight": 6764730,
           "total_entities": 10
         },
         {
           "authority": 1.0,
           "cluster_index": 3,
-          "entity_demand": 6760970,
+          "entity_demand_weight": 6760970,
           "head": "best running shoes for marathon training under 200",
           "owned_entities": 8,
-          "owned_entity_demand": 6760970,
+          "owned_entity_demand_weight": 6760970,
           "total_entities": 8
         },
         {
           "authority": 1.0,
           "cluster_index": 21,
-          "entity_demand": 6747220,
+          "entity_demand_weight": 6747220,
           "head": "best running shoes for beginners",
           "owned_entities": 6,
-          "owned_entity_demand": 6747220,
+          "owned_entity_demand_weight": 6747220,
           "total_entities": 6
         },
         {
           "authority": 1.0,
           "cluster_index": 9,
-          "entity_demand": 6512480,
+          "entity_demand_weight": 6512480,
           "head": "nike running shoes",
           "owned_entities": 7,
-          "owned_entity_demand": 6512480,
+          "owned_entity_demand_weight": 6512480,
           "total_entities": 7
         },
         {
           "authority": 1.0,
           "cluster_index": 10,
-          "entity_demand": 6407380,
+          "entity_demand_weight": 6407380,
           "head": "adidas running shoes",
           "owned_entities": 7,
-          "owned_entity_demand": 6407380,
+          "owned_entity_demand_weight": 6407380,
           "total_entities": 7
         },
         {
           "authority": 1.0,
           "cluster_index": 12,
-          "entity_demand": 6348340,
+          "entity_demand_weight": 6348340,
           "head": "hoka running shoes",
           "owned_entities": 5,
-          "owned_entity_demand": 6348340,
+          "owned_entity_demand_weight": 6348340,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 11,
-          "entity_demand": 6320740,
+          "entity_demand_weight": 6320740,
           "head": "brooks running shoes",
           "owned_entities": 5,
-          "owned_entity_demand": 6320740,
+          "owned_entity_demand_weight": 6320740,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 13,
-          "entity_demand": 6297140,
+          "entity_demand_weight": 6297140,
           "head": "asics running shoes",
           "owned_entities": 5,
-          "owned_entity_demand": 6297140,
+          "owned_entity_demand_weight": 6297140,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 22,
-          "entity_demand": 6268440,
+          "entity_demand_weight": 6268440,
           "head": "running shoes review 2026",
           "owned_entities": 7,
-          "owned_entity_demand": 6268440,
+          "owned_entity_demand_weight": 6268440,
           "total_entities": 7
         },
         {
           "authority": 1.0,
           "cluster_index": 1,
-          "entity_demand": 6257740,
+          "entity_demand_weight": 6257740,
           "head": "running shoes for flat feet",
           "owned_entities": 6,
-          "owned_entity_demand": 6257740,
+          "owned_entity_demand_weight": 6257740,
           "total_entities": 6
         },
         {
           "authority": 1.0,
           "cluster_index": 17,
-          "entity_demand": 6245140,
+          "entity_demand_weight": 6245140,
           "head": "running shoes for plantar fasciitis",
           "owned_entities": 6,
-          "owned_entity_demand": 6245140,
+          "owned_entity_demand_weight": 6245140,
           "total_entities": 6
         },
         {
           "authority": 0.9989,
           "cluster_index": 20,
-          "entity_demand": 6237240,
+          "entity_demand_weight": 6237240,
           "head": "new balance running shoes",
           "owned_entities": 4,
-          "owned_entity_demand": 6230440,
+          "owned_entity_demand_weight": 6230440,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 41,
-          "entity_demand": 6232230,
+          "entity_demand_weight": 6232230,
           "head": "how to choose running shoes",
           "owned_entities": 12,
-          "owned_entity_demand": 6232230,
+          "owned_entity_demand_weight": 6232230,
           "total_entities": 12
         },
         {
           "authority": 1.0,
           "cluster_index": 23,
-          "entity_demand": 6222240,
+          "entity_demand_weight": 6222240,
           "head": "what running shoes should i buy",
           "owned_entities": 7,
-          "owned_entity_demand": 6222240,
+          "owned_entity_demand_weight": 6222240,
           "total_entities": 7
         },
         {
           "authority": 1.0,
           "cluster_index": 8,
-          "entity_demand": 6210790,
+          "entity_demand_weight": 6210790,
           "head": "marathon running shoes",
           "owned_entities": 6,
-          "owned_entity_demand": 6210790,
+          "owned_entity_demand_weight": 6210790,
           "total_entities": 6
         },
         {
           "authority": 0.9996,
           "cluster_index": 44,
-          "entity_demand": 6207440,
+          "entity_demand_weight": 6207440,
           "head": "running shoes christmas sale",
           "owned_entities": 4,
-          "owned_entity_demand": 6205040,
+          "owned_entity_demand_weight": 6205040,
           "total_entities": 5
         },
         {
           "authority": 0.9968,
           "cluster_index": 43,
-          "entity_demand": 6206740,
+          "entity_demand_weight": 6206740,
           "head": "running shoes black friday",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 6
         },
         {
           "authority": 1.0,
           "cluster_index": 19,
-          "entity_demand": 6203140,
+          "entity_demand_weight": 6203140,
           "head": "running shoes for high arches",
           "owned_entities": 6,
-          "owned_entity_demand": 6203140,
+          "owned_entity_demand_weight": 6203140,
           "total_entities": 6
         },
         {
           "authority": 0.9981,
           "cluster_index": 29,
-          "entity_demand": 6201780,
+          "entity_demand_weight": 6201780,
           "head": "running shoes brand comparison",
           "owned_entities": 4,
-          "owned_entity_demand": 6189760,
+          "owned_entity_demand_weight": 6189760,
           "total_entities": 7
         },
         {
           "authority": 0.9993,
           "cluster_index": 30,
-          "entity_demand": 6198910,
+          "entity_demand_weight": 6198910,
           "head": "running shoes fitting tips",
           "owned_entities": 4,
-          "owned_entity_demand": 6194630,
+          "owned_entity_demand_weight": 6194630,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 4,
-          "entity_demand": 6197850,
+          "entity_demand_weight": 6197850,
           "head": "zero drop running shoes",
           "owned_entities": 5,
-          "owned_entity_demand": 6197850,
+          "owned_entity_demand_weight": 6197850,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 18,
-          "entity_demand": 6197540,
+          "entity_demand_weight": 6197540,
           "head": "running shoes for overpronation",
           "owned_entities": 4,
-          "owned_entity_demand": 6197540,
+          "owned_entity_demand_weight": 6197540,
           "total_entities": 4
         },
         {
           "authority": 0.9987,
           "cluster_index": 25,
-          "entity_demand": 6195260,
+          "entity_demand_weight": 6195260,
           "head": "running shoes that last long",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 5
         },
         {
           "authority": 0.9989,
           "cluster_index": 27,
-          "entity_demand": 6195100,
+          "entity_demand_weight": 6195100,
           "head": "running shoes affordable options",
           "owned_entities": 5,
-          "owned_entity_demand": 6188100,
+          "owned_entity_demand_weight": 6188100,
           "total_entities": 6
         },
         {
           "authority": 0.9989,
           "cluster_index": 31,
-          "entity_demand": 6193740,
+          "entity_demand_weight": 6193740,
           "head": "running shoes for casual runners",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 4
         },
         {
           "authority": 0.9999,
           "cluster_index": 26,
-          "entity_demand": 6193690,
+          "entity_demand_weight": 6193690,
           "head": "running shoes for daily training",
           "owned_entities": 4,
-          "owned_entity_demand": 6193110,
+          "owned_entity_demand_weight": 6193110,
           "total_entities": 5
         },
         {
           "authority": 0.9992,
           "cluster_index": 32,
-          "entity_demand": 6192160,
+          "entity_demand_weight": 6192160,
           "head": "running shoes pronation guide",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 4
         },
         {
           "authority": 0.9998,
           "cluster_index": 37,
-          "entity_demand": 6192100,
+          "entity_demand_weight": 6192100,
           "head": "running shoes gait analysis",
           "owned_entities": 5,
-          "owned_entity_demand": 6190700,
+          "owned_entity_demand_weight": 6190700,
           "total_entities": 6
         },
         {
           "authority": 0.9994,
           "cluster_index": 33,
-          "entity_demand": 6190960,
+          "entity_demand_weight": 6190960,
           "head": "running shoes for recovery runs",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 36,
-          "entity_demand": 6190660,
+          "entity_demand_weight": 6190660,
           "head": "running shoes for treadmill workouts",
           "owned_entities": 4,
-          "owned_entity_demand": 6190660,
+          "owned_entity_demand_weight": 6190660,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 35,
-          "entity_demand": 6190040,
+          "entity_demand_weight": 6190040,
           "head": "running shoes break in period",
           "owned_entities": 4,
-          "owned_entity_demand": 6190040,
+          "owned_entity_demand_weight": 6190040,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 40,
-          "entity_demand": 6187780,
+          "entity_demand_weight": 6187780,
           "head": "running shoes warranty information",
           "owned_entities": 5,
-          "owned_entity_demand": 6187780,
+          "owned_entity_demand_weight": 6187780,
           "total_entities": 5
         },
         {
           "authority": 1.0,
           "cluster_index": 5,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "maximalist running shoes",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 6,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "minimalist running shoes",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 28,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "motion control running shoes",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 34,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "running shoes return policy",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 38,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "running shoes stack height",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 39,
-          "entity_demand": 6186940,
+          "entity_demand_weight": 6186940,
           "head": "running shoes laces types",
           "owned_entities": 3,
-          "owned_entity_demand": 6186940,
+          "owned_entity_demand_weight": 6186940,
           "total_entities": 3
         },
         {
           "authority": 1.0,
           "cluster_index": 24,
-          "entity_demand": 2145160,
+          "entity_demand_weight": 2145160,
           "head": "example shoes near me",
           "owned_entities": 13,
-          "owned_entity_demand": 2145160,
+          "owned_entity_demand_weight": 2145160,
           "total_entities": 13
         },
         {
           "authority": 1.0,
           "cluster_index": 7,
-          "entity_demand": 2112760,
+          "entity_demand_weight": 2112760,
           "head": "example shoes coupon code",
           "owned_entities": 11,
-          "owned_entity_demand": 2112760,
+          "owned_entity_demand_weight": 2112760,
           "total_entities": 11
         },
         {
           "authority": 1.0,
           "cluster_index": 42,
-          "entity_demand": 2096900,
+          "entity_demand_weight": 2096900,
           "head": "example shoes size chart",
           "owned_entities": 4,
-          "owned_entity_demand": 2096900,
+          "owned_entity_demand_weight": 2096900,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 14,
-          "entity_demand": 203900,
+          "entity_demand_weight": 203900,
           "head": "nike pegasus 41 review",
           "owned_entities": 4,
-          "owned_entity_demand": 203900,
+          "owned_entity_demand_weight": 203900,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 15,
-          "entity_demand": 125300,
+          "entity_demand_weight": 125300,
           "head": "hoka clifton 10 review",
           "owned_entities": 4,
-          "owned_entity_demand": 125300,
+          "owned_entity_demand_weight": 125300,
           "total_entities": 4
         },
         {
           "authority": 1.0,
           "cluster_index": 16,
-          "entity_demand": 102300,
+          "entity_demand_weight": 102300,
           "head": "brooks ghost 16 review",
           "owned_entities": 2,
-          "owned_entity_demand": 102300,
+          "owned_entity_demand_weight": 102300,
           "total_entities": 2
         }
       ]
@@ -15640,13 +15640,25 @@
           "filename": "dashboard.html",
           "format": "html",
           "sha256": "f1a08c0ffb688c49bb15a33f17148a437365403bd1c487299157fb958b632272"
+        },
+        {
+          "bytes": 38457,
+          "filename": "audit.docx",
+          "format": "docx",
+          "sha256": "21dbc0af75a20ee9cee7818afcbd1ec80949b08c40502c9390378d122bdcad6b"
+        },
+        {
+          "bytes": 10277,
+          "filename": "dashboard.xlsx",
+          "format": "xlsx",
+          "sha256": "8a1d60f446aa7177749d89daa83dd186cc9ab1498862081435899f9c09321a7a"
         }
       ],
       "backends": {
-        "docx": false,
+        "docx": true,
         "plotly": true,
         "pptx": false,
-        "xlsx": false
+        "xlsx": true
       },
       "brand": {
         "fingerprint": "0efff436fc9b",
@@ -15665,14 +15677,6 @@
         {
           "format": "pptx",
           "reason": "backend not installed (pptx)"
-        },
-        {
-          "format": "docx",
-          "reason": "backend not installed (docx)"
-        },
-        {
-          "format": "xlsx",
-          "reason": "backend not installed (xlsx)"
         }
       ]
     }

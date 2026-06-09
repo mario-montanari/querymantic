@@ -148,7 +148,10 @@ def _position_cell(position: int, table: dict[str, Any]) -> tuple[float, str]:
     max_pos = max(int(p) for p in positions)
     key = str(max(1, min(position, max_pos)))
     cell = positions[key]
-    provenance = cell.get("provenance", "interpolated")
+    # A cell with no declared provenance is treated as the most uncertain bucket, not
+    # a moderately confident one, so a malformed table widens the band rather than
+    # quietly understating uncertainty. The bundled table always declares provenance.
+    provenance = cell.get("provenance", "extrapolated")
     if position > max_pos:
         # Past the table: floor value, treated as extrapolated.
         provenance = "extrapolated"

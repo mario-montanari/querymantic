@@ -41,12 +41,16 @@ function Have([string] $cmd) {
 
 Write-Host "== Pre-publication gates ==" -ForegroundColor Cyan
 
+# Every gate is fail-closed: a missing tool BLOCKS the publish rather than skipping
+# the check, so the script can never push with a gate silently bypassed.
+
 # 1. Plugin structure (authoritative, local, where you are logged in)
 if (Have "claude") {
   claude plugin validate .
   Stop-IfFailed "claude plugin validate"
 } else {
-  Write-Host "WARNING: 'claude' not found, skipping plugin validation." -ForegroundColor Yellow
+  Write-Host "BLOCKED: 'claude' (Claude Code) not found; plugin validation is required. No push." -ForegroundColor Red
+  exit 1
 }
 
 # 2. pre-commit: secrets (gitleaks), lint and format (ruff), security (bandit)
@@ -54,32 +58,47 @@ if (Have "pre-commit") {
   pre-commit run --all-files
   Stop-IfFailed "pre-commit"
 } else {
-  Write-Host "WARNING: 'pre-commit' not found. Install with: pip install pre-commit" -ForegroundColor Yellow
+  Write-Host "BLOCKED: 'pre-commit' not found; secret/lint/security gates are required. Install with: pip install pre-commit. No push." -ForegroundColor Red
+  exit 1
 }
 
 # 3. Dependency audit of the optional libraries
-if ((Have "pip-audit") -and (Test-Path "requirements-optional.txt")) {
+if (-not (Have "pip-audit")) {
+  Write-Host "BLOCKED: 'pip-audit' not found; the dependency audit is required. Install with: pip install pip-audit. No push." -ForegroundColor Red
+  exit 1
+}
+if (Test-Path "requirements-optional.txt") {
   pip-audit -r requirements-optional.txt
   Stop-IfFailed "pip-audit"
 } else {
-  Write-Host "Skipping pip-audit (pip-audit or requirements-optional.txt missing). The core is stdlib-only." -ForegroundColor Yellow
+  Write-Host "OK: no requirements-optional.txt to audit (core is stdlib-only)" -ForegroundColor Green
 }
 
 # 4. Tests
-$haveTests = (Test-Path "evals") -or (Test-Path "tests") -or (Get-ChildItem -Recurse -Filter "test_*.py" -ErrorAction SilentlyContinue | Select-Object -First 1)
-if ((Have "pytest") -and $haveTests) {
-  pytest -q
-  Stop-IfFailed "pytest"
+$haveTests = (Test-Path "evals") -or (Test-Path "tests")
+if ($haveTests) {
+  if (Have "pytest") {
+    pytest -q
+    Stop-IfFailed "pytest"
+  } else {
+    Write-Host "BLOCKED: tests are present but 'pytest' is not installed; the suite must run before a publish. Install with: pip install pytest. No push." -ForegroundColor Red
+    exit 1
+  }
 } else {
-  Write-Host "No tests found, skipping pytest." -ForegroundColor Yellow
+  Write-Host "OK: no test directory present to run" -ForegroundColor Green
 }
 
 Write-Host "== All green. Proceeding with git ==" -ForegroundColor Cyan
 
 git add -A
-git commit -m "$Message"
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "Note: nothing new to commit (or commit failed). Continuing to push any commits already prepared." -ForegroundColor Yellow
+# Distinguish a clean tree (legitimately nothing to commit, push prepared commits)
+# from a real commit failure (a failing hook, for example), which must block.
+$pending = git status --porcelain
+if (-not $pending) {
+  Write-Host "OK: working tree clean, nothing new to commit. Pushing prepared commits." -ForegroundColor Green
+} else {
+  git commit -m "$Message"
+  Stop-IfFailed "git commit"
 }
 
 if ($First) {

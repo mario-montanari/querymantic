@@ -16,10 +16,11 @@ Callers consult ``ooxml_capabilities()`` first.
 It also carries the determinism helper the Office formats need. An OOXML file is a
 ZIP archive, and ``zipfile`` stamps each member with the current local time by
 default, so two runs of the same content would differ byte for byte. The package
-metadata (the core-properties created and modified dates) varies the same way.
-``normalize_zip`` rewrites a produced archive with a fixed member timestamp and a
-stable member order, so that once the generators pin the core-properties dates to
-the run timestamp, the whole file is byte-reproducible across runs.
+metadata (the core-properties created and modified dates) varies the same way, and a
+backend may even overwrite the date the renderer sets (openpyxl stamps ``modified``
+with the wall clock at save time). ``normalize_zip`` rewrites a produced archive with
+a fixed member timestamp, a stable member order, and the core-properties dates pinned
+to the run timestamp, so the whole file is byte-reproducible across runs.
 
 Note on cross-environment reproducibility: byte-equality holds across runs in the
 same environment with the same backend versions. A different ``python-pptx`` or
@@ -30,12 +31,39 @@ package's behaviour, not the port's, and it is recorded as a known limitation.
 from __future__ import annotations
 
 import io
+import re
 import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 # The earliest timestamp the ZIP format can represent. Using it as the fixed
 # member time is the conventional choice for reproducible archives.
 _ZIP_EPOCH = (1980, 1, 1, 0, 0, 0)
+
+# The OOXML core-properties part and the two date elements a backend may stamp. The
+# backreference on the element name keeps the closing tag matched to its opening tag,
+# so a created/modified pair can never be crossed.
+_CORE_PART = "docProps/core.xml"
+_CORE_DATE_RE = re.compile(r"(<dcterms:(created|modified)\b[^>]*>)[^<]*(</dcterms:\2>)")
+
+
+def _w3cdtf(ts: datetime) -> str:
+    """Format a datetime as the W3CDTF string OOXML core properties use (UTC, ``Z``)."""
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return ts.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _pin_core_dates(data: bytes, ts: datetime) -> bytes:
+    """Rewrite the created/modified dates in a ``core.xml`` payload to ``ts``.
+
+    Some backends (openpyxl overwrites ``modified`` with the wall clock at save time)
+    ignore the date the renderer sets, which would make the archive non-reproducible.
+    Pinning the element text here covers every backend uniformly; for a backend that
+    already honours the date this is a no-op.
+    """
+    stamp = _w3cdtf(ts)
+    return _CORE_DATE_RE.sub(rf"\g<1>{stamp}\g<3>", data.decode("utf-8")).encode("utf-8")
 
 
 def _present(module_name: str) -> bool:
@@ -60,14 +88,16 @@ def ooxml_capabilities() -> dict[str, bool]:
     }
 
 
-def normalize_zip(path: Path) -> None:
+def normalize_zip(path: Path, core_timestamp: datetime | None = None) -> None:
     """Rewrite an OOXML archive in place with deterministic member metadata.
 
     Each member keeps its name, content, compression type, and external
     attributes, but its modification time is pinned to the ZIP epoch and the
-    members are written in sorted name order. Combined with the generators pinning
-    the core-properties dates, this makes the output byte-reproducible across two
-    runs on the same input in the same environment.
+    members are written in sorted name order. When ``core_timestamp`` is given, the
+    created and modified dates inside ``docProps/core.xml`` are pinned to it as well,
+    so a backend that stamps the wall clock (openpyxl does this for ``modified``)
+    cannot make the file vary between runs. Together this makes the output
+    byte-reproducible across two runs on the same input in the same environment.
 
     The function reads the whole archive into memory, which is appropriate for the
     report-sized documents Output Forge produces.
@@ -80,6 +110,8 @@ def normalize_zip(path: Path) -> None:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as dst:
         for info, data in members:
+            if core_timestamp is not None and info.filename == _CORE_PART:
+                data = _pin_core_dates(data, core_timestamp)
             pinned = zipfile.ZipInfo(filename=info.filename, date_time=_ZIP_EPOCH)
             pinned.compress_type = info.compress_type
             pinned.external_attr = info.external_attr

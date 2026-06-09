@@ -90,8 +90,10 @@ def _render_ooxml(
         from .dashboard_xlsx import render_workbook
 
         render_workbook(view, brand, out_path, ts)
-    # The produced archive is normalised so two runs are byte-identical.
-    ooxml.normalize_zip(out_path)
+    # The produced archive is normalised so two runs are byte-identical. Passing the
+    # pinned timestamp also re-stamps the core-properties dates, which a backend may
+    # otherwise overwrite with the wall clock (openpyxl does this for ``modified``).
+    ooxml.normalize_zip(out_path, core_timestamp=ts)
 
 
 def output_forge(
@@ -122,7 +124,12 @@ def output_forge(
         raise ModuleError("output_forge needs the engine analysis with clusters")
 
     try:
-        resolved_brand = resolve_brand(brand) if not _is_resolved(brand) else brand
+        # Always resolve, even when the caller passes a pre-resolved brand. resolve_brand
+        # is idempotent, so this costs nothing, and it guarantees every colour is
+        # re-validated as strict hex before it reaches a raw SVG/CSS attribute. Trusting
+        # a caller-built dict here was the one path by which an unescaped colour could
+        # have been injected.
+        resolved_brand = resolve_brand(brand)
     except BrandError as exc:
         raise OutputForgeError(str(exc)) from exc
 
@@ -195,15 +202,6 @@ def output_forge(
         ),
     }
     return state
-
-
-def _is_resolved(brand: dict[str, Any] | None) -> bool:
-    """True when ``brand`` is already a resolved brand mapping (has a colours block)."""
-    return (
-        isinstance(brand, dict)
-        and isinstance(brand.get("colors"), dict)
-        and "primary" in brand["colors"]
-    )
 
 
 __all__ = ["output_forge", "ModuleError", "OutputForgeError", "FORMATS"]

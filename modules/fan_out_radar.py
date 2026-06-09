@@ -82,13 +82,21 @@ def _load_synonyms() -> dict[str, list[str]]:
 
 
 def _reference_year(state: dict[str, Any]) -> int:
+    """Return the run's reference year, read only from the pinned run timestamp.
+
+    The year seeds the "recent" sub-query archetypes, so it must never come from the
+    wall clock: that would make the output vary between runs. The pipeline always
+    stamps ``generated_at``; a missing or malformed value is a broken run-state, and
+    raising keeps the module deterministic instead of inventing a year.
+    """
     stamp = (state.get("querymantic") or {}).get("generated_at", "")
     try:
         return int(str(stamp)[:4])
-    except (ValueError, TypeError):
-        from datetime import datetime, timezone
-
-        return datetime.now(timezone.utc).year
+    except (ValueError, TypeError) as exc:
+        raise ModuleError(
+            "fan_out_radar needs a valid 'generated_at' run timestamp to fix the "
+            "reference year deterministically"
+        ) from exc
 
 
 def _norm(text: str) -> str:

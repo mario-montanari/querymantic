@@ -39,8 +39,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from querymantic.text import tokenize
-
 # Default weights for the offline readiness blend. Each input is a signal that has
 # a real value offline; a component with no value is dropped and the remaining
 # weights are renormalised, so the score degrades gracefully when an upstream
@@ -85,10 +83,6 @@ FRESH_STATES = {"rising": 1.0, "seasonal": 0.8, "declining": 0.4, "flat": 0.3}
 
 class ModuleError(Exception):
     """Raised when a module cannot run against the current run-state."""
-
-
-def _norm(text: str) -> str:
-    return " ".join(tokenize(text))
 
 
 def _config(params: dict[str, Any] | None) -> dict[str, Any]:

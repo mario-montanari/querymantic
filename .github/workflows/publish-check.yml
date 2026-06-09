@@ -42,10 +42,14 @@ jobs:
 
       - name: Dependency audit
         run: |
-          if [ -f requirements.txt ]; then
-            pip-audit -r requirements.txt
+          # The core suite is stdlib-only, so there is no requirements.txt. The
+          # optional libraries (Output Forge formats, STL seasonal path) are
+          # pinned in requirements-optional.txt and that pinned set is what gets
+          # audited here.
+          if [ -f requirements-optional.txt ]; then
+            pip-audit -r requirements-optional.txt
           else
-            echo "No requirements.txt: skipping pip-audit. The suite is stdlib-only."
+            echo "No requirements-optional.txt: skipping pip-audit. The suite is stdlib-only."
           fi
 
       - name: Tests

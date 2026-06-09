@@ -1,7 +1,7 @@
 Spektr
 Copyright (c) 2026 Mario Montanari
 
-This product includes the following bundled component:
+This product includes the following bundled components:
 
 1. keyword-intelligence
    Path: engine/keyword-intelligence/
@@ -10,6 +10,17 @@ This product includes the following bundled component:
    and kept byte-identical to its source. Refresh it only with the sync script
    at engine/sync_engine.py.
 
+2. plotly.js (partial "basic" bundle)
+   Path: vendor/plotly/plotly-basic-3.6.0.min.js
+   License: MIT (Copyright (c) 2012-2026 Plotly, Inc.)
+   Source: https://cdn.plot.ly/plotly-basic-3.6.0.min.js
+   Role: pinned, vendored charting library for the OPTIONAL interactive HTML
+   dashboard (the --forge-interactive output of Output Forge). It is inlined into
+   that one artifact, never fetched from a content delivery network at runtime,
+   so the dashboard stays offline. The default HTML dashboard does not use it and
+   stays script-free inline SVG. The bundle is kept byte-identical to the pinned
+   download.
+
 Optional third-party libraries are NOT bundled in this repository. The core
 suite and the vendored engine run on the Python standard library alone. When a
 module needs one of the libraries below, it imports it through a port that
@@ -17,27 +28,22 @@ degrades gracefully when the library is absent, so the suite still runs without
 it. Each library keeps its own license; install it yourself if you want the
 feature it powers.
 
-2. python-pptx
+3. python-pptx
    Used by: spektr_core/ports/ooxml.py (Output Forge .pptx slide deck)
    License: MIT
    Source: https://pypi.org/project/python-pptx/
 
-3. python-docx
+4. python-docx
    Used by: spektr_core/ports/ooxml.py (Output Forge .docx audit document)
    License: MIT
    Source: https://pypi.org/project/python-docx/
 
-4. openpyxl
+5. openpyxl
    Used by: spektr_core/ports/ooxml.py (Output Forge .xlsx workbook)
    License: MIT
    Source: https://pypi.org/project/openpyxl/
 
-5. statsmodels
+6. statsmodels
    Used by: spektr_core/ports/stats.py (Demand Pulse optional STL seasonal path)
    License: BSD-3-Clause
    Source: https://pypi.org/project/statsmodels/
-
-The self-contained HTML dashboard uses inline SVG only. No JavaScript charting
-library is bundled and none is fetched at runtime. If an interactive charting
-layer is vendored in a later release, it will be listed here with its license
-and a pinned version.

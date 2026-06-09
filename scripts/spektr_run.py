@@ -90,6 +90,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Output Forge formats to render (subset of: html pptx docx xlsx); default renders all available",
     )
     run_p.add_argument(
+        "--forge-interactive",
+        action="store_true",
+        help="also render the interactive Plotly HTML dashboard (needs the vendored plotly.js bundle; the default HTML stays script-free SVG)",
+    )
+    run_p.add_argument(
         "--deterministic-timestamp",
         default=None,
         help="fixed ISO 8601 timestamp for reproducible output",
@@ -118,6 +123,11 @@ def _build_parser() -> argparse.ArgumentParser:
         nargs="*",
         default=None,
         help="formats to render (subset of: html pptx docx xlsx)",
+    )
+    forge_p.add_argument(
+        "--interactive",
+        action="store_true",
+        help="also render the interactive Plotly HTML dashboard (needs the vendored plotly.js bundle; the default HTML stays script-free SVG)",
     )
     forge_p.add_argument(
         "--output",
@@ -167,15 +177,28 @@ def _cmd_run(args: argparse.Namespace) -> int:
             except BrandError as exc:
                 _fail(str(exc), as_json=args.json)
                 return 1
-        if args.forge_formats is not None:
-            unknown = [f for f in args.forge_formats if f not in FORMATS]
+        forge_formats = (
+            list(args.forge_formats) if args.forge_formats is not None else None
+        )
+        if forge_formats is not None:
+            unknown = [f for f in forge_formats if f not in FORMATS]
             if unknown:
                 _fail(
                     f"unknown --forge-formats value(s): {', '.join(sorted(unknown))}",
                     as_json=args.json,
                 )
                 return 1
-            forge_kwargs["formats"] = tuple(args.forge_formats)
+        if args.forge_interactive:
+            base = (
+                forge_formats
+                if forge_formats is not None
+                else ["html", "pptx", "docx", "xlsx"]
+            )
+            if "interactive_html" not in base:
+                base = base + ["interactive_html"]
+            forge_formats = base
+        if forge_formats is not None:
+            forge_kwargs["formats"] = tuple(forge_formats)
         module_kwargs["output_forge"] = forge_kwargs
 
     try:
@@ -278,6 +301,8 @@ def _cmd_forge(args: argparse.Namespace) -> int:
         if args.formats is not None
         else ("html", "pptx", "docx", "xlsx")
     )
+    if args.interactive and "interactive_html" not in formats:
+        formats = formats + ("interactive_html",)
     unknown = [f for f in formats if f not in FORMATS]
     if unknown:
         _fail(

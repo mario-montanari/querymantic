@@ -32,11 +32,16 @@ from spektr_core.ports import ooxml
 from . import model
 from .brand import BrandError, brand_fingerprint, resolve_brand
 from .dashboard_html import render_html
+from .dashboard_interactive import interactive_available, render_interactive_html
 
 # The formats the module can produce, and the fixed filename for each. Fixed names
-# keep the manifest and the on-disk output deterministic.
+# keep the manifest and the on-disk output deterministic. ``interactive_html`` is
+# opt-in only (it is never in the default ``formats`` tuple): it mounts interactive
+# Plotly charts from the vendored bundle, while ``html`` stays the script-free,
+# always-available SVG floor.
 FORMATS: dict[str, str] = {
     "html": "dashboard.html",
+    "interactive_html": "dashboard.interactive.html",
     "pptx": "deck.pptx",
     "docx": "audit.docx",
     "xlsx": "dashboard.xlsx",
@@ -123,7 +128,7 @@ def output_forge(
 
     view = model.build_view(state)
     ts = _parse_timestamp(state.get("spektr", {}).get("generated_at", ""))
-    capabilities = ooxml.ooxml_capabilities()
+    capabilities = {**ooxml.ooxml_capabilities(), "plotly": interactive_available()}
 
     out_path_dir.mkdir(parents=True, exist_ok=True)
 
@@ -131,12 +136,22 @@ def output_forge(
     skipped: list[dict[str, str]] = []
 
     # Render in a fixed order so the manifest is stable regardless of the caller's.
-    for fmt in ("html", "pptx", "docx", "xlsx"):
+    for fmt in ("html", "interactive_html", "pptx", "docx", "xlsx"):
         if fmt not in formats:
             continue
         out_file = out_path_dir / FORMATS[fmt]
         if fmt == "html":
             out_file.write_bytes(render_html(view, resolved_brand))
+        elif fmt == "interactive_html":
+            if not interactive_available():
+                skipped.append(
+                    {
+                        "format": fmt,
+                        "reason": "vendored plotly.js bundle not present (vendor/plotly/)",
+                    }
+                )
+                continue
+            out_file.write_bytes(render_interactive_html(view, resolved_brand))
         else:
             backend = _OOXML_FORMATS[fmt]
             if not capabilities.get(backend, False):

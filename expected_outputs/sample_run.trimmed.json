@@ -15644,6 +15644,7 @@
       ],
       "backends": {
         "docx": false,
+        "plotly": true,
         "pptx": false,
         "xlsx": false
       },

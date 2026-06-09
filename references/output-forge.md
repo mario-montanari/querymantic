@@ -44,6 +44,14 @@ so two runs on the same input build the same view.
 - **Word audit** (`audit_docx.py`, `.docx`): a written audit behind `python-docx`.
 - **Excel dashboard** (`dashboard_xlsx.py`, `.xlsx`): a sortable, filterable
   workbook behind `openpyxl`.
+- **Interactive HTML dashboard** (`dashboard_interactive.py`, opt-in via
+  `--forge-interactive`): the same dashboard with the charts mounted as interactive
+  Plotly figures. It inlines a pinned, vendored copy of the partial `plotly-basic`
+  bundle (no content delivery network reference, so it stays offline) and keeps the
+  static SVG inside each chart container as a fallback when scripts do not run. It is
+  never the default: the always-available HTML dashboard above stays script-free
+  inline SVG. When the vendored bundle is absent the format is skipped and recorded,
+  like an absent Office backend.
 
 The three Office formats are Office Open XML documents, the packaging format
 standardised as ECMA-376 and ISO/IEC 29500. An OOXML file is a ZIP archive of XML
@@ -73,7 +81,10 @@ resolved brand rather than a file path, so the run-state carries no absolute pat
 The suite's promise is that the same input gives the same output. For text that is
 easy: the HTML dashboard is byte-identical across runs because every value comes
 from the deterministic view and the only timestamp shown is the run timestamp, which
-is itself pinnable (`--deterministic-timestamp`).
+is itself pinnable (`--deterministic-timestamp`). The interactive variant is
+byte-identical too: its chart data comes from the same deterministic view, the
+vendored Plotly bundle is a fixed file, and it emits no timestamp or generated
+identifier of its own.
 
 The Office formats need two extra steps, because a naive save is not reproducible:
 
@@ -128,8 +139,10 @@ rules in plain language.
   dashboard, and the manifest records the skip.
 - Office byte-equality is environment-bound, as noted above: it holds across runs
   with the same backend versions, not across versions.
-- The interactive Plotly charts are a planned enhancement. The HTML dashboard's
-  inline-SVG charts are the current, self-contained implementation; a pinned,
-  vendored copy of plotly.js is not bundled yet.
+- The interactive Plotly charts are an opt-in enhancement (`--forge-interactive`),
+  not the default. The default HTML dashboard's inline-SVG charts are the
+  self-contained floor; the interactive variant inlines a pinned, vendored copy of
+  the partial `plotly-basic` bundle and falls back to the same SVG when scripts do
+  not run.
 - The dashboard surfaces the top clusters and gaps by demand, not every row; the
   Excel workbook carries the full per-cluster table for analysts who need it.

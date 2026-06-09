@@ -5,6 +5,17 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 
 ## [Unreleased]
 
+### Added (interactive dashboard)
+- Optional interactive HTML dashboard for Output Forge, opt-in via
+  `--forge-interactive` (on both `run` and `forge`). It renders the same dashboard
+  with the charts mounted as interactive Plotly figures, inlining a pinned, vendored
+  copy of the partial `plotly-basic` bundle (`vendor/plotly/plotly-basic-3.6.0.min.js`,
+  MIT) with no content delivery network reference, so it stays offline. Each chart
+  keeps the static SVG as a fallback when scripts do not run. The default HTML
+  dashboard is unchanged and stays script-free inline SVG; the interactive format is
+  skipped and recorded when the vendored bundle is absent. The variant is
+  byte-deterministic. `NOTICE` lists the vendored bundle as a bundled component.
+
 ### Added (publish kit)
 - Publish kit and license attributions. `NOTICE` now lists the optional
   third-party libraries the suite imports through degrading ports (python-pptx,

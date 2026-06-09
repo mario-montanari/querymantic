@@ -1,10 +1,12 @@
 # Pin the hook versions here. To refresh: run `pre-commit autoupdate` once inside
 # the repo, then `pre-commit install`.
 
-# The vendored engine is read-only and kept byte-identical to its source, and
-# runs/ holds generated output. No hook (ruff --fix, bandit, the formatters)
-# may touch either, so they are excluded from every hook below.
-exclude: '^(engine/|runs/)'
+# The vendored engine is read-only and kept byte-identical to its source, runs/
+# holds generated output, and vendor/ holds pinned third-party assets (the
+# plotly.js bundle) that must stay byte-identical so their recorded SHA-256 holds.
+# No hook (ruff --fix, bandit, the formatters, the whitespace fixers, the
+# large-file guard) may touch any of them, so all three are excluded below.
+exclude: '^(engine/|runs/|vendor/)'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

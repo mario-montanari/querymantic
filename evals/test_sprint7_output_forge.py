@@ -153,7 +153,9 @@ def test_output_forge_contract(tmp_path: Path) -> None:
     forge = loaded["modules"]["output_forge"]
     assert forge["mode"] == "render"
     assert forge["generated_at"] == FIXED_TIMESTAMP
-    assert set(forge["backends"]) == {"pptx", "docx", "xlsx"}
+    # The backend map covers the three Office formats plus the optional Plotly
+    # bundle for the interactive dashboard.
+    assert set(forge["backends"]) == {"pptx", "docx", "xlsx", "plotly"}
     assert forge["brand"]["name"] == "Spektr"
     assert len(forge["brand"]["fingerprint"]) == 12
 

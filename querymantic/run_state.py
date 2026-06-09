@@ -144,6 +144,40 @@ def mark_module_run(state: dict[str, Any], module: str) -> None:
         ran.append(module)
 
 
+STORED_FLOAT_PRECISION = 6
+
+
+def _round_floats(value: Any, ndigits: int) -> Any:
+    """Recursively round every float in a JSON-like structure to ``ndigits``.
+
+    Integers, booleans, strings and ``None`` are left untouched. This makes module
+    output reproducible across machines: scores that pass through transcendental
+    functions (BM25 and TF-IDF use ``log``) can differ in the last bit between one
+    platform's math library and another's, and rounding to a fixed decimal removes
+    that noise before it reaches run.json.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return round(value, ndigits)
+    if isinstance(value, dict):
+        return {k: _round_floats(v, ndigits) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_round_floats(v, ndigits) for v in value]
+    return value
+
+
+def round_module_slot(state: dict[str, Any], module: str) -> None:
+    """Round every float in a module's slot to the stored precision, in place.
+
+    Applied right after a module fills its slot, so downstream modules and the
+    renderers read the same rounded numbers a fresh run produces on any platform.
+    """
+    modules = state.get("modules")
+    if isinstance(modules, dict) and isinstance(modules.get(module), (dict, list)):
+        modules[module] = _round_floats(modules[module], STORED_FLOAT_PRECISION)
+
+
 def save_run_state(state: dict[str, Any], path: Path) -> None:
     """Write a run-state to disk as UTF-8 JSON with stable key order.
 

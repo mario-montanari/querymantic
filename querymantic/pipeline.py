@@ -106,6 +106,9 @@ def run_pipeline(
         module_fn = module_registry.get(name)
         extra = (module_kwargs or {}).get(name, {})
         state = module_fn(state, **extra)
+        # Round the slot before the next module (or the renderers) reads it, so the
+        # whole pipeline produces the same numbers on any platform.
+        run_state.round_module_slot(state, name)
         run_state.mark_module_run(state, name)
 
     run_state.save_run_state(state, output)

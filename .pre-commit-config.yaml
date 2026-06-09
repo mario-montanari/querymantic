@@ -4,9 +4,12 @@
 # The vendored engine is read-only and kept byte-identical to its source, runs/
 # holds generated output, and vendor/ holds pinned third-party assets (the
 # plotly.js bundle) that must stay byte-identical so their recorded SHA-256 holds.
-# No hook (ruff --fix, bandit, the formatters, the whitespace fixers, the
-# large-file guard) may touch any of them, so all three are excluded below.
-exclude: '^(engine/|runs/|vendor/)'
+# The two expected_outputs fixtures are the determinism proof: they are compared
+# byte-for-byte against a fresh render, so a whitespace fixer adding a trailing
+# newline would break the proof. No hook (ruff --fix, bandit, the formatters, the
+# whitespace fixers, the large-file guard) may touch any of these, so they are all
+# excluded below.
+exclude: '^(engine/|runs/|vendor/|expected_outputs/sample_dashboard\.html$|expected_outputs/sample_run\.trimmed\.json$)'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

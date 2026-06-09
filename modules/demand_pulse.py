@@ -34,13 +34,13 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from spektr_core.ports.stats import (
+from querymantic.ports.stats import (
     mann_kendall,
     stats_capabilities,
     stl_strength,
     theil_sen,
 )
-from spektr_core.text import tokenize
+from querymantic.text import tokenize
 
 # Significance level for the Mann-Kendall test. The conventional 0.05; a parameter,
 # not a magic number, and overridable through ``params``.

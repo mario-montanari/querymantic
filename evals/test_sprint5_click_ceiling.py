@@ -21,7 +21,7 @@ from modules.click_ceiling import (  # noqa: E402
     _ctr,
     load_ctr_table,
 )
-from spektr_core import pipeline, run_state  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 FIXED_TIMESTAMP = "2026-06-08T00:00:00+00:00"
@@ -45,7 +45,7 @@ def test_click_ceiling_contract(tmp_path: Path) -> None:
     _run(tmp_path, FULL_STACK)
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
-    assert loaded["spektr"]["modules_run"][-1] == "click_ceiling"
+    assert loaded["querymantic"]["modules_run"][-1] == "click_ceiling"
 
     cc = loaded["modules"]["click_ceiling"]
     assert cc["mode"] == "expected"

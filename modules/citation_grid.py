@@ -39,7 +39,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from spektr_core.text import tokenize
+from querymantic.text import tokenize
 
 # Default weights for the offline readiness blend. Each input is a signal that has
 # a real value offline; a component with no value is dropped and the remaining

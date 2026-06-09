@@ -1,7 +1,7 @@
-"""Spektr shared core: run-state contract, engine adapter, and pipeline runner.
+"""Querymantic shared core: run-state contract, engine adapter, and pipeline runner.
 
 This package is stdlib-only. Optional third-party libraries, when a module needs
-one, are reached through ``spektr_core.ports`` so they can degrade when absent.
+one, are reached through ``querymantic.ports`` so they can degrade when absent.
 """
 
 from __future__ import annotations

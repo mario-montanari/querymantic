@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from spektr_core.entity_extractor import (
+from querymantic.entity_extractor import (
     DEFAULT_EXTRACTOR,
     DEFAULT_MIN_DF,
     get_extractor,

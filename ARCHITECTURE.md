@@ -1,6 +1,6 @@
 # Architecture
 
-Spektr is a Claude Code and Claude Cowork plugin that turns keyword exports into a
+Querymantic is a Claude Code and Claude Cowork plugin that turns keyword exports into a
 single structured state and a set of offline analyses. It vendors the
 keyword-intelligence engine for the base analysis and adds modules on top. Nothing
 calls an external API: every figure is computed from the files you provide.
@@ -11,7 +11,7 @@ The published plugin lives in this directory and has its own git history. The
 vendored engine sits inside it, read-only.
 
 ```
-spektr/
+querymantic/
 ├── .claude-plugin/plugin.json   # plugin manifest
 ├── README.md
 ├── LICENSE                      # MIT
@@ -21,16 +21,16 @@ spektr/
 ├── engine/
 │   ├── keyword-intelligence/    # vendored, read-only, byte-identical to source
 │   └── sync_engine.py           # refresh and verify the vendored copy
-├── spektr_core/                 # shared package, stdlib-first
+├── querymantic/                 # shared package, stdlib-first
 │   ├── run_state.py             # run.json contract: hash, build, load, save, validate
 │   ├── engine_adapter.py        # runs the vendored engine, reads analysis.json
 │   ├── pipeline.py              # ingest -> engine -> modules -> save
 │   ├── text/                    # tokenizer, BM25, stopwords (stdlib)
 │   └── ports/                   # thin adapters to optional libraries, degrade if absent
 ├── modules/                     # the modules: pure functions run_state -> run_state'
-├── skills/spektr/               # orchestrator skill (drop a CSV, get the analysis)
-├── agents/spektr-orchestrator.md
-├── commands/                    # spektr-analyze, spektr-audit
+├── skills/querymantic/               # orchestrator skill (drop a CSV, get the analysis)
+├── agents/querymantic-orchestrator.md
+├── commands/                    # querymantic-analyze, querymantic-audit
 ├── references/                  # methodology; cites primary sources only
 ├── schemas/run.schema.json      # the run.json contract
 ├── data/                        # dated lookup tables and gazetteers
@@ -64,14 +64,14 @@ spektr/
 
 `run.json` has three parts:
 
-- `spektr`: the schema and plugin versions, a deterministic SHA-256 over the input
+- `querymantic`: the schema and plugin versions, a deterministic SHA-256 over the input
   files, the input paths, and the list of modules that have run.
 - `engine`: the vendored engine analysis. Stable fields include `corpus_summary`,
   per-keyword `metrics` and `scores`, `clusters`, and `gaps`.
 - `modules`: one slot per module, `null` until that module fills it.
 
 The schema is documented in `schemas/run.schema.json`. The executable check the
-pipeline relies on is the structural validator in `spektr_core/run_state.py`, which
+pipeline relies on is the structural validator in `querymantic/run_state.py`, which
 uses the standard library only, so the suite needs no schema-validation dependency.
 
 ## Modules

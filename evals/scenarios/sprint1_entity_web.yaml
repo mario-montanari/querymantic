@@ -8,11 +8,11 @@ description: >
 inputs:
   - assets/samples/
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --modules entity_web --client-domain example-shoes.com
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run is ["entity_web"]
+  - querymantic.modules_run is ["entity_web"]
   - modules.entity_web has summary, entities, graph, entity_gaps, topical_authority
   - owned_entities plus demand_only_entities equals entities_total
   - every entity in entity_gaps is unowned

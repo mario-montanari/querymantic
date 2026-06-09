@@ -31,8 +31,8 @@ from modules.output_forge.brand import (
 )  # noqa: E402
 from modules.output_forge.dashboard_html import render_html  # noqa: E402
 from modules.output_forge.model import build_view  # noqa: E402
-from spektr_core import pipeline, run_state  # noqa: E402
-from spektr_core.ports import ooxml  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
+from querymantic.ports import ooxml  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 SAMPLE_CAPTURE = PLUGIN_ROOT / "assets" / "livewire" / "sample_capture.json"
@@ -65,7 +65,7 @@ def _run(tmp: Path, modules: tuple[str, ...], with_capture: bool = False) -> dic
 
 def test_brand_defaults_and_merge() -> None:
     default = resolve_brand(None)
-    assert default["name"] == "Spektr"
+    assert default["name"] == "Querymantic"
     assert default["colors"]["primary"].startswith("#")
     merged = resolve_brand({"name": "Acme SEO", "colors": {"primary": "#102030"}})
     assert merged["name"] == "Acme SEO"
@@ -148,7 +148,7 @@ def test_output_forge_contract(tmp_path: Path) -> None:
     _run(tmp_path, OFFLINE_STACK + ("output_forge",))
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
-    assert loaded["spektr"]["modules_run"][-1] == "output_forge"
+    assert loaded["querymantic"]["modules_run"][-1] == "output_forge"
 
     forge = loaded["modules"]["output_forge"]
     assert forge["mode"] == "render"
@@ -156,7 +156,7 @@ def test_output_forge_contract(tmp_path: Path) -> None:
     # The backend map covers the three Office formats plus the optional Plotly
     # bundle for the interactive dashboard.
     assert set(forge["backends"]) == {"pptx", "docx", "xlsx", "plotly"}
-    assert forge["brand"]["name"] == "Spektr"
+    assert forge["brand"]["name"] == "Querymantic"
     assert len(forge["brand"]["fingerprint"]) == 12
 
     produced = {a["format"] for a in forge["artifacts"]}
@@ -235,13 +235,13 @@ def test_forge_renders_from_existing_run(tmp_path: Path) -> None:
     # The `forge` subcommand path: a saved run is loaded, rendered, marked, re-saved.
     _run(tmp_path, OFFLINE_STACK)
     loaded = run_state.load_run_state(tmp_path / "run.json")
-    assert "output_forge" not in loaded["spektr"]["modules_run"]
+    assert "output_forge" not in loaded["querymantic"]["modules_run"]
     output_forge(loaded, out_dir=tmp_path / "forge", brand=load_brand(BRAND_FILE))
     run_state.mark_module_run(loaded, "output_forge")
     run_state.save_run_state(loaded, tmp_path / "run.json")
     again = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(again)
-    assert "output_forge" in again["spektr"]["modules_run"]
+    assert "output_forge" in again["querymantic"]["modules_run"]
     assert (tmp_path / "forge" / "dashboard.html").is_file()
 
 

@@ -22,7 +22,7 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
-from spektr_core.ports import ooxml  # noqa: E402
+from querymantic.ports import ooxml  # noqa: E402
 
 EXPECTED_DIR = PLUGIN_ROOT / "expected_outputs"
 
@@ -51,10 +51,10 @@ def test_trimmed_has_modules_and_no_engine() -> None:
     data = json.loads(
         (EXPECTED_DIR / "sample_run.trimmed.json").read_text(encoding="utf-8")
     )
-    assert set(data) == {"spektr", "modules"}, (
+    assert set(data) == {"querymantic", "modules"}, (
         "the engine block must be dropped from the proof"
     )
-    assert data["spektr"]["generated_at"] == "2026-06-08T00:00:00+00:00"
+    assert data["querymantic"]["generated_at"] == "2026-06-08T00:00:00+00:00"
     # Every offline module ran and filled its slot.
     for name in (
         "entity_web",

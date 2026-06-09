@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pipeline runner for Spektr.
+"""Pipeline runner for Querymantic.
 
 The pipeline turns input keyword exports into a validated ``run.json``:
 

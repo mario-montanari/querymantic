@@ -14,11 +14,11 @@ description: >
 inputs:
   - assets/samples/
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --modules entity_web fan_out_radar citation_grid
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run is ["entity_web", "fan_out_radar", "citation_grid"]
+  - querymantic.modules_run is ["entity_web", "fan_out_radar", "citation_grid"]
   - modules.citation_grid has mode expected and expected_only true
   - modules.citation_grid reads entity_web and fan_out_radar, not demand_pulse
   - each cluster carries an expected_readiness between 0 and 100

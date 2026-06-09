@@ -276,7 +276,7 @@ def _json_island(payload: dict[str, Any]) -> str:
 _INIT_JS = (
     "(function(){"
     "if(typeof Plotly==='undefined')return;"
-    'var el=document.getElementById("spektr-plotdata");'
+    'var el=document.getElementById("querymantic-plotdata");'
     "if(!el)return;"
     "var specs=JSON.parse(el.textContent);"
     "var cfg={displayModeBar:false,responsive:true};"
@@ -337,7 +337,7 @@ def render_interactive_html(view: dict[str, Any], brand: dict[str, Any]) -> byte
         f'<div class="tagline">{_esc(title)}</div></header>'
         f"{body}{meta}"
         "</main>"
-        f'<script type="application/json" id="spektr-plotdata">{island}</script>'
+        f'<script type="application/json" id="querymantic-plotdata">{island}</script>'
         f"<script>{plotly_js}</script>"
         f"<script>{_INIT_JS}</script>"
         "</body></html>"

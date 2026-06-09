@@ -21,7 +21,7 @@ from modules.citation_grid import (  # noqa: E402
     DEFAULT_WEIGHTS,
 )
 from modules.demand_pulse import load_series  # noqa: E402
-from spektr_core import pipeline, run_state  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 SERIES_CSV = PLUGIN_ROOT / "assets" / "series" / "sample_series.csv"
@@ -46,7 +46,7 @@ def test_citation_grid_contract(tmp_path: Path) -> None:
     _run(tmp_path, ("entity_web", "fan_out_radar", "citation_grid"))
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
-    assert loaded["spektr"]["modules_run"] == [
+    assert loaded["querymantic"]["modules_run"] == [
         "entity_web",
         "fan_out_radar",
         "citation_grid",

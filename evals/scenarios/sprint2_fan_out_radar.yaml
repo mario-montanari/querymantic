@@ -8,11 +8,11 @@ description: >
 inputs:
   - assets/samples/
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --modules entity_web fan_out_radar
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run is ["entity_web", "fan_out_radar"]
+  - querymantic.modules_run is ["entity_web", "fan_out_radar"]
   - modules.fan_out_radar.mode is "expected"
   - the archetype set is exactly the seven archetypes
   - each cluster reports cover_at_tau between 0 and 1, plus missing_archetypes and gatekeepers

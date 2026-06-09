@@ -11,14 +11,14 @@ inputs:
   - assets/samples/
   - forge/templates/brand.json
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --client-domain example-shoes.com
   --modules entity_web fan_out_radar citation_grid click_ceiling output_forge
   --brand forge/templates/brand.json --forge-out forge_output
   --deterministic-timestamp "2026-06-08T00:00:00+00:00"
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run ends with output_forge
+  - querymantic.modules_run ends with output_forge
   - modules.output_forge.mode is "render"
   - modules.output_forge.artifacts contains an html entry with a 64-character sha256
   - forge_output/dashboard.html exists and references no external resource (no http, no script tag, no cdn)

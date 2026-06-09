@@ -37,7 +37,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from spektr_core.text import tokenize
+from querymantic.text import tokenize
 
 # How many competitor domains to list per split, longest tail folded into "other".
 MAX_COMPETITORS = 8

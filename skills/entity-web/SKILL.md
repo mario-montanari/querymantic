@@ -29,7 +29,7 @@ topical authority per cluster. It runs offline on the engine analysis already in
 ## Run it
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json --modules entity_web
+python scripts/querymantic_run.py run --inputs exports/ --output run.json --modules entity_web
 ```
 
 Add `--client-domain example.com` so ownership reflects the client. Entity Web is the

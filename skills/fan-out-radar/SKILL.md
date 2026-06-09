@@ -29,7 +29,7 @@ originating volume). It runs offline and writes the `fan_out_radar` slot.
 ## Run it
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json --modules entity_web fan_out_radar
+python scripts/querymantic_run.py run --inputs exports/ --output run.json --modules entity_web fan_out_radar
 ```
 
 Run `entity_web` first: Fan-Out Radar uses its graph when present and degrades cleanly

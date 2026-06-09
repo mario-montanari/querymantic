@@ -67,17 +67,17 @@ def _authority_by_cluster(
 
 
 def _header(state: dict[str, Any]) -> dict[str, Any]:
-    spektr = state.get("spektr") or {}
+    querymantic = state.get("querymantic") or {}
     engine = state.get("engine") or {}
     meta = engine.get("run_metadata") or {}
     return {
         "label": str(meta.get("label", "") or ""),
-        "generated_at": str(spektr.get("generated_at", "")),
-        "input_hash": str(spektr.get("input_hash", "")),
-        "input_files": len(spektr.get("inputs") or []),
-        "plugin_version": str(spektr.get("plugin_version", "")),
-        "schema_version": str(spektr.get("schema_version", "")),
-        "modules_run": list(spektr.get("modules_run") or []),
+        "generated_at": str(querymantic.get("generated_at", "")),
+        "input_hash": str(querymantic.get("input_hash", "")),
+        "input_files": len(querymantic.get("inputs") or []),
+        "plugin_version": str(querymantic.get("plugin_version", "")),
+        "schema_version": str(querymantic.get("schema_version", "")),
+        "modules_run": list(querymantic.get("modules_run") or []),
     }
 
 

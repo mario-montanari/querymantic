@@ -32,7 +32,7 @@ an audit slot. It runs first so the analysis modules read corrected values, and 
 List `language_layer` first, before the analysis modules, so they read corrected values.
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json \
+python scripts/querymantic_run.py run --inputs exports/ --output run.json \
   --modules language_layer entity_web fan_out_radar citation_grid click_ceiling
 ```
 

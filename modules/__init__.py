@@ -1,4 +1,4 @@
-"""Module registry for Spektr.
+"""Module registry for Querymantic.
 
 Each module is a pure function ``run_state -> run_state'`` that fills its own slot
 in ``run_state['modules']``. Modules register here by name so the pipeline can

@@ -1,6 +1,6 @@
 # Live Wire capture guide
 
-Live Wire is the opt-in path that brings observed data into a Spektr run. It reads
+Live Wire is the opt-in path that brings observed data into a Querymantic run. It reads
 one file, `livewire_capture.json`, and pairs the observed numbers with the offline
 estimates already in the run. Nothing here runs by default and nothing leaves your
 machine. Copy `livewire_capture.template.json`, fill the two blocks below, and pass

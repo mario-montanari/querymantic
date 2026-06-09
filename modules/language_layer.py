@@ -8,7 +8,7 @@ On Italian input it misreads two axes: it votes the language to ``en`` or ``fr``
 with an English fallback, so Italian cues such as ``prezzo`` or ``migliori`` are
 unseen. The one exception is a provided intent column, which the engine honours.
 
-Language Layer corrects this offline, as a Spektr module, without touching the
+Language Layer corrects this offline, as a Querymantic module, without touching the
 vendored engine. It runs FIRST, before the other modules, so they read corrected
 language and intent rather than retrofitting each one. Per keyword it:
 

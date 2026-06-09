@@ -1,4 +1,4 @@
-# Optional libraries for Spektr. The core suite and the vendored engine run on
+# Optional libraries for Querymantic. The core suite and the vendored engine run on
 # the Python standard library alone, so there is NO requirements.txt for the
 # core. Install the libraries below only if you want the optional features they
 # power. Each is imported through a port that degrades when the library is
@@ -8,10 +8,10 @@
 # raises a pull request when a newer release ships; pip-audit checks the pinned
 # set for known advisories.
 
-# Output Forge deliverables (spektr_core/ports/ooxml.py)
+# Output Forge deliverables (querymantic/ports/ooxml.py)
 python-pptx==1.0.2     # MIT  -- .pptx slide deck
 python-docx==1.2.0     # MIT  -- .docx audit document
 openpyxl==3.1.5        # MIT  -- .xlsx workbook
 
-# Demand Pulse optional STL seasonal path (spektr_core/ports/stats.py)
+# Demand Pulse optional STL seasonal path (querymantic/ports/stats.py)
 statsmodels==0.14.6    # BSD-3-Clause -- STL decomposition

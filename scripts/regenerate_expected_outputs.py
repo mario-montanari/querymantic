@@ -3,10 +3,10 @@
 
 The full ``run.json`` is not byte-deterministic, because the vendored engine writes
 a temporary output path and its own timestamp into ``engine.run_metadata``. The parts
-Spektr owns are deterministic: every module slot, and the Output Forge HTML dashboard.
+Querymantic owns are deterministic: every module slot, and the Output Forge HTML dashboard.
 So the committed proof is a trimmed artifact, not the raw run.json:
 
-- ``sample_run.trimmed.json``: the ``spektr`` metadata (with a pinned timestamp and the
+- ``sample_run.trimmed.json``: the ``querymantic`` metadata (with a pinned timestamp and the
   input hash) plus every ``modules`` slot, with the non-deterministic ``engine`` block
   dropped.
 - ``sample_dashboard.html``: the Output Forge HTML dashboard, byte for byte.
@@ -30,7 +30,7 @@ if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
 from modules.output_forge.brand import load_brand  # noqa: E402
-from spektr_core import pipeline  # noqa: E402
+from querymantic import pipeline  # noqa: E402
 
 # The fixed inputs that define the committed proof. Changing any of these changes
 # the expected bytes, so they live here as the single source of truth.
@@ -66,7 +66,7 @@ def _build(work_dir: Path) -> tuple[bytes, bytes]:
         generated_at=FIXED_TIMESTAMP,
         module_kwargs={"output_forge": {"out_dir": forge_dir, "brand": brand}},
     )
-    trimmed = {"spektr": state["spektr"], "modules": state["modules"]}
+    trimmed = {"querymantic": state["querymantic"], "modules": state["modules"]}
     trimmed_bytes = (
         json.dumps(trimmed, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     ).encode("utf-8")

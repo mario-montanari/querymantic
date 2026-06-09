@@ -28,7 +28,7 @@ offline and writes the `click_ceiling` slot.
 ## Run it
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json \
+python scripts/querymantic_run.py run --inputs exports/ --output run.json \
   --modules entity_web fan_out_radar citation_grid click_ceiling
 ```
 

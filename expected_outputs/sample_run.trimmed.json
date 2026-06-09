@@ -6671,7 +6671,7 @@
       ],
       "ctr_table": {
         "device_scope": "mobile",
-        "name": "Spektr CTR-by-position table",
+        "name": "Querymantic CTR-by-position table",
         "sources": [
           "sistrix_2020",
           "seer_2025"
@@ -15636,10 +15636,10 @@
     "output_forge": {
       "artifacts": [
         {
-          "bytes": 11020,
+          "bytes": 11045,
           "filename": "dashboard.html",
           "format": "html",
-          "sha256": "8517913c6a428ba9db174e2a9948aa9b0d29723d104cd96a8543811ae95e91d3"
+          "sha256": "f1a08c0ffb688c49bb15a33f17148a437365403bd1c487299157fb958b632272"
         }
       ],
       "backends": {
@@ -15649,8 +15649,8 @@
         "xlsx": false
       },
       "brand": {
-        "fingerprint": "2789f8637f6d",
-        "name": "Spektr"
+        "fingerprint": "0efff436fc9b",
+        "name": "Querymantic"
       },
       "formats_requested": [
         "docx",
@@ -15677,7 +15677,7 @@
       ]
     }
   },
-  "spektr": {
+  "querymantic": {
     "generated_at": "2026-06-08T00:00:00+00:00",
     "input_hash": "cae0c34bda5abea775c3fb522cddb307b9963d30fff14fc96ee4e62eb7f3d8fe",
     "inputs": [

@@ -26,7 +26,7 @@ from modules.live_wire import (  # noqa: E402
     _to_float,
     load_capture,
 )
-from spektr_core import pipeline, run_state  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 SAMPLE_CAPTURE = PLUGIN_ROOT / "assets" / "livewire" / "sample_capture.json"
@@ -95,7 +95,7 @@ def test_live_wire_contract(tmp_path: Path) -> None:
     _run(tmp_path, FULL_STACK)
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
-    assert loaded["spektr"]["modules_run"][-1] == "live_wire"
+    assert loaded["querymantic"]["modules_run"][-1] == "live_wire"
 
     lw = loaded["modules"]["live_wire"]
     assert lw["mode"] == "observed"

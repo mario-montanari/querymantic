@@ -29,7 +29,7 @@ from modules.output_forge.dashboard_interactive import (  # noqa: E402
     vendored_plotly_path,
 )
 from modules.output_forge.model import build_view  # noqa: E402
-from spektr_core import pipeline  # noqa: E402
+from querymantic import pipeline  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 BRAND_FILE = PLUGIN_ROOT / "forge" / "templates" / "brand.json"
@@ -80,7 +80,7 @@ def test_interactive_html_inlines_plotly_offline(tmp_path: Path) -> None:
     for needle in ("<script src", "<link ", 'src="http'):
         assert needle not in html, f"unexpected external load: {needle}"
     # The data island and the three chart containers are emitted.
-    assert 'id="spektr-plotdata"' in html
+    assert 'id="querymantic-plotdata"' in html
     for plot_id in ("plot-intent", "plot-winnable", "plot-readiness"):
         assert f'id="{plot_id}"' in html
     # The static SVG stays as the fallback inside each container.
@@ -100,7 +100,7 @@ def test_data_island_cannot_close_the_script_tag(tmp_path: Path) -> None:
     html = render_interactive_html(build_view(state), resolve_brand(None)).decode(
         "utf-8"
     )
-    island = html.split('id="spektr-plotdata">', 1)[1].split("</script>", 1)[0]
+    island = html.split('id="querymantic-plotdata">', 1)[1].split("</script>", 1)[0]
     assert "<" not in island
 
 

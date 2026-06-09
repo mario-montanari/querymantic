@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Run-state contract for Spektr.
+"""Run-state contract for Querymantic.
 
 The run-state is the single canonical object for one analysis run, stored as
 ``run.json``. It carries three parts:
 
-- ``spektr``: suite metadata (schema and plugin versions, a deterministic hash
+- ``querymantic``: suite metadata (schema and plugin versions, a deterministic hash
   of the input files, the input paths, and the list of modules that have run).
 - ``engine``: the vendored keyword-intelligence engine output (the contents of
   the engine's ``analysis.json``), or ``null`` before the engine runs.
-- ``modules``: one slot per Spektr module, each ``null`` until that module fills
+- ``modules``: one slot per Querymantic module, each ``null`` until that module fills
   it. Every module is a pure function ``run_state -> run_state'`` that writes its
-  own slot and appends its name to ``spektr.modules_run``.
+  own slot and appends its name to ``querymantic.modules_run``.
 
 Validation here is structural and uses the standard library only, so the suite
 carries no ``jsonschema`` dependency. The JSON Schema at ``schemas/run.schema.json``
@@ -119,7 +119,7 @@ def new_run_state(
     if generated_at is None:
         generated_at = datetime.now(timezone.utc).isoformat()
     return {
-        "spektr": {
+        "querymantic": {
             "schema_version": SCHEMA_VERSION,
             "plugin_version": version,
             "generated_at": generated_at,
@@ -135,11 +135,11 @@ def new_run_state(
 def mark_module_run(state: dict[str, Any], module: str) -> None:
     """Record that ``module`` has populated its slot.
 
-    Appends the module name to ``spektr.modules_run`` once, preserving order.
+    Appends the module name to ``querymantic.modules_run`` once, preserving order.
     """
     if module not in MODULE_KEYS:
         raise RunStateError(f"unknown module: {module}")
-    ran = state["spektr"]["modules_run"]
+    ran = state["querymantic"]["modules_run"]
     if module not in ran:
         ran.append(module)
 
@@ -178,9 +178,9 @@ def collect_validation_errors(state: Any) -> list[str]:
     if not isinstance(state, dict):
         return ["run-state must be a JSON object"]
 
-    spektr = state.get("spektr")
-    if not isinstance(spektr, dict):
-        errors.append("'spektr' must be an object")
+    querymantic = state.get("querymantic")
+    if not isinstance(querymantic, dict):
+        errors.append("'querymantic' must be an object")
     else:
         for field, expected in (
             ("schema_version", str),
@@ -188,18 +188,20 @@ def collect_validation_errors(state: Any) -> list[str]:
             ("generated_at", str),
             ("input_hash", str),
         ):
-            value = spektr.get(field)
+            value = querymantic.get(field)
             if not isinstance(value, expected) or value == "":
-                errors.append(f"'spektr.{field}' must be a non-empty string")
-        if not isinstance(spektr.get("inputs"), list):
-            errors.append("'spektr.inputs' must be an array")
-        modules_run = spektr.get("modules_run")
+                errors.append(f"'querymantic.{field}' must be a non-empty string")
+        if not isinstance(querymantic.get("inputs"), list):
+            errors.append("'querymantic.inputs' must be an array")
+        modules_run = querymantic.get("modules_run")
         if not isinstance(modules_run, list):
-            errors.append("'spektr.modules_run' must be an array")
+            errors.append("'querymantic.modules_run' must be an array")
         else:
             for name in modules_run:
                 if name not in MODULE_KEYS:
-                    errors.append(f"'spektr.modules_run' has unknown module: {name!r}")
+                    errors.append(
+                        f"'querymantic.modules_run' has unknown module: {name!r}"
+                    )
 
     if "engine" not in state:
         errors.append("'engine' key is required (object or null)")

@@ -1,4 +1,4 @@
-Spektr
+Querymantic
 Copyright (c) 2026 Mario Montanari
 
 This product includes the following bundled components:
@@ -29,21 +29,21 @@ it. Each library keeps its own license; install it yourself if you want the
 feature it powers.
 
 3. python-pptx
-   Used by: spektr_core/ports/ooxml.py (Output Forge .pptx slide deck)
+   Used by: querymantic/ports/ooxml.py (Output Forge .pptx slide deck)
    License: MIT
    Source: https://pypi.org/project/python-pptx/
 
 4. python-docx
-   Used by: spektr_core/ports/ooxml.py (Output Forge .docx audit document)
+   Used by: querymantic/ports/ooxml.py (Output Forge .docx audit document)
    License: MIT
    Source: https://pypi.org/project/python-docx/
 
 5. openpyxl
-   Used by: spektr_core/ports/ooxml.py (Output Forge .xlsx workbook)
+   Used by: querymantic/ports/ooxml.py (Output Forge .xlsx workbook)
    License: MIT
    Source: https://pypi.org/project/openpyxl/
 
 6. statsmodels
-   Used by: spektr_core/ports/stats.py (Demand Pulse optional STL seasonal path)
+   Used by: querymantic/ports/stats.py (Demand Pulse optional STL seasonal path)
    License: BSD-3-Clause
    Source: https://pypi.org/project/statsmodels/

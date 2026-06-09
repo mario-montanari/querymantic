@@ -93,7 +93,7 @@ The Office formats need two extra steps, because a naive save is not reproducibl
    wall clock.
 2. **Archive normalisation.** An OOXML file is a ZIP, and the ZIP format records a
    modification time per member, defaulting to the current local time, so two saves
-   of identical content differ byte for byte. `spektr_core/ports/ooxml.py`
+   of identical content differ byte for byte. `querymantic/ports/ooxml.py`
    rewrites the produced archive with a fixed member time (the 1980 ZIP epoch) and a
    stable member order. This is the conventional reproducible-archive technique; see
    the reproducible-builds guidance on archive metadata at

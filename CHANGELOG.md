@@ -33,7 +33,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 - Tooling configuration so the publish gates are green and never touch the
   vendored engine: a `ruff.toml` that excludes `engine/` and `runs/`, and a
   top-level `exclude` in `.pre-commit-config.yaml` so no hook (ruff fixes,
-  bandit, formatters) rewrites the read-only engine in CI. The Spektr-authored
+  bandit, formatters) rewrites the read-only engine in CI. The Querymantic-authored
   Python (modules, core, scripts, evals) was run through `ruff format` and its
   lint findings cleared. Verified after: ruff check and ruff format clean,
   bandit clean at the configured level, 73 tests still green including the
@@ -56,7 +56,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   never edited. A corpus in one of the four supported languages is left untouched
   (verified zero changes on the English sample). The Italian lexicon lives as data
   in `data/gazetteer/it.json`; Italian entity-extraction stopwords were added to
-  `spektr_core/text/stopwords.py`. Ships an Italian sample at `assets/samples/it/`,
+  `querymantic/text/stopwords.py`. Ships an Italian sample at `assets/samples/it/`,
   the `references/language-layer.md` methodology, and the `language-layer` skill.
 
 ### Changed
@@ -71,13 +71,13 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   (`entity-web`, `fan-out-radar`, `demand-pulse`, `citation-grid`, `click-ceiling`,
   `live-wire`), each a lean SKILL.md with a trigger-only description, the CLI invocation,
   what it writes to `run.json`, and a one-level-deep link to its methodology reference.
-  These join the `output-forge` skill and the `spektr` orchestrator, so every module now
+  These join the `output-forge` skill and the `querymantic` orchestrator, so every module now
   has a discoverable skill.
 - Sprint 8 (refinement), determinism proof: `expected_outputs/` now holds a committed,
   regenerable proof that the same input produces the same bytes. Because the vendored
   engine writes a temporary path and its own timestamp into `engine.run_metadata`, the
-  full `run.json` is not byte-stable; the parts Spektr owns are. The proof therefore
-  stores a trimmed artifact (`sample_run.trimmed.json`: the `spektr` metadata with a
+  full `run.json` is not byte-stable; the parts Querymantic owns are. The proof therefore
+  stores a trimmed artifact (`sample_run.trimmed.json`: the `querymantic` metadata with a
   pinned timestamp plus every `modules` slot, with the `engine` block dropped) and the
   Output Forge HTML dashboard (`sample_dashboard.html`), byte for byte.
   `scripts/regenerate_expected_outputs.py` rewrites the files or, with `--check`,
@@ -168,7 +168,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   demand and ownership, builds a co-occurrence graph, lists entity gaps, and scores
   topical authority per cluster, writing the `entity_web` slot in `run.json`. Adds a
   methodology reference and pytest coverage.
-- Sprint 0 scaffold: plugin manifest, shared `spektr_core` package (run-state
+- Sprint 0 scaffold: plugin manifest, shared `querymantic` package (run-state
   contract, engine adapter, pipeline runner), the `run.json` schema, the CLI
   entry point, and stub skill, agent, and command files.
 - Vendored `keyword-intelligence` engine under `engine/`, read-only and
@@ -176,4 +176,4 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 - Continuous integration and pre-commit configuration for secret scanning,
   linting, and dependency audit.
 
-[Unreleased]: https://example.invalid/spektr/compare
+[Unreleased]: https://example.invalid/querymantic/compare

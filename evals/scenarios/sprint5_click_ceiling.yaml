@@ -14,11 +14,11 @@ description: >
 inputs:
   - assets/samples/
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --modules entity_web fan_out_radar citation_grid click_ceiling
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run ends with click_ceiling
+  - querymantic.modules_run ends with click_ceiling
   - modules.click_ceiling has mode expected and expected_only true
   - the ctr_table block names the dated table and its sources
   - each cluster reports a winnable_band [low, high] with low <= high

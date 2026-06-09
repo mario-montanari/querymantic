@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mariomontanari.it/spektr/run.schema.json",
-  "title": "Spektr run-state",
-  "description": "Canonical state for one Spektr analysis run, stored as run.json. This schema is the documentary contract. The executable check the pipeline relies on is the structural validator in spektr_core/run_state.py, which uses the standard library only.",
+  "$id": "https://querymantic.com/run.schema.json",
+  "title": "Querymantic run-state",
+  "description": "Canonical state for one Querymantic analysis run, stored as run.json. This schema is the documentary contract. The executable check the pipeline relies on is the structural validator in querymantic/run_state.py, which uses the standard library only.",
   "type": "object",
-  "required": ["spektr", "engine", "modules"],
+  "required": ["querymantic", "engine", "modules"],
   "additionalProperties": false,
   "properties": {
-    "spektr": {
+    "querymantic": {
       "type": "object",
       "description": "Suite metadata for the run.",
       "required": [

@@ -15,8 +15,8 @@ if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
 from modules.fan_out_radar import ARCHETYPES, GATEKEEPER_MIN_CENTRALITY  # noqa: E402
-from spektr_core import pipeline, run_state  # noqa: E402
-from spektr_core.text.bm25 import BM25  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
+from querymantic.text.bm25 import BM25  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 FIXED_TIMESTAMP = "2026-01-01T00:00:00+00:00"
@@ -48,7 +48,7 @@ def test_fan_out_contract(tmp_path: Path) -> None:
     _run(tmp_path, ("entity_web", "fan_out_radar"))
     loaded = run_state.load_run_state(tmp_path / "run.json")
     run_state.validate_run_state(loaded)
-    assert loaded["spektr"]["modules_run"] == ["entity_web", "fan_out_radar"]
+    assert loaded["querymantic"]["modules_run"] == ["entity_web", "fan_out_radar"]
 
     fo = loaded["modules"]["fan_out_radar"]
     assert fo["mode"] == "expected"

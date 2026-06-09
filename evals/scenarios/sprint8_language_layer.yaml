@@ -15,11 +15,11 @@ description: >
 inputs:
   - assets/samples/it/
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/it/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/it/ --output run.json
   --modules language_layer entity_web fan_out_radar citation_grid click_ceiling
 expect:
   - run.json validates against the run-state contract at schema 0.2.0
-  - spektr.modules_run begins with language_layer
+  - querymantic.modules_run begins with language_layer
   - the engine alone tags no keyword Italian and flattens intent to informational
   - with the layer, corpus_summary.by_language reports Italian for most keywords
   - a telegraphic content-only Italian phrase stays as the engine read it

@@ -1,6 +1,6 @@
 ---
 name: output-forge
-description: "Use when turning a Spektr run.json into client-ready deliverables, or when a user asks to export, package, or brand a Spektr analysis. Triggers: build the deck, generate the report, export the audit, branded output, white-label, slide deck, Word audit, Excel dashboard, HTML dashboard, .pptx, .docx, .xlsx from a run."
+description: "Use when turning a Querymantic run.json into client-ready deliverables, or when a user asks to export, package, or brand a Querymantic analysis. Triggers: build the deck, generate the report, export the audit, branded output, white-label, slide deck, Word audit, Excel dashboard, HTML dashboard, .pptx, .docx, .xlsx from a run."
 user-invokable: true
 argument-hint: "[run.json] [--out DIR] [--brand brand.json]"
 license: MIT
@@ -14,7 +14,7 @@ metadata:
 
 ## Overview
 
-Output Forge renders a finished Spektr `run.json` into deliverables: a self-contained
+Output Forge renders a finished Querymantic `run.json` into deliverables: a self-contained
 HTML dashboard, a slide deck, a Word audit, and an Excel workbook. The HTML dashboard
 needs no third-party package and is always produced; the three Office formats need
 optional backends and are skipped, with a recorded reason, when those backends are
@@ -29,26 +29,26 @@ byte-deterministic: the same `run.json` renders the same bytes.
 - A reproducible artifact is needed, where two renders of one run match byte for byte.
 
 Do not use to compute new analysis; Output Forge only renders what the modules
-already wrote. Run the analysis modules first (see the `spektr` skill).
+already wrote. Run the analysis modules first (see the `querymantic` skill).
 
 ## Render from an existing run.json
 
 Render without re-running the engine:
 
 ```bash
-python scripts/spektr_run.py forge run.json --out forge_output --brand forge/templates/brand.json
+python scripts/querymantic_run.py forge run.json --out forge_output --brand forge/templates/brand.json
 ```
 
 This writes the artifacts to the output directory and records a manifest in the
 `output_forge` slot of `run.json`. Limit the formats with `--formats html docx`. Run
-`python scripts/spektr_run.py forge --help` for the full option list.
+`python scripts/querymantic_run.py forge --help` for the full option list.
 
 ## Render as part of a pipeline run
 
 Add `output_forge` to the module list to render in the same pass that builds the run:
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json \
+python scripts/querymantic_run.py run --inputs exports/ --output run.json \
   --modules entity_web fan_out_radar citation_grid click_ceiling output_forge \
   --brand forge/templates/brand.json --forge-out forge_output
 ```

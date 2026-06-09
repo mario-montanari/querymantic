@@ -107,7 +107,7 @@ The Italian cues, question pronouns, and intent markers live in
 `data/gazetteer/it.json`, not in code, so the lists are auditable and a further
 language is a new file rather than a code change. The module is language-agnostic
 and loads the resource at run time. The Italian function words used for entity
-extraction live separately in `spektr_core/text/stopwords.py`, alongside the four
+extraction live separately in `querymantic/text/stopwords.py`, alongside the four
 existing languages.
 
 ## Limitations and escape hatches

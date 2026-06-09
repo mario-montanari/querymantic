@@ -1,6 +1,6 @@
-# Publishing Spektr
+# Publishing Querymantic
 
-This is the checklist to run before Spektr goes public. Nothing here reaches a
+This is the checklist to run before Querymantic goes public. Nothing here reaches a
 remote until every gate below is green. The repository ships with the gates
 already wired: `.pre-commit-config.yaml` for the local hooks, the CI workflow at
 `.github/workflows/publish-check.yml` for the same checks on every push, and
@@ -26,7 +26,7 @@ Output Forge document formats and the optional STL seasonal path.
 
 ## The gates, in order
 
-Run these from the plugin root (the `spektr/` directory). Each one must pass
+Run these from the plugin root (the `querymantic/` directory). Each one must pass
 before the next.
 
 1. **Plugin structure.** `claude plugin validate .`

@@ -6,7 +6,7 @@ deliverables: a self-contained HTML dashboard (always), and a slide deck, a Word
 audit, and an Excel workbook when their optional Office backends are installed. A
 white-label ``brand.json`` drives the look and the authorship of all of them.
 
-Like every Spektr module it is a pure step ``run_state -> run_state'``: its visible
+Like every Querymantic module it is a pure step ``run_state -> run_state'``: its visible
 effect is the files it writes to ``out_dir``, but in the run-state it only fills its
 own ``output_forge`` slot with a manifest, listing each artifact with its size and
 SHA-256, the brand fingerprint, the available backends, and any format skipped for a
@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from spektr_core.ports import ooxml
+from querymantic.ports import ooxml
 
 from . import model
 from .brand import BrandError, brand_fingerprint, resolve_brand
@@ -127,7 +127,7 @@ def output_forge(
         raise OutputForgeError(str(exc)) from exc
 
     view = model.build_view(state)
-    ts = _parse_timestamp(state.get("spektr", {}).get("generated_at", ""))
+    ts = _parse_timestamp(state.get("querymantic", {}).get("generated_at", ""))
     capabilities = {**ooxml.ooxml_capabilities(), "plotly": interactive_available()}
 
     out_path_dir.mkdir(parents=True, exist_ok=True)
@@ -177,7 +177,7 @@ def output_forge(
 
     state["modules"]["output_forge"] = {
         "mode": "render",
-        "generated_at": state.get("spektr", {}).get("generated_at", ""),
+        "generated_at": state.get("querymantic", {}).get("generated_at", ""),
         "brand": {
             "name": resolved_brand["name"],
             "fingerprint": brand_fingerprint(resolved_brand),

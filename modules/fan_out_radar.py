@@ -36,8 +36,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from spektr_core.text import stopwords_for, tokenize
-from spektr_core.text.bm25 import BM25, median_value
+from querymantic.text import stopwords_for, tokenize
+from querymantic.text.bm25 import BM25, median_value
 
 ARCHETYPES = (
     "related",
@@ -82,7 +82,7 @@ def _load_synonyms() -> dict[str, list[str]]:
 
 
 def _reference_year(state: dict[str, Any]) -> int:
-    stamp = (state.get("spektr") or {}).get("generated_at", "")
+    stamp = (state.get("querymantic") or {}).get("generated_at", "")
     try:
         return int(str(stamp)[:4])
     except (ValueError, TypeError):

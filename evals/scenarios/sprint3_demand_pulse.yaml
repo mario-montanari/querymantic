@@ -11,11 +11,11 @@ inputs:
   - assets/samples/
   - assets/series/sample_series.csv
 command: >
-  python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+  python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
   --modules demand_pulse --series assets/series/sample_series.csv
 expect:
   - run.json validates against the run-state contract
-  - spektr.modules_run is ["demand_pulse"]
+  - querymantic.modules_run is ["demand_pulse"]
   - modules.demand_pulse has params, stats_backend, series, summary, method_note, clusters
   - without a series every cluster state is unknown and trend is null
   - with the sample series at least one cluster leaves unknown and carries a trend block

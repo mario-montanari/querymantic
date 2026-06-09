@@ -31,7 +31,7 @@ The canonical run-state carries volume only, so the series is an optional second
 a wide CSV with a `keyword` column plus `YYYY-MM` columns.
 
 ```bash
-python scripts/spektr_run.py run --inputs exports/ --output run.json \
+python scripts/querymantic_run.py run --inputs exports/ --output run.json \
   --modules demand_pulse --series series.csv
 ```
 

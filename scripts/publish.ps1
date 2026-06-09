@@ -1,6 +1,6 @@
 #requires -Version 5.1
 <#
-  publish.ps1 - Publish Spektr only if EVERY gate passes.
+  publish.ps1 - Publish Querymantic only if EVERY gate passes.
 
   This script does nothing until you run it. There is no remote configured, so
   by default it only commits and pushes to an existing origin. The first
@@ -15,13 +15,13 @@
   Add -Public for a public repository instead of private.
   Requires: git, gh (GitHub CLI), and locally claude (Claude Code).
 
-  Run this from the plugin root (the spektr/ directory).
+  Run this from the plugin root (the querymantic/ directory).
 #>
 
 param(
   [Parameter(Mandatory = $true)] [string] $Message,
   [switch] $First,
-  [string] $RepoName = "spektr",
+  [string] $RepoName = "querymantic",
   [switch] $Public
 )
 

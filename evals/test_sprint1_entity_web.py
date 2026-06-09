@@ -14,8 +14,8 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
-from spektr_core import pipeline, run_state  # noqa: E402
-from spektr_core.entity_extractor import tfidf_position_extract  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
+from querymantic.entity_extractor import tfidf_position_extract  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 FIXED_TIMESTAMP = "2026-01-01T00:00:00+00:00"
@@ -57,7 +57,7 @@ def test_entity_web_contract_on_samples(tmp_path: Path) -> None:
     loaded = run_state.load_run_state(output)
     run_state.validate_run_state(loaded)
 
-    assert loaded["spektr"]["modules_run"] == ["entity_web"]
+    assert loaded["querymantic"]["modules_run"] == ["entity_web"]
     ew = loaded["modules"]["entity_web"]
     assert isinstance(ew, dict)
 

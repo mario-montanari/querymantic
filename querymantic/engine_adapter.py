@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Adapter for the vendored keyword-intelligence engine.
 
-Spektr does not reimplement the engine. It runs the vendored copy under
+Querymantic does not reimplement the engine. It runs the vendored copy under
 ``engine/keyword-intelligence/`` as a separate process and reads its canonical
 ``analysis.json``. The engine is stdlib-only, so it runs under the same Python
 interpreter as the suite (``sys.executable``).
@@ -66,7 +66,7 @@ def run_engine(
         raise EngineError(f"input files not found: {listed}")
 
     if work_dir is None:
-        with tempfile.TemporaryDirectory(prefix="spektr-engine-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="querymantic-engine-") as tmp:
             return _invoke(
                 root, analyze_py, inputs, Path(tmp), label, client_domain, brand_list
             )

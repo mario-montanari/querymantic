@@ -25,7 +25,7 @@ from modules.language_layer import (  # noqa: E402
     _italian_intent,
     load_gazetteer,
 )
-from spektr_core import pipeline, run_state  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 IT_SAMPLES = SAMPLES / "it"

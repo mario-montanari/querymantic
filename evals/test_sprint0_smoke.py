@@ -15,7 +15,7 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
-from spektr_core import pipeline, run_state  # noqa: E402
+from querymantic import pipeline, run_state  # noqa: E402
 
 SAMPLES = PLUGIN_ROOT / "assets" / "samples"
 FIXED_TIMESTAMP = "2026-01-01T00:00:00+00:00"
@@ -36,10 +36,10 @@ def test_pipeline_produces_valid_run(tmp_path: Path) -> None:
     run_state.validate_run_state(loaded)
 
     # Metadata.
-    assert loaded["spektr"]["schema_version"] == run_state.SCHEMA_VERSION
-    assert len(loaded["spektr"]["input_hash"]) == 64
-    assert loaded["spektr"]["modules_run"] == []
-    assert loaded["spektr"]["inputs"], "inputs should list the sample files"
+    assert loaded["querymantic"]["schema_version"] == run_state.SCHEMA_VERSION
+    assert len(loaded["querymantic"]["input_hash"]) == 64
+    assert loaded["querymantic"]["modules_run"] == []
+    assert loaded["querymantic"]["inputs"], "inputs should list the sample files"
 
     # Engine populated with a real corpus.
     engine = loaded["engine"]
@@ -51,7 +51,7 @@ def test_pipeline_produces_valid_run(tmp_path: Path) -> None:
         assert loaded["modules"][key] is None
 
     # The returned state matches the written one.
-    assert state["spektr"]["input_hash"] == loaded["spektr"]["input_hash"]
+    assert state["querymantic"]["input_hash"] == loaded["querymantic"]["input_hash"]
 
 
 def test_input_hash_is_deterministic() -> None:

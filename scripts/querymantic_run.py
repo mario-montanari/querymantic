@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spektr command-line entry point.
+"""Querymantic command-line entry point.
 
 Subcommands:
 
@@ -20,18 +20,18 @@ import json
 import sys
 from pathlib import Path
 
-# Make the plugin root importable so ``spektr_core`` resolves whether the script
+# Make the plugin root importable so ``querymantic`` resolves whether the script
 # is run from the repo root or elsewhere.
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
-from spektr_core import pipeline, run_state  # noqa: E402  (path set above)
+from querymantic import pipeline, run_state  # noqa: E402  (path set above)
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="spektr",
+        prog="querymantic",
         description="Offline keyword and demand intelligence suite.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
@@ -222,10 +222,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
     summary = {
         "status": "ok",
         "output": str(output),
-        "input_hash": state["spektr"]["input_hash"],
-        "input_files": len(state["spektr"]["inputs"]),
+        "input_hash": state["querymantic"]["input_hash"],
+        "input_files": len(state["querymantic"]["inputs"]),
         "total_keywords": corpus.get("total_keywords"),
-        "modules_run": state["spektr"]["modules_run"],
+        "modules_run": state["querymantic"]["modules_run"],
     }
     if args.json:
         print(json.dumps(summary, ensure_ascii=False, indent=2))

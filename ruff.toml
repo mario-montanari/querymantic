@@ -1,4 +1,4 @@
-# Ruff configuration for Spektr.
+# Ruff configuration for Querymantic.
 #
 # The vendored engine under engine/ is read-only and kept byte-identical to its
 # source, so ruff never touches it. Generated runs under runs/ are excluded too.

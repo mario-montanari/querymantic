@@ -1,14 +1,14 @@
-# Spektr
+# Querymantic
 
 Offline keyword and demand intelligence for Claude Code and Claude Cowork.
 
-You drop in your keyword exports. Spektr reads them, runs a deterministic analysis,
+You drop in your keyword exports. Querymantic reads them, runs a deterministic analysis,
 and writes one structured file you can build on. No external API, no account, no data
 leaving your machine. The numbers come from your files and you can trace every one of
 them back to a row.
 
 Most keyword tools hand you a spreadsheet and call it research. A spreadsheet is not a
-strategy. Spektr is built around the questions that actually decide a project: what
+strategy. Querymantic is built around the questions that actually decide a project: what
 demand exists, how it clusters, where the client is invisible, and which of those
 queries now route through AI search instead of ten blue links.
 
@@ -38,8 +38,8 @@ Python 3.10 or newer from the standard library. There is nothing to `pip install
 the core.
 
 ```bash
-git clone <your-fork> spektr
-cd spektr
+git clone <your-fork> querymantic
+cd querymantic
 ```
 
 ## Use
@@ -48,23 +48,23 @@ From the plugin root:
 
 ```bash
 # Analyse a folder of exports and write run.json
-python scripts/spektr_run.py run --inputs assets/samples/ --output run.json
+python scripts/querymantic_run.py run --inputs assets/samples/ --output run.json
 
 # Add gap analysis and a branded split
-python scripts/spektr_run.py run --inputs my-exports/ --output run.json \
+python scripts/querymantic_run.py run --inputs my-exports/ --output run.json \
   --client-domain example.com --brand-list "example,example shop"
 
 # Check an existing run against the contract
-python scripts/spektr_run.py validate run.json
+python scripts/querymantic_run.py validate run.json
 ```
 
 Run any command with `--help` for the full option list. Inside Claude Code, the
-`spektr` skill and the `/spektr-analyze` and `/spektr-audit` commands wrap the same
+`querymantic` skill and the `/querymantic-analyze` and `/querymantic-audit` commands wrap the same
 pipeline.
 
 ## How it is built
 
-Spektr vendors a complete, read-only copy of the keyword-intelligence engine and adds
+Querymantic vendors a complete, read-only copy of the keyword-intelligence engine and adds
 its own layer on top. The engine answers what demand exists and how it is structured.
 The modules answer what to do with it. One canonical state, `run.json`, ties the two
 together, and each module is a pure step that reads that state and writes its own part
@@ -77,10 +77,10 @@ and lets the suite evolve without forking the engine.
 ## On AI search
 
 A growing share of queries now resolve inside AI Overviews, ChatGPT, and Perplexity,
-where the user reads an answer and never clicks. Spektr treats that as structure, not
+where the user reads an answer and never clicks. Querymantic treats that as structure, not
 magic. There is no secret markup and no special file that makes an AI cite you. What
 works is answer-shaped passages, real statistics, clear citations, and clean
-structured data, on a site a crawler can actually read. Spektr scores your demand for
+structured data, on a site a crawler can actually read. Querymantic scores your demand for
 that readiness and shows you where AI search is routing users to someone else.
 
 ## Author

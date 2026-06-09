@@ -80,6 +80,10 @@ MAX_CHECKLIST_EXAMPLES = 8
 # Demand Pulse states that raise the freshness signal (recency matters more).
 FRESH_STATES = {"rising": 1.0, "seasonal": 0.8, "declining": 0.4, "flat": 0.3}
 
+# How much a GEO-opportunity query (cited by third-party generative engines even
+# when Google shows no AI Overview) lifts its eligibility signal. Project parameter.
+GEO_ELIGIBILITY_NUDGE = 0.1
+
 
 class ModuleError(Exception):
     """Raised when a module cannot run against the current run-state."""
@@ -90,6 +94,8 @@ def _config(params: dict[str, Any] | None) -> dict[str, Any]:
     cfg: dict[str, Any] = {
         "weights": weights,
         "max_checklist_examples": MAX_CHECKLIST_EXAMPLES,
+        "fresh_states": dict(FRESH_STATES),
+        "geo_eligibility_nudge": GEO_ELIGIBILITY_NUDGE,
     }
     if params:
         if isinstance(params.get("weights"), dict):
@@ -98,6 +104,14 @@ def _config(params: dict[str, Any] | None) -> dict[str, Any]:
                     weights[key] = float(value)
         if isinstance(params.get("max_checklist_examples"), int):
             cfg["max_checklist_examples"] = params["max_checklist_examples"]
+        if isinstance(params.get("fresh_states"), dict):
+            for key, value in params["fresh_states"].items():
+                if key in cfg["fresh_states"] and isinstance(value, (int, float)):
+                    cfg["fresh_states"][key] = float(value)
+        if isinstance(
+            params.get("geo_eligibility_nudge"), (int, float)
+        ) and not isinstance(params.get("geo_eligibility_nudge"), bool):
+            cfg["geo_eligibility_nudge"] = float(params["geo_eligibility_nudge"])
     return cfg
 
 
@@ -138,7 +152,9 @@ def _has_structure_feature(keyword: dict[str, Any]) -> bool:
 
 
 def _eligibility_value(
-    members: list[int], keywords: list[dict[str, Any]]
+    members: list[int],
+    keywords: list[dict[str, Any]],
+    geo_nudge: float = GEO_ELIGIBILITY_NUDGE,
 ) -> float | None:
     """Mean AIO eligibility score (0 to 1) across the cluster's keywords.
 
@@ -157,7 +173,7 @@ def _eligibility_value(
         value = max(0.0, min(100.0, float(score))) / 100.0
         geo_label = (scopes.get("geo_opportunity") or {}).get("label", "")
         if geo_label in ("dual", "geo_only"):
-            value = min(1.0, value + 0.1)
+            value = min(1.0, value + geo_nudge)
         scores.append(value)
     if not scores:
         return None
@@ -194,11 +210,15 @@ def _query_family_value(
     return coverage_by_cluster.get(index)
 
 
-def _freshness_value(index: int, state_by_cluster: dict[int, str]) -> float | None:
+def _freshness_value(
+    index: int,
+    state_by_cluster: dict[int, str],
+    fresh_states: dict[str, float] | None = None,
+) -> float | None:
     state = state_by_cluster.get(index)
     if state is None or state == "unknown":
         return None
-    return FRESH_STATES.get(state)
+    return (fresh_states or FRESH_STATES).get(state)
 
 
 def _blend(
@@ -450,12 +470,14 @@ def citation_grid(
         demand = _cluster_demand(cluster, members, keywords)
 
         values: dict[str, float | None] = {
-            "eligibility": _eligibility_value(members, keywords),
+            "eligibility": _eligibility_value(
+                members, keywords, cfg["geo_eligibility_nudge"]
+            ),
             "query_family": _query_family_value(index, coverage_by_cluster),
             "entity_coverage": _entity_coverage_value(index, authority_by_cluster),
             "extractability": _extractability_value(members, keywords),
             "structured_demand": _structured_value(members, keywords),
-            "freshness": _freshness_value(index, state_by_cluster),
+            "freshness": _freshness_value(index, state_by_cluster, cfg["fresh_states"]),
         }
         readiness, inputs = _blend(values, weights)
 
@@ -504,6 +526,14 @@ def citation_grid(
         "params": {
             "weights": {k: round(v, 6) for k, v in weights.items()},
             "max_checklist_examples": limit,
+            "fresh_states": {k: round(v, 6) for k, v in cfg["fresh_states"].items()},
+            "geo_eligibility_nudge": round(cfg["geo_eligibility_nudge"], 6),
+            "provenance": (
+                "Weights, the per-state freshness map, and the GEO eligibility nudge are "
+                "project parameters, not search-engine facts. The nudge lifts a query "
+                "routed to a third-party generative engine (geo_opportunity dual/geo_only). "
+                "Override any of them through 'params'."
+            ),
         },
         "components": [{"name": name, "offline": kind} for name, kind in COMPONENTS],
         "reads": {

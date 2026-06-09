@@ -23,7 +23,7 @@ expected without recomputing anything.
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -62,13 +62,29 @@ class OutputForgeError(Exception):
 def _parse_timestamp(value: str) -> datetime:
     """Parse the pinned run timestamp for the Office core properties.
 
-    Falls back to the ZIP epoch rather than the wall clock, so a malformed or empty
-    timestamp never makes the output non-deterministic.
+    Normalises a trailing ``Z`` (Zulu/UTC) to ``+00:00`` before parsing, because
+    ``datetime.fromisoformat`` rejects the ``Z`` suffix before Python 3.11. Without
+    this, the same pinned timestamp parsed on Python 3.10 (a supported platform) and
+    on 3.11+ would disagree, so the document dates, and therefore the rendered bytes,
+    would differ between supported Pythons.
+
+    An unparsable or empty value raises rather than falling back silently: a pinned
+    timestamp the run-state could not honour must surface, not be replaced by an
+    invented date that would put the wrong year on every delivered document.
     """
+    text = (value or "").strip()
+    if not text:
+        raise OutputForgeError(
+            "run-state has no 'generated_at' timestamp to pin the documents to"
+        )
+    if text.endswith(("Z", "z")):
+        text = text[:-1] + "+00:00"
     try:
-        return datetime.fromisoformat(value)
-    except (ValueError, TypeError):
-        return datetime(1980, 1, 1, tzinfo=timezone.utc)
+        return datetime.fromisoformat(text)
+    except (ValueError, TypeError) as exc:
+        raise OutputForgeError(
+            f"'generated_at' is not a valid ISO 8601 timestamp: {value!r}"
+        ) from exc
 
 
 def _sha256_of(path: Path) -> str:
@@ -168,11 +184,20 @@ def output_forge(
                 continue
             try:
                 _render_ooxml(fmt, view, resolved_brand, out_file, ts)
-            except Exception as exc:  # a backend failure must not lose the rest
+            except (ImportError, ModuleNotFoundError) as exc:
+                # The optional backend (or a part of it) is not importable after all:
+                # skip this format and keep the rest, the same as an absent backend.
                 skipped.append(
-                    {"format": fmt, "reason": f"{type(exc).__name__}: {exc}"}
+                    {
+                        "format": fmt,
+                        "reason": f"backend not importable ({backend}): {exc}",
+                    }
                 )
                 continue
+            except Exception as exc:
+                # A genuine rendering error is NOT a missing backend; surfacing it keeps a
+                # real defect from hiding as a silent skip with an obscure reason.
+                raise OutputForgeError(f"failed to render {fmt}: {exc}") from exc
         artifacts.append(
             {
                 "format": fmt,

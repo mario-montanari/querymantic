@@ -19,6 +19,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .brand import office_hex
 from .dashboard_html import _fmt_band, _fmt_int, _fmt_pct
 
 
@@ -54,12 +55,12 @@ def render_audit(
     heading = doc.add_heading(title_text, level=0)
     for run in heading.runs:
         run.font.color.rgb = RGBColor.from_string(
-            brand["colors"]["primary"].lstrip("#")
+            office_hex(brand["colors"]["primary"])
         )
     sub = doc.add_paragraph(f"{brand['name']} | {brand['tagline']}")
     for run in sub.runs:
         run.font.size = Pt(11)
-        run.font.color.rgb = RGBColor.from_string(brand["colors"]["muted"].lstrip("#"))
+        run.font.color.rgb = RGBColor.from_string(office_hex(brand["colors"]["muted"]))
 
     # Demand overview.
     corpus = view["corpus"]
@@ -179,7 +180,7 @@ def render_audit(
     )
     for run in footer.runs:
         run.font.size = Pt(8)
-        run.font.color.rgb = RGBColor.from_string(brand["colors"]["muted"].lstrip("#"))
+        run.font.color.rgb = RGBColor.from_string(office_hex(brand["colors"]["muted"]))
 
     core = doc.core_properties
     core.author = brand["author"]

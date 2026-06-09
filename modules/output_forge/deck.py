@@ -19,13 +19,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .brand import office_hex
 from .dashboard_html import _fmt_band, _fmt_int, _fmt_pct
 
 
 def _rgb(color_hex: str):
     from pptx.dml.color import RGBColor
 
-    return RGBColor.from_string(color_hex.lstrip("#"))
+    return RGBColor.from_string(office_hex(color_hex))
 
 
 def _add_title(slide, text: str, brand: dict[str, Any], top_in: float = 0.4) -> None:

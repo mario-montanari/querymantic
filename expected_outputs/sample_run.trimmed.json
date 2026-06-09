@@ -4378,7 +4378,15 @@
       "method_note": "Readiness is an offline estimate from demand-side signals; the weights are project parameters, not search-engine facts. InformationGain and SourceCues need real passage text and are checklist-only offline. An observed citation share and the competitor split are unmeasurable offline and belong to the Live Wire path.",
       "mode": "expected",
       "params": {
+        "fresh_states": {
+          "declining": 0.4,
+          "flat": 0.3,
+          "rising": 1.0,
+          "seasonal": 0.8
+        },
+        "geo_eligibility_nudge": 0.1,
         "max_checklist_examples": 8,
+        "provenance": "Weights, the per-state freshness map, and the GEO eligibility nudge are project parameters, not search-engine facts. The nudge lifts a query routed to a third-party generative engine (geo_opportunity dual/geo_only). Override any of them through 'params'.",
         "weights": {
           "eligibility": 0.28,
           "entity_coverage": 0.2,
@@ -6682,8 +6690,11 @@
       "method_note": "Winnable clicks are reported as a band, never a single number: a single CTR curve is a crude approximation and the realistic target rank is itself a range. Confirmed CTR cells come from a dated primary source; interpolated and extrapolated cells are filled by formula and widen the band. The target-rank range and the prior-slot adjusters are project parameters, not search-engine facts.",
       "mode": "expected",
       "params": {
+        "ai_heavy_share": 0.5,
         "authority_floor": 0.7,
         "coverage_floor": 0.7,
+        "low_coverage_tau": 0.5,
+        "provenance": "All values are project parameters, not search-engine facts: the target-rank range, the authority and coverage floors, and the AI-heavy share and low-coverage tau thresholds that gate the Fan-Out coverage trim. Override any of them through 'params'.",
         "target_high": 1,
         "target_low": 3
       },
@@ -15636,22 +15647,22 @@
     "output_forge": {
       "artifacts": [
         {
-          "bytes": 11045,
+          "bytes": 10970,
           "filename": "dashboard.html",
           "format": "html",
-          "sha256": "f1a08c0ffb688c49bb15a33f17148a437365403bd1c487299157fb958b632272"
+          "sha256": "43612913e7594a1e4c4fdbe83b831074531f28bbcf65ec50e1f86cd8b3d46a09"
         },
         {
-          "bytes": 38457,
+          "bytes": 38412,
           "filename": "audit.docx",
           "format": "docx",
-          "sha256": "21dbc0af75a20ee9cee7818afcbd1ec80949b08c40502c9390378d122bdcad6b"
+          "sha256": "1ee06e19ec8b278f73545dd6f9313f1f2025a1a687c186d79823cf4dd973d7cf"
         },
         {
-          "bytes": 10277,
+          "bytes": 10012,
           "filename": "dashboard.xlsx",
           "format": "xlsx",
-          "sha256": "8a1d60f446aa7177749d89daa83dd186cc9ab1498862081435899f9c09321a7a"
+          "sha256": "0aed26dbd7a9fa042f6c80987f00b4865af88c51f6265d26508c24257ceab27b"
         }
       ],
       "backends": {

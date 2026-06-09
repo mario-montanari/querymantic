@@ -122,16 +122,24 @@ def _config(params: dict[str, Any] | None) -> dict[str, Any]:
         "demand_adj": {k: dict(v) for k, v in DEFAULT_DEMAND_ADJ.items()},
         "authority_floor": DEFAULT_AUTHORITY_FLOOR,
         "coverage_floor": DEFAULT_COVERAGE_FLOOR,
+        "ai_heavy_share": AI_HEAVY_SHARE,
+        "low_coverage_tau": LOW_COVERAGE_TAU,
         "max_driver_examples": MAX_DRIVER_EXAMPLES,
     }
     if params:
         for key in ("target_high", "target_low"):
             if isinstance(params.get(key), int) and params[key] >= 1:
                 cfg[key] = params[key]
-        if isinstance(params.get("authority_floor"), (int, float)):
-            cfg["authority_floor"] = float(params["authority_floor"])
-        if isinstance(params.get("coverage_floor"), (int, float)):
-            cfg["coverage_floor"] = float(params["coverage_floor"])
+        for key in (
+            "authority_floor",
+            "coverage_floor",
+            "ai_heavy_share",
+            "low_coverage_tau",
+        ):
+            if isinstance(params.get(key), (int, float)) and not isinstance(
+                params.get(key), bool
+            ):
+                cfg[key] = float(params[key])
         if isinstance(params.get("max_driver_examples"), int):
             cfg["max_driver_examples"] = params["max_driver_examples"]
     if cfg["target_low"] < cfg["target_high"]:
@@ -358,8 +366,8 @@ def _apply_cluster_adjusters(
 
     if (
         coverage is not None
-        and ai_share > AI_HEAVY_SHARE
-        and coverage < LOW_COVERAGE_TAU
+        and ai_share > cfg["ai_heavy_share"]
+        and coverage < cfg["low_coverage_tau"]
     ):
         floor = cfg["coverage_floor"]
         trim = floor + (1.0 - floor) * coverage
@@ -509,6 +517,14 @@ def click_ceiling(
             "target_low": cfg["target_low"],
             "authority_floor": round(cfg["authority_floor"], 4),
             "coverage_floor": round(cfg["coverage_floor"], 4),
+            "ai_heavy_share": round(cfg["ai_heavy_share"], 4),
+            "low_coverage_tau": round(cfg["low_coverage_tau"], 4),
+            "provenance": (
+                "All values are project parameters, not search-engine facts: the "
+                "target-rank range, the authority and coverage floors, and the "
+                "AI-heavy share and low-coverage tau thresholds that gate the Fan-Out "
+                "coverage trim. Override any of them through 'params'."
+            ),
         },
         "reads": {
             "citation_grid": bool(readiness_by_cluster),

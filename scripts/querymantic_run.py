@@ -3,13 +3,17 @@
 
 Subcommands:
 
-- ``run``: ingest keyword exports, run the vendored engine, and write a validated
-  ``run.json``. In the Sprint 0 scaffold no analysis modules run yet, so the
-  output carries the engine analysis with empty module slots.
-- ``validate``: check that an existing ``run.json`` satisfies the run-state
-  contract.
+- ``run``: ingest keyword exports, run the vendored engine, then run the requested
+  analysis modules in order (``--modules``: entity_web, fan_out_radar, demand_pulse,
+  citation_grid, click_ceiling, live_wire, language_layer, output_forge) and write a
+  validated ``run.json``. Optional inputs (``--series``, ``--livewire``) and the
+  Output Forge options (``--forge-out``, ``--brand``, ``--forge-formats``,
+  ``--forge-interactive``) are wired through here.
+- ``forge``: render deliverables (HTML, and pptx/docx/xlsx when their backends are
+  present) from an existing ``run.json`` without re-running the engine.
+- ``validate``: check that an existing ``run.json`` satisfies the run-state contract.
 
-Both subcommands print a human-readable summary by default and a machine-readable
+Each subcommand prints a human-readable summary by default and a machine-readable
 JSON object with ``--json``.
 """
 

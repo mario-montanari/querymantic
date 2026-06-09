@@ -41,10 +41,18 @@ from pathlib import Path
 _ZIP_EPOCH = (1980, 1, 1, 0, 0, 0)
 
 # The OOXML core-properties part and the two date elements a backend may stamp. The
-# backreference on the element name keeps the closing tag matched to its opening tag,
-# so a created/modified pair can never be crossed.
+# namespace prefix is matched generically (any prefix, or none) so a backend that does
+# not use the literal ``dcterms:`` prefix is still pinned rather than silently skipped.
+# The backreferences on the prefix and the element name keep the closing tag matched to
+# its opening tag, so a created/modified pair can never be crossed.
 _CORE_PART = "docProps/core.xml"
-_CORE_DATE_RE = re.compile(r"(<dcterms:(created|modified)\b[^>]*>)[^<]*(</dcterms:\2>)")
+_CORE_DATE_RE = re.compile(
+    r"(<((?:[\w.-]+:)?)(created|modified)\b[^>]*>)[^<]*(</\2\3>)"
+)
+
+
+class OoxmlError(Exception):
+    """Raised when an OOXML archive cannot be normalised deterministically."""
 
 
 def _w3cdtf(ts: datetime) -> str:
@@ -59,11 +67,20 @@ def _pin_core_dates(data: bytes, ts: datetime) -> bytes:
 
     Some backends (openpyxl overwrites ``modified`` with the wall clock at save time)
     ignore the date the renderer sets, which would make the archive non-reproducible.
-    Pinning the element text here covers every backend uniformly; for a backend that
-    already honours the date this is a no-op.
+    Pinning the element text here covers every backend uniformly.
+
+    Raises ``OoxmlError`` if the core-properties part carries no date element to pin:
+    a silent no-op would let a wall-clock date survive and quietly break determinism,
+    which is exactly the failure this pinning exists to prevent.
     """
     stamp = _w3cdtf(ts)
-    return _CORE_DATE_RE.sub(rf"\g<1>{stamp}\g<3>", data.decode("utf-8")).encode("utf-8")
+    pinned, count = _CORE_DATE_RE.subn(rf"\g<1>{stamp}\g<4>", data.decode("utf-8"))
+    if count == 0:
+        raise OoxmlError(
+            "core.xml has no created/modified date to pin; the wall clock would "
+            "survive and break byte-reproducibility"
+        )
+    return pinned.encode("utf-8")
 
 
 def _present(module_name: str) -> bool:

@@ -59,7 +59,27 @@ def _validate_color(key: str, value: Any) -> str:
         raise BrandError(
             f"colors.{key} must be a hex colour like '#1f3a5f', got {value!r}"
         )
-    return value.strip().lower()
+    text = value.strip().lower()
+    # Expand the 3-digit short form (#abc) to the 6-digit form (#aabbcc) at this single
+    # point, so every renderer downstream receives a 6-digit colour. The CSS dashboard
+    # accepts the short form, but the Office backends (openpyxl, python-docx, python-pptx)
+    # need a full aRGB/RGB hex and used to raise on the short form a validation accepted.
+    if len(text) == 4:  # '#abc'
+        text = "#" + "".join(ch * 2 for ch in text[1:])
+    return text
+
+
+def office_hex(color: str) -> str:
+    """Return a colour as the 6-digit uppercase ``RRGGBB`` the Office backends want.
+
+    The single conversion shared by the xlsx, docx, and pptx renderers, so they cannot
+    diverge on the same input. Colours coming from ``resolve_brand`` are already 6-digit;
+    this also expands a bare 3-digit value defensively for any other caller.
+    """
+    text = color.lstrip("#")
+    if len(text) == 3:
+        text = "".join(ch * 2 for ch in text)
+    return text.upper()
 
 
 def resolve_brand(raw: dict[str, Any] | None) -> dict[str, Any]:

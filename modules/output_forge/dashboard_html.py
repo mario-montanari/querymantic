@@ -20,11 +20,13 @@ import html
 from typing import Any
 
 # Chart geometry, in SVG user units. Fixed so two renders are byte-identical.
+# ``_VALUE_W`` is wide enough for a full "low to high" band label (e.g.
+# "318,122 to 1,820,400"), so a winnable-clicks range is never clipped on the right.
 _BAR_W = 520
 _BAR_H = 22
 _BAR_GAP = 8
 _LABEL_W = 230
-_VALUE_W = 90
+_VALUE_W = 180
 
 
 def _esc(value: Any) -> str:

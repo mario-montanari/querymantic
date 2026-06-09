@@ -24,12 +24,37 @@ TOP_CLUSTERS = 12
 TOP_GAPS = 12
 TOP_OPPORTUNITIES = 10
 
+# Rounding for the rendered figures. The run-state keeps full precision in its module
+# slots; the deliverable shows rounded values so it never claims a precision the
+# estimate does not have. Fractions that feed a percentage formatter keep enough
+# decimals for a one-decimal percent (``_round``); a 0-to-100 score shows one decimal
+# (``_score``); a 0-to-1 ratio shown raw shows two (``_ratio``).
 _ROUND = 4
+_SCORE_ROUND = 1
+_RATIO_ROUND = 2
 
 
 def _round(value: Any) -> Any:
     return (
         round(float(value), _ROUND)
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else value
+    )
+
+
+def _score(value: Any) -> Any:
+    """Round a 0-to-100 score to one decimal, matching the dashboard cards."""
+    return (
+        round(float(value), _SCORE_ROUND)
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else value
+    )
+
+
+def _ratio(value: Any) -> Any:
+    """Round a 0-to-1 ratio shown raw to two decimals, avoiding false precision."""
+    return (
+        round(float(value), _RATIO_ROUND)
         if isinstance(value, (int, float)) and not isinstance(value, bool)
         else value
     )
@@ -95,7 +120,7 @@ def _corpus(state: dict[str, Any]) -> dict[str, Any]:
         "by_source": dict(sorted((cs.get("by_source") or {}).items())),
         "aio_eligibility_share": _round(cs.get("aio_eligibility_share")),
         "geo_opportunity_share": _round(cs.get("geo_opportunity_share")),
-        "demand_opportunity_score": _round(cs.get("demand_opportunity_score")),
+        "demand_opportunity_score": _score(cs.get("demand_opportunity_score")),
     }
 
 
@@ -131,16 +156,16 @@ def _clusters(state: dict[str, Any]) -> list[dict[str, Any]]:
             "dominant_intent": str(cluster.get("dominant_intent", "")),
         }
         if idx in authority:
-            row["topical_authority"] = _round(authority[idx].get("authority"))
+            row["topical_authority"] = _ratio(authority[idx].get("authority"))
         if idx in fan_out:
             cov = fan_out[idx].get("coverage") or {}
-            row["cover_at_tau"] = _round(cov.get("cover_at_tau"))
+            row["cover_at_tau"] = _ratio(cov.get("cover_at_tau"))
             row["missing_archetypes"] = list(
                 fan_out[idx].get("missing_archetypes") or []
             )
         if idx in citation:
-            row["expected_readiness"] = _round(citation[idx].get("expected_readiness"))
-            row["expected_share"] = _round(citation[idx].get("expected_share"))
+            row["expected_readiness"] = _score(citation[idx].get("expected_readiness"))
+            row["expected_share"] = _score(citation[idx].get("expected_share"))
         if idx in ceiling:
             band = ceiling[idx].get("winnable_band") or []
             row["winnable_band"] = (
@@ -208,7 +233,7 @@ def _readiness(state: dict[str, Any]) -> dict[str, Any] | None:
         return None
     summary = cg.get("summary") or {}
     return {
-        "mean_expected_readiness": _round(summary.get("mean_expected_readiness")),
+        "mean_expected_readiness": _score(summary.get("mean_expected_readiness")),
         "scored_components": summary.get("scored_components"),
         "checklist_only_components": summary.get("checklist_only_components"),
         "expected_only": bool(cg.get("expected_only", True)),

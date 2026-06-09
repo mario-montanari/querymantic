@@ -288,7 +288,10 @@ _INIT_JS = (
     'var el=document.getElementById("querymantic-plotdata");'
     "if(!el)return;"
     "var specs=JSON.parse(el.textContent);"
-    "var cfg={displayModeBar:false,responsive:true};"
+    # The modebar is off, so its plotly.com logo link is never rendered; displaylogo
+    # is also set false as belt-and-suspenders. Only bar traces are drawn, so the
+    # bundle's topojson/image XHR paths are never reached.
+    "var cfg={displayModeBar:false,displaylogo:false,responsive:true};"
     "Object.keys(specs).forEach(function(id){"
     "var node=document.getElementById(id);"
     "if(!node)return;"

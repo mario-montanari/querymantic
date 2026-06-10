@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Regenerate (or check) the committed determinism proof in expected_outputs/.
 
-The full ``run.json`` is not byte-deterministic, because the vendored engine writes
-a temporary output path and its own timestamp into ``engine.run_metadata``. The parts
-Querymantic owns are deterministic: every module slot, and the Output Forge HTML dashboard.
-So the committed proof is a trimmed artifact, not the raw run.json:
+The whole ``run.json`` is byte-deterministic on the same input: the pipeline makes the
+run-state portable (it rewrites the absolute paths the engine echoes back, drops the
+engine's temp output directory, and pins the engine timestamp). The committed proof is
+still a trimmed artifact, because the engine block is large and is the engine's own
+output, not the part Querymantic owns:
 
 - ``sample_run.trimmed.json``: the ``querymantic`` metadata (with a pinned timestamp and the
-  input hash) plus every ``modules`` slot, with the non-deterministic ``engine`` block
-  dropped.
+  input hash) plus every ``modules`` slot, with the ``engine`` block dropped for size.
 - ``sample_dashboard.html``: the Output Forge HTML dashboard, byte for byte.
 
 Run with no flag to refresh the committed sample files. Run with ``--check`` to
@@ -69,30 +69,16 @@ def _build(work_dir: Path) -> tuple[bytes, bytes]:
         generated_at=FIXED_TIMESTAMP,
         module_kwargs={"output_forge": {"out_dir": forge_dir, "brand": brand}},
     )
-    # The committed proof must be machine-independent: the run-state records the
-    # input files as absolute paths, which differ across machines (and would break
-    # the cross-machine --check in CI). Store them relative to the plugin root, with
-    # forward slashes, so the proof is byte-identical everywhere.
-    meta = dict(state["querymantic"])
-    meta["inputs"] = [_relative_input(p) for p in meta.get("inputs", [])]
-    trimmed = {"querymantic": meta, "modules": state["modules"]}
+    # The pipeline already makes the run-state portable: input paths are stored
+    # relative to the plugin root (POSIX), so the proof is byte-identical across
+    # machines and directories. The proof keeps the querymantic metadata and the
+    # module slots, and drops the engine block, which is the engine's own output.
+    trimmed = {"querymantic": dict(state["querymantic"]), "modules": state["modules"]}
     trimmed_bytes = (
         json.dumps(trimmed, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     ).encode("utf-8")
     html_bytes = (forge_dir / "dashboard.html").read_bytes()
     return trimmed_bytes, html_bytes
-
-
-def _relative_input(path_str: str) -> str:
-    """Return an input path relative to the plugin root, posix-style.
-
-    Falls back to the file name if the path is not under the plugin root, so the
-    proof never carries an absolute, machine-specific path.
-    """
-    try:
-        return Path(path_str).resolve().relative_to(PLUGIN_ROOT).as_posix()
-    except ValueError:
-        return Path(path_str).name
 
 
 def _sha(data: bytes) -> str:

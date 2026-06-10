@@ -132,6 +132,82 @@ def new_run_state(
     }
 
 
+def _portable_input(path_str: str, plugin_root: Path) -> str:
+    """Rewrite an absolute input path into a portable form.
+
+    A path under the plugin root becomes a POSIX path relative to it; any other
+    absolute path is reduced to its bare file name. Either way the stored path
+    carries no machine-, user-, or run-specific prefix, so two runs of the same
+    input from different directories record identical paths.
+    """
+    if not isinstance(path_str, str):
+        return path_str
+    try:
+        return Path(path_str).resolve().relative_to(plugin_root).as_posix()
+    except (ValueError, OSError):
+        return Path(path_str).name
+
+
+def make_portable(state: dict[str, Any], plugin_root: Path) -> None:
+    """Rewrite recorded paths and the engine timestamp so run.json is portable.
+
+    The vendored engine echoes the absolute input paths, its temporary output
+    directory, and its own wall-clock timestamp into its analysis. Left as is they
+    make run.json non-reproducible and leak the local user's directory layout (the
+    temp directory sits under the home folder). This rewrites every recorded input
+    path to a portable form, drops the per-run temp directory, and pins the engine
+    timestamp to the run's logical ``generated_at``. The result is byte-identical
+    across runs and machines on the same input and never carries a user name.
+
+    The path-bearing fields are handled by name rather than by scanning every
+    string, so a keyword that happens to look like a path is never rewritten. The
+    determinism regression test is the safety net if a future engine sync adds a
+    new path field.
+    """
+    plugin_root = plugin_root.resolve()
+    querymantic = state.get("querymantic")
+    generated_at = None
+    if isinstance(querymantic, dict):
+        generated_at = querymantic.get("generated_at")
+        inputs = querymantic.get("inputs")
+        if isinstance(inputs, list):
+            querymantic["inputs"] = [_portable_input(p, plugin_root) for p in inputs]
+
+    engine = state.get("engine")
+    if not isinstance(engine, dict):
+        return
+
+    params = engine.get("parameters")
+    if isinstance(params, dict):
+        if isinstance(params.get("inputs"), list):
+            params["inputs"] = [
+                _portable_input(p, plugin_root) for p in params["inputs"]
+            ]
+        if "output" in params:
+            # The engine's temp output directory: random per run, never under the
+            # plugin root, and carrying the local home path. It has no portable form
+            # and nothing reads it, so it is dropped rather than recorded.
+            params["output"] = ""
+
+    manifest = engine.get("input_manifest")
+    if isinstance(manifest, dict) and isinstance(manifest.get("files"), list):
+        for entry in manifest["files"]:
+            if isinstance(entry, dict) and "path" in entry:
+                entry["path"] = _portable_input(entry["path"], plugin_root)
+
+    keywords = engine.get("keywords")
+    if isinstance(keywords, list):
+        for keyword in keywords:
+            if isinstance(keyword, dict) and "source_file" in keyword:
+                keyword["source_file"] = _portable_input(
+                    keyword["source_file"], plugin_root
+                )
+
+    meta = engine.get("run_metadata")
+    if isinstance(meta, dict) and isinstance(generated_at, str) and generated_at:
+        meta["timestamp"] = generated_at
+
+
 def mark_module_run(state: dict[str, Any], module: str) -> None:
     """Record that ``module`` has populated its slot.
 

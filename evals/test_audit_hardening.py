@@ -147,6 +147,86 @@ def test_pin_core_dates_raises_when_nothing_to_pin() -> None:
         ooxml._pin_core_dates(b"<r><title>no dates here</title></r>", ts)
 
 
+# --- M-1: the raw run.json is portable and byte-deterministic ----------------
+
+
+def _portability_run(out_path: Path, cwd: Path) -> bytes:
+    import os
+
+    from querymantic import pipeline
+
+    previous = Path.cwd()
+    os.chdir(cwd)
+    try:
+        pipeline.run_pipeline(
+            PLUGIN_ROOT,
+            [SAMPLES],
+            out_path,
+            modules_to_run=("entity_web", "fan_out_radar"),
+            generated_at=FIXED_TIMESTAMP,
+        )
+    finally:
+        os.chdir(previous)
+    return out_path.read_bytes()
+
+
+def test_run_json_is_byte_identical_across_directories(tmp_path: Path) -> None:
+    # M-1: two runs of the same input from different working directories must produce
+    # byte-identical run.json. The engine echoes a random temp output path and its own
+    # wall-clock timestamp; make_portable drops and pins them, so the file is
+    # reproducible regardless of where it is run.
+    here = tmp_path / "a"
+    there = tmp_path / "b"
+    here.mkdir()
+    there.mkdir()
+    first = _portability_run(here / "run.json", cwd=here)
+    second = _portability_run(there / "run.json", cwd=there)
+    assert first == second, "run.json is not byte-identical between two directories"
+
+
+def test_run_json_records_no_absolute_path(tmp_path: Path) -> None:
+    # M-1: the engine echoes the absolute input paths and a temp output directory that
+    # sits under the local home folder, which is how the OS user name would leak into a
+    # delivered run.json. Every recorded path must be portable (relative, POSIX), so no
+    # absolute path, temp directory, or home folder survives. The check is on path shape,
+    # not on the literal user name, because a user name can legitimately appear as
+    # keyword text (the sample corpus contains "runners").
+    import json
+    import re
+
+    from querymantic import pipeline
+
+    out = tmp_path / "run.json"
+    pipeline.run_pipeline(
+        PLUGIN_ROOT,
+        [SAMPLES],
+        out,
+        modules_to_run=("entity_web", "fan_out_radar"),
+        generated_at=FIXED_TIMESTAMP,
+    )
+    text = out.read_text(encoding="utf-8")
+    assert "querymantic-engine-" not in text, "run.json leaks the engine temp directory"
+
+    state = json.loads(text)
+    engine = state["engine"]
+    recorded_paths = list(state["querymantic"]["inputs"])
+    recorded_paths += list(engine["parameters"]["inputs"])
+    recorded_paths += [f["path"] for f in engine["input_manifest"]["files"]]
+    recorded_paths += [k["source_file"] for k in engine["keywords"]]
+
+    def _is_absolute_or_windows(p: str) -> bool:
+        # Drive-letter (C:\ or C:/), UNC (\\host), POSIX absolute (/home/...), or any
+        # backslash separator: none of these are portable.
+        return bool(re.match(r"[A-Za-z]:[\\/]|\\\\|/", p)) or "\\" in p
+
+    leaks = [p for p in recorded_paths if _is_absolute_or_windows(p)]
+    assert not leaks, f"run.json carries non-portable paths: {leaks[:3]}"
+    # The engine temp output directory is dropped, not recorded.
+    assert engine["parameters"]["output"] == ""
+    # The engine timestamp is pinned to the run's logical timestamp.
+    assert engine["run_metadata"]["timestamp"] == FIXED_TIMESTAMP
+
+
 def _state_for_forge(tmp_path: Path) -> dict:
     from querymantic import pipeline
 

@@ -112,6 +112,10 @@ def run_pipeline(
         engine=analysis,
         generated_at=generated_at,
     )
+    # Rewrite the absolute paths the engine echoes back, drop its temp output dir,
+    # and pin its wall-clock timestamp, so the saved run.json is byte-reproducible
+    # across machines and directories and never carries the local user name.
+    run_state.make_portable(state, plugin_root)
 
     for name in modules_to_run:
         module_fn = module_registry.get(name)

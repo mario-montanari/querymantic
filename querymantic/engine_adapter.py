@@ -28,6 +28,17 @@ ANALYZE_SCRIPT = Path("scripts") / "analyze.py"
 # off a legitimate large run.
 ENGINE_TIMEOUT_SECONDS = 600
 
+# The vendored engine is read-only and its error hints describe its own CLI;
+# the suite CLI does not expose ``--mapping``, so that hint is rewritten into
+# advice a Querymantic user can act on.
+_HINT_REWRITES: tuple[tuple[str, str], ...] = (
+    (
+        "Supply --mapping with explicit column maps.",
+        "Rename the CSV columns to match a supported tool export "
+        "(see engine/keyword-intelligence/references/input-normalization.md).",
+    ),
+)
+
 
 class EngineError(Exception):
     """Raised when the vendored engine fails to produce a usable analysis."""
@@ -36,6 +47,13 @@ class EngineError(Exception):
 def engine_root(plugin_root: Path) -> Path:
     """Return the absolute path to the vendored engine directory."""
     return (plugin_root / ENGINE_SUBDIR).resolve()
+
+
+def _rewrite_engine_hints(detail: str) -> str:
+    """Replace engine CLI hints that cite flags the suite CLI does not expose."""
+    for engine_hint, suite_hint in _HINT_REWRITES:
+        detail = detail.replace(engine_hint, suite_hint)
+    return detail
 
 
 def run_engine(
@@ -119,7 +137,9 @@ def _invoke(
         raise EngineError(f"could not start the engine process: {exc}") from exc
 
     if completed.returncode != 0:
-        detail = completed.stderr.strip() or completed.stdout.strip() or "no output"
+        detail = _rewrite_engine_hints(
+            completed.stderr.strip() or completed.stdout.strip() or "no output"
+        )
         raise EngineError(f"engine exited with code {completed.returncode}: {detail}")
 
     analysis_path = out_dir / "analysis.json"

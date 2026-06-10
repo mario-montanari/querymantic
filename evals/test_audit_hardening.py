@@ -869,3 +869,65 @@ def test_load_gazetteer_rejects_missing_file(tmp_path: Path) -> None:
 
     with pytest.raises(LanguageLayerError):
         load_gazetteer(tmp_path / "no_such_gazetteer.json")
+
+
+# --- B-3: engine error hints must cite only flags the suite CLI exposes ------
+
+
+def _suite_run_cli_flags() -> set[str]:
+    """Collect the long options the suite CLI actually exposes, every subcommand."""
+    import argparse
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "querymantic_run", PLUGIN_ROOT / "scripts" / "querymantic_run.py"
+    )
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    parser = cli._build_parser()
+    flags: set[str] = set()
+    stack = [parser]
+    while stack:
+        current = stack.pop()
+        for action in current._actions:
+            if isinstance(action, argparse._SubParsersAction):
+                stack.extend(action.choices.values())
+            flags.update(o for o in action.option_strings if o.startswith("--"))
+    return flags
+
+
+def test_engine_hint_rewrite_drops_unexposed_mapping_flag() -> None:
+    # B-3: the vendored engine suggests its own --mapping flag when it cannot
+    # detect the CSV tool, but the suite CLI does not expose that flag; the
+    # adapter must rewrite the hint into advice the user can follow.
+    from querymantic.engine_adapter import _rewrite_engine_hints
+
+    raw = (
+        "Validation error: Cannot detect tool from headers: ['colA', 'colB']. "
+        "Supply --mapping with explicit column maps."
+    )
+    rewritten = _rewrite_engine_hints(raw)
+    assert "--mapping" not in rewritten
+    assert "input-normalization" in rewritten
+    assert "Cannot detect tool from headers" in rewritten
+
+
+def test_engine_error_cites_only_suite_cli_flags(tmp_path: Path) -> None:
+    # Behaviour guard for B-3 that survives a future engine sync: trigger the
+    # real engine failure on an unrecognisable CSV and require every flag the
+    # surfaced message cites to exist in the suite CLI.
+    import re
+
+    from querymantic import engine_adapter
+
+    unknown = tmp_path / "unknown_tool.csv"
+    unknown.write_text("colA,colB\nfoo,1\n", encoding="utf-8")
+    with pytest.raises(engine_adapter.EngineError) as excinfo:
+        engine_adapter.run_engine(PLUGIN_ROOT, [unknown])
+    message = str(excinfo.value)
+    cited = set(re.findall(r"--[A-Za-z][A-Za-z0-9-]*", message))
+    unexposed = cited - _suite_run_cli_flags()
+    assert not unexposed, (
+        f"engine error message cites flags the suite CLI does not expose: "
+        f"{sorted(unexposed)}; full message: {message}"
+    )

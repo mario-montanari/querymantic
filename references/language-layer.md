@@ -118,7 +118,7 @@ made only of content words and loanwords, with no Italian function word or marke
 read and is left as the engine classified it. This is the conservative choice: a
 false negative is safer than flipping a English, French, German, or Spanish
 keyword to Italian. Two escape hatches resolve it when the data allows. A language
-column is honoured by the engine before this module runs, so a declared `it` sets
+column is honored by the engine before this module runs, so a declared `it` sets
 the language directly. An intent column is folded by the engine into the vector,
 so a declared intent survives even when no Italian marker fires. The lexicon is
 extensible: a domain with recurring content terms can add them to the gazetteer.

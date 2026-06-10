@@ -1,5 +1,5 @@
 ---
-description: Run a full Querymantic audit (pipeline plus all available modules) and summarise findings.
+description: Run a full Querymantic audit (pipeline plus all available modules) and summarize findings.
 argument-hint: "[inputs] [client-domain]"
 allowed-tools: Read, Bash, Glob, Grep
 ---

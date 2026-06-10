@@ -27,7 +27,7 @@ The sub-query archetypes follow Mike King's account of AI Mode fan-out (iPullRan
 2025): related, implicit, comparative, recent, personalized, reformulation, and
 entity-expanded. Each is generated deterministically:
 
-- Related: the head plus a co-occurrence neighbour from the Entity Web graph, or a
+- Related: the head plus a co-occurrence neighbor from the Entity Web graph, or a
   frequent cluster token when the graph is absent.
 - Implicit: a question word (what, why, how, when) plus the head.
 - Comparative: the head versus the most similar sibling cluster heads.
@@ -35,7 +35,7 @@ entity-expanded. Each is generated deterministically:
 - Personalized: only from explicit audience signals, which the offline corpus does
   not carry, so it is skipped here by design.
 - Reformulation: a head token swapped for a synonym from a small bundled gazetteer.
-- Entity-expanded: a neighbour entity's distinctive token paired with the head noun.
+- Entity-expanded: a neighbor entity's distinctive token paired with the head noun.
 
 Archetypes are merged round-robin under a per-cluster cap so the set keeps its
 diversity.
@@ -62,7 +62,7 @@ keyword with volume.
 A real fan-out is often quoted as producing eight to twelve sub-queries. That figure
 is a secondary industry estimate, not a number from any search-engine source. Here it
 is only a configurable cap on how many sub-queries to generate per cluster, and it is
-labelled as such in the output.
+labeled as such in the output.
 
 ## Limitations
 
@@ -70,4 +70,4 @@ Offline simulation cannot reproduce the stateful, personalised fan-out a live sy
 performs. Coverage is expected, derived from the keyword set itself; pasted real
 sub-queries or a content corpus would turn it into observed coverage. Engine-specific
 archetype weighting is available as a configuration but defaults to uniform, since
-engines change their behaviour without notice.
+engines change their behavior without notice.

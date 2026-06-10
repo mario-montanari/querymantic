@@ -28,7 +28,7 @@ estimate.
 ## Why it is offline and expected
 
 The module runs with no content corpus. There is no passage text to read, so it
-cannot measure a real passage. Every figure it reports is labelled `expected`,
+cannot measure a real passage. Every figure it reports is labeled `expected`,
 never `observed`. The split matters: a score that depends on signals unavailable
 offline has an expected (offline) form and an observed (Live Wire) form, and the
 two are never mixed.
@@ -53,7 +53,7 @@ generative engines select:
   Aggarwal et al. (arXiv:2311.09735; KDD 2024, DOI 10.1145/3637528.3671900), the
   two highest-performing tactics were adding statistics and adding quotations.
 - **InformationGain.** Content that adds information beyond the competing pages is
-  favoured. This mirrors Google's "Contextual estimation of link information gain"
+  favored. This mirrors Google's "Contextual estimation of link information gain"
   patent family (US11354342B2 and its continuations US11720613B2, US12013887B2,
   US12326889B2; inventors Carbune and Gonnet Anders). The offline approximation of
   novelty follows the temporal-IDF method of Karkali et al. (arXiv:1401.1456).
@@ -91,7 +91,7 @@ Readiness is a weighted mean of the inputs that have a value offline, rescaled t
 
 Each input carries a base weight. When an input has no value (an upstream module
 did not run, or Demand Pulse is absent), it is dropped and the remaining weights
-are renormalised, so the score degrades rather than breaking. Eligibility,
+are renormalized, so the score degrades rather than breaking. Eligibility,
 extractability, and structured demand come from the engine scopes, which are always
 present, so a readiness is produced even when no other module has run. The output
 records each input's value, base weight, and effective weight, so any figure is
@@ -99,7 +99,7 @@ auditable.
 
 ## Expected share, and what it is not
 
-The expected share weights each cluster's readiness by its demand and normalises
+The expected share weights each cluster's readiness by its demand and normalizes
 the result to sum to 100 across the client's own clusters. It is a within-portfolio
 priority signal: where, across the client's topics, citation readiness and demand
 coincide. A cluster with no demand contributes no share even when its readiness is
@@ -142,7 +142,7 @@ the output so any result is reproducible from them.
 Citation readiness measures extractable structure: answer-shaped passages, named
 entities, statistics, citations, and structured data. These operate through
 ordinary indexing. Google's own guidance is explicit that no special markup, no
-AI-specific files, and no AI-specific optimisation are required to appear in
+AI-specific files, and no AI-specific optimization are required to appear in
 generative AI search. Citation Grid is therefore rigor on structure a content team
 can control, not a secret channel into any model.
 

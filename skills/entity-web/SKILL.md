@@ -1,6 +1,6 @@
 ---
 name: entity-web
-description: "Use when analysing which entities a keyword corpus owns versus only demands, mapping topical authority per cluster, or finding entity gaps to close. Triggers: entity coverage, entity gap, co-occurrence, topical authority, owned vs demand entities, named entities from keywords, entity graph, semantic coverage."
+description: "Use when analyzing which entities a keyword corpus owns versus only demands, mapping topical authority per cluster, or finding entity gaps to close. Triggers: entity coverage, entity gap, co-occurrence, topical authority, owned vs demand entities, named entities from keywords, entity graph, semantic coverage."
 user-invokable: true
 argument-hint: "[inputs] [output]"
 license: MIT
@@ -24,7 +24,7 @@ topical authority per cluster. It runs offline on the engine analysis already in
 - A corpus needs an entity-level view, not just a keyword list: which entities the site
   already ranks for (owned) against those it only has demand for.
 - A content plan needs the gap entities to close, ranked by demand.
-- A cluster needs a topical-authority read for prioritisation.
+- A cluster needs a topical-authority read for prioritization.
 
 ## Run it
 

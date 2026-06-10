@@ -1,6 +1,6 @@
 ---
 name: live-wire
-description: "Use when bringing observed data (Google Search Console clicks, AI-citation observations) into a run to compare measured against expected, opt-in. Triggers: observed clicks, Search Console import, GSC export, measured CTR, observed citation share, competitor citation split, live data overlay, expected vs observed, measured vs modelled."
+description: "Use when bringing observed data (Google Search Console clicks, AI-citation observations) into a run to compare measured against expected, opt-in. Triggers: observed clicks, Search Console import, GSC export, measured CTR, observed citation share, competitor citation split, live data overlay, expected vs observed, measured vs modeled."
 user-invokable: true
 argument-hint: "[inputs] [output] --livewire capture.json"
 license: MIT
@@ -21,7 +21,7 @@ It writes its own `live_wire` slot with `mode: observed`.
 
 ## When to use
 
-- Real Search Console clicks exist and should override the modelled current clicks and
+- Real Search Console clicks exist and should override the modeled current clicks and
   re-anchor the winnable band.
 - AI-surface citation observations exist and should give a measured citation share and
   the competitor split, which Citation Grid can only approximate offline.

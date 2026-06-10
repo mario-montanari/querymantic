@@ -16,7 +16,7 @@ When given inputs:
    `python scripts/querymantic_run.py run --inputs <paths> --output <run.json>`.
    Add `--client-domain` and `--brand-list` when the user supplies them, and
    `--modules` to run named modules in order.
-3. Read the resulting `run.json` and summarise: corpus size, the strongest clusters,
+3. Read the resulting `run.json` and summarize: corpus size, the strongest clusters,
    the AI-search and gap signals from the engine, and any module findings present.
 4. Report numbers as they appear in `run.json`. Do not invent figures. If a field is
    absent because a module has not run, say so rather than estimating.

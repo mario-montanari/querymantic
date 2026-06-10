@@ -6,7 +6,7 @@
 - The shared view
 - The four formats
 - White-label branding
-- Determinism: pinned timestamps and archive normalisation
+- Determinism: pinned timestamps and archive normalization
 - Degradation and the dependency budget
 - The manifest in run.json
 - Expected against observed in the deliverables
@@ -24,7 +24,7 @@ else in the run-state.
 ## The shared view
 
 The four renderers do not each walk the run-state on their own. A single function
-builds one normalised view (`modules/output_forge/model.py`): the corpus headline
+builds one normalized view (`modules/output_forge/model.py`): the corpus headline
 figures, the clusters ordered by demand with every per-module metric folded in, the
 winnable-clicks summary, the citation-readiness summary, the entity gaps, and the
 observed block when Live Wire ran. Every renderer consumes that view, so a deck and
@@ -54,7 +54,7 @@ so two runs on the same input build the same view.
   like an absent Office backend.
 
 The three Office formats are Office Open XML documents, the packaging format
-standardised as ECMA-376 and ISO/IEC 29500. An OOXML file is a ZIP archive of XML
+standardized as ECMA-376 and ISO/IEC 29500. An OOXML file is a ZIP archive of XML
 parts, which matters for determinism below.
 
 Primary references for the formats and backends:
@@ -70,13 +70,13 @@ Primary references for the formats and backends:
 
 A single `brand.json` (template under `forge/templates/`) drives the look and the
 authorship of every artifact: the name, tagline, footer, contact, font stack, and a
-small colour palette, plus the document author written into the Office core
+small color palette, plus the document author written into the Office core
 properties. Every field is optional and falls back to a neutral default, so a run
 with no brand file still produces complete, unbranded output. The brand is validated
-on load (colours must be hex), and the manifest records a short fingerprint of the
+on load (colors must be hex), and the manifest records a short fingerprint of the
 resolved brand rather than a file path, so the run-state carries no absolute path.
 
-## Determinism: pinned timestamps and archive normalisation
+## Determinism: pinned timestamps and archive normalization
 
 The suite's promise is that the same input gives the same output. For text that is
 easy: the HTML dashboard is byte-identical across runs because every value comes
@@ -91,7 +91,7 @@ The Office formats need two extra steps, because a naive save is not reproducibl
 1. **Pinned document dates.** Each renderer sets the core-properties created and
    modified dates to the run timestamp, instead of letting the backend stamp the
    wall clock.
-2. **Archive normalisation.** An OOXML file is a ZIP, and the ZIP format records a
+2. **Archive normalization.** An OOXML file is a ZIP, and the ZIP format records a
    modification time per member, defaulting to the current local time, so two saves
    of identical content differ byte for byte. `querymantic/ports/ooxml.py`
    rewrites the produced archive with a fixed member time (the 1980 ZIP epoch) and a
@@ -101,8 +101,8 @@ The Office formats need two extra steps, because a naive save is not reproducibl
 
 Together these make the Office output byte-identical across two runs on the same
 input in the same environment. Byte-equality across different backend versions is
-not guaranteed: a different `python-pptx` or `openpyxl` release can serialise the
-same content differently. That is the backend's behaviour, not the module's, and it
+not guaranteed: a different `python-pptx` or `openpyxl` release can serialize the
+same content differently. That is the backend's behavior, not the module's, and it
 is the reason the determinism proof in the test suite runs twice in one environment.
 
 ## Degradation and the dependency budget
@@ -128,7 +128,7 @@ manifest holds no absolute path, so it stays portable.
 The deliverables inherit the suite's discipline that expected and observed figures
 are never conflated. The shared view marks an observed value as the headline only
 where Live Wire actually measured one, and keeps the expected value beside it. When
-Live Wire did not run, the deliverables show expected figures alone, labelled as
+Live Wire did not run, the deliverables show expected figures alone, labeled as
 such. The "how to read these figures" section in every format states the provenance
 rules in plain language.
 

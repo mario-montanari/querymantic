@@ -22,7 +22,7 @@ changes nothing else.
 The classification rests on a monthly volume series. The canonical engine state
 carries one volume per keyword, not a series, so when no series is supplied every
 cluster is reported as unknown and only the marker-derived flag is set. This is
-the default behaviour on a volume-only corpus.
+the default behavior on a volume-only corpus.
 
 ## The series input, and why it is optional
 
@@ -34,7 +34,7 @@ input rather than inventing one.
 The series file is a wide CSV: a `keyword` column (or the first column) followed
 by one column per month, each header in `YYYY-MM` form. Cells may be empty; an
 empty cell drops that point for that keyword. Keywords are matched to the corpus
-on a normalised form, so casing and spacing do not have to match exactly. The
+on a normalized form, so casing and spacing do not have to match exactly. The
 series is an input, not derived state, so it never enters `run.json`; only the
 computed results do.
 
@@ -49,7 +49,7 @@ library:
 
 - The Mann-Kendall test gives the direction and whether it is statistically
   significant. It counts, over every pair of points, how often the later value
-  exceeds the earlier one, standardises that count against its variance with a
+  exceeds the earlier one, standardizes that count against its variance with a
   tie correction, and returns a two-sided p-value (Mann, H.B., 1945,
   "Nonparametric Tests Against Trend", Econometrica 13(3), 245-259; Kendall,
   M.G., 1948, "Rank Correlation Methods", Charles Griffin, London).
@@ -90,7 +90,7 @@ records which backend produced each result.
 Independently of the series, the engine assigns a marker-based seasonality label
 from seasonal terms in the keyword itself (for example a holiday or an event
 name). Demand Pulse surfaces this as `seasonal_marker`, kept separate and
-labelled as marker-derived, never merged into the series-based state.
+labeled as marker-derived, never merged into the series-based state.
 
 ## The per-cluster state
 

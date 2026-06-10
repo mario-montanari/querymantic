@@ -24,7 +24,7 @@ originating volume). It runs offline and writes the `fan_out_radar` slot.
 - A cluster needs a coverage read against the way engines expand a query, not just the
   head term.
 - A content brief needs the missing angles (comparative, implicit, and the rest) and
-  the gatekeeper queries to prioritise.
+  the gatekeeper queries to prioritize.
 
 ## Run it
 
@@ -40,7 +40,7 @@ without it.
 The `fan_out_radar` slot: per cluster, the generated `sub_queries` with their archetype
 and BM25 score, a `coverage` block (`cover_at_tau`, `covered`, `total`, the `tau`
 threshold), the `missing_archetypes`, and the `gatekeepers`. The sub-query count per
-cluster is a configurable cap, labelled a secondary estimate, not a search-engine fact.
+cluster is a configurable cap, labeled a secondary estimate, not a search-engine fact.
 
 ## Methodology
 

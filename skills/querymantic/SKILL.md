@@ -1,6 +1,6 @@
 ---
 name: querymantic
-description: "Use when analysing keyword exports (Semrush, Ahrefs, Google Search Console, Moz, Ubersuggest, or generic CSV) offline for SEO, GEO, and AI-search strategy, or when a user drops a keyword CSV and wants a structured demand analysis rather than a flat list. Triggers: keyword analysis, demand intelligence, search intent, topical authority, entity coverage, query fan-out, AI citation readiness, winnable clicks, content gap."
+description: "Use when analyzing keyword exports (Semrush, Ahrefs, Google Search Console, Moz, Ubersuggest, or generic CSV) offline for SEO, GEO, and AI-search strategy, or when a user drops a keyword CSV and wants a structured demand analysis rather than a flat list. Triggers: keyword analysis, demand intelligence, search intent, topical authority, entity coverage, query fan-out, AI citation readiness, winnable clicks, content gap."
 user-invokable: true
 argument-hint: "[inputs] [output]"
 license: MIT

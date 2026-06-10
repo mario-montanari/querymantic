@@ -42,7 +42,7 @@ algorithm and an opt-in embedding-based extractor without changing the modules.
 ## Ownership and demand
 
 An entity's demand is the sum of search volume over the keywords that contain it. An
-entity is owned when the analysed domain ranks for at least one of those keywords,
+entity is owned when the analyzed domain ranks for at least one of those keywords,
 inferred from a present ranking position at or above the threshold (default top 20).
 
 ## Co-occurrence graph

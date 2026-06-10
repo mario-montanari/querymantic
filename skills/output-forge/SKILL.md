@@ -56,7 +56,7 @@ python scripts/querymantic_run.py run --inputs exports/ --output run.json \
 ## White-label branding
 
 Copy `forge/templates/brand.json` and edit the name, tagline, footer, contact, font
-stack, colours (hex), and author. Every field is optional and falls back to a neutral
+stack, colors (hex), and author. Every field is optional and falls back to a neutral
 default. Pass the file with `--brand`. The author follows the brand name unless set
 explicitly, so a custom brand never carries the default author into its documents.
 
@@ -83,5 +83,5 @@ runs on the same input.
 ## Methodology
 
 For how the shared report view is built, how determinism is achieved (pinned
-timestamps and OOXML archive normalisation), and the expected-against-observed rule,
+timestamps and OOXML archive normalization), and the expected-against-observed rule,
 see [references/output-forge.md](../../references/output-forge.md).

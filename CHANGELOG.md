@@ -94,7 +94,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   which lists each artifact with its byte size and SHA-256, the brand fingerprint, the
   backend availability, and any skipped format, and carries no absolute path. Output is
   byte-deterministic: every timestamp is pinned to the run timestamp (the OOXML
-  core-properties dates) and the produced OOXML archive is normalised in the port
+  core-properties dates) and the produced OOXML archive is normalized in the port
   (fixed ZIP-epoch member time, sorted member order), so two renders of the same input
   match byte for byte. The `forge` subcommand renders from an existing run.json without
   re-running the engine; adding `output_forge` to `--modules` renders inline in a
@@ -106,7 +106,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   observed data enters a run, and it never runs by default: it runs only when a
   capture file is passed with `--livewire`. It reads two optional blocks. The
   `search_console` block (query, clicks, impressions, ctr, position) overrides Click
-  Ceiling's modelled current clicks with measured clicks and re-anchors the winnable
+  Ceiling's modeled current clicks with measured clicks and re-anchors the winnable
   band to the ceiling minus the measured current. The `ai_citations` block (which
   domains an AI surface cited per query) measures the client's demand-weighted
   citation share and the competitor split, which Citation Grid can only approximate
@@ -139,9 +139,9 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   text and are checklist-only offline. An expected readiness (0 to 100) blends only
   the signals with an offline value (engine AIO and GEO eligibility, Fan-Out
   coverage, Entity Web topical authority, answer-shape density, SERP structure
-  features, and the Demand Pulse trend when present), renormalising the weights when
+  features, and the Demand Pulse trend when present), renormalizing the weights when
   an upstream module is absent. An expected share is a within-portfolio,
-  demand-weighted distribution, explicitly labelled expected and never a competitor
+  demand-weighted distribution, explicitly labeled expected and never a competitor
   or observed share (which belong to the Live Wire path). Adds a methodology
   reference, an eval scenario, and pytest coverage.
 - Sprint 3, Demand Pulse: a stdlib statistics port (Mann-Kendall, Theil-Sen) with
@@ -159,7 +159,7 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   coverage against the cluster keywords (offline), reports Cover@tau and missing
   archetypes, and flags gatekeeper queries (central sub-queries with no originating
   volume). It uses the Entity Web graph when present and degrades without it. The
-  sub-query count is a configurable cap, labelled a secondary estimate. Adds a
+  sub-query count is a configurable cap, labeled a secondary estimate. Adds a
   starter reformulation gazetteer, a methodology reference, and pytest coverage.
 - Sprint 1, Entity Web: an interchangeable entity extractor (default
   `tfidf_position`, an own stdlib scorer; clean-room YAKE left as a declared slot),

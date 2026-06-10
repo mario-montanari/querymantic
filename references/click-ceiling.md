@@ -34,7 +34,7 @@ source, and when the realistic rank target spans a wider range.
 ## The dated CTR table and its provenance
 
 The table lives in `data/ctr_table_2026Q2.json`. It is dated and carries a source
-record, and every cell is labelled with how it was obtained:
+record, and every cell is labeled with how it was obtained:
 
 - `confirmed`: an exact value stated in the primary source. The anchor positions
   1, 2, 3, and 10 carry SISTRIX's published average mobile CTRs (28.5%, 15.7%,
@@ -81,7 +81,7 @@ queries fell 61% (from 1.76% to 0.61%), so the baseline organic multiplier is
 organic clicks than uncited pages on the same result page, so a page that is
 answer-ready and cited recovers part of the loss, up to a 1.35 factor over the
 suppressed baseline. The scope is informational queries; the figure is not
-generalised verbatim to commercial intent.
+generalized verbatim to commercial intent.
 
 The current-clicks estimate assumes no recovery, since the page is not cited yet.
 The optimistic end of the winnable band lets the recovery apply, scaled by the
@@ -130,7 +130,7 @@ are overridable per run, and the chosen values are recorded in the output.
 The CTR table is a mobile, cross-intent average; a single curve cannot capture
 how CTR shifts by intent, brand, device, and industry, which is why the result is
 a band and why a user-supplied table is supported. The positions between the
-confirmed anchors are modelled, not measured. The AI-Overview figures come from
+confirmed anchors are modeled, not measured. The AI-Overview figures come from
 one informational-query panel and are treated as a prior with a stated scope, not
 a universal constant. The estimate is offline and demand-side: it models the
 clicks a rank could earn, not the work required to reach that rank. Observed

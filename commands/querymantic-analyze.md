@@ -13,6 +13,6 @@ Steps:
 
 1. If `$1` is a directory, list its CSV/TSV files with Glob.
 2. Run: `python scripts/querymantic_run.py run --inputs $1 --output ${2:-run.json}`.
-3. Read the resulting `run.json` and summarise corpus size, the strongest clusters,
+3. Read the resulting `run.json` and summarize corpus size, the strongest clusters,
    and the engine's AI-search and gap signals. Report figures exactly as written in
    the file; do not invent numbers.

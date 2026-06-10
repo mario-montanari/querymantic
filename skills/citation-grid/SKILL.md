@@ -41,10 +41,10 @@ The `citation_grid` slot: per cluster, a `checklist` (six components, each with 
 concrete action and its basis), `expected_readiness` (0 to 100), and `expected_share`.
 Two of the six components need real passage text and stay checklist-only offline, so the
 readiness blends only the signals that have a genuine offline value. The share is
-labelled expected and within-portfolio, never a competitor or observed share (that is
+labeled expected and within-portfolio, never a competitor or observed share (that is
 the Live Wire path).
 
 ## Methodology
 
-For the six components, the offline-value rule, the weighting and renormalisation, and
+For the six components, the offline-value rule, the weighting and renormalization, and
 the honest-positioning note, see [references/citation-grid.md](../../references/citation-grid.md).

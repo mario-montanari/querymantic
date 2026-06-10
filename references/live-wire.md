@@ -15,7 +15,7 @@
 
 Live Wire writes `modules.live_wire`: an observed overlay that pairs measured data
 with the offline estimates already in the run. It has two override blocks, each
-optional. The Search Console block turns modelled current clicks into measured
+optional. The Search Console block turns modeled current clicks into measured
 current clicks and re-anchors the winnable band. The AI-citations block turns the
 within-portfolio expected citation share into a measured share of real citations,
 with the competitor split. It is a pure step and changes nothing else; the offline
@@ -29,7 +29,7 @@ protecting. Observed data breaks it by definition, because a click count or an A
 citation is a measurement taken at a moment, not a calculation. So observed data
 lives behind its own opt-in step that runs only when a capture file is supplied,
 and it writes its own slot rather than editing the offline ones. The run stays
-honest about which numbers are modelled and which are measured.
+honest about which numbers are modeled and which are measured.
 
 ## The capture file
 
@@ -57,11 +57,11 @@ Live Wire joins each captured query to the keyword corpus and aggregates per
 cluster:
 
 - **Measured current clicks**: the sum of the matched queries' clicks. This is the
-  measured counterpart to Click Ceiling's modelled `current_clicks_estimate`.
+  measured counterpart to Click Ceiling's modeled `current_clicks_estimate`.
 - **Average position**: impression-weighted across the matched queries, so a
   high-impression query carries more of the cluster's position than a marginal one.
 - **Re-anchored winnable band**: the ceiling endpoints stay as Click Ceiling
-  modelled them, since they describe the reachable rank range, not today's
+  modeled them, since they describe the reachable rank range, not today's
   performance. The winnable band becomes the ceiling minus the measured current,
   floored at zero. A cluster already capturing most of its ceiling shows a smaller
   winnable band than the offline estimate assumed, which is the point.
@@ -94,7 +94,7 @@ run with and without a capture differ only in the presence of the `live_wire` sl
 
 ## Joining the capture to the corpus
 
-Queries match the corpus by the engine's own normalisation (lowercasing and
+Queries match the corpus by the engine's own normalization (lowercasing and
 tokenisation), so casing and spacing do not matter. A query that matches nothing is
 still counted in the portfolio totals and is listed under `unmatched_queries`, so
 the coverage of a capture is always visible and a thin capture cannot masquerade as
@@ -104,7 +104,7 @@ a complete one.
 
 - **Observed data is a sample.** AI answer surfaces vary by session and by
   personalization and are not reproducible. A citation share is the share seen in
-  the captured observations, not a guarantee of future behaviour.
+  the captured observations, not a guarantee of future behavior.
 - **Coverage is the analyst's responsibility.** Live Wire measures only what the
   capture contains. The unmatched lists and the matched-query counts make the
   coverage auditable, but they cannot fill a sparse capture.

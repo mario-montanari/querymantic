@@ -3,7 +3,7 @@
 Scenarios and tests that prove each sprint's deliverable.
 
 - `scenarios/` holds declarative YAML scenarios: an input, the command, and the
-  behaviour to expect. They document what a run should do in plain terms.
+  behavior to expect. They document what a run should do in plain terms.
 - `test_*.py` files are pytest checks on the calculations and contracts. They run
   the real pipeline on the sample corpus and assert concrete results.
 

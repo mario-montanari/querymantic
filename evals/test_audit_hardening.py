@@ -462,11 +462,37 @@ def test_xlsx_has_no_active_formula_from_input(tmp_path: Path) -> None:
     assert active == [], f"active formulas leaked into the workbook: {active}"
 
 
+# A distinct hostile payload per input-derived field the deck renders, keyed by a
+# unique tag name that never occurs in OOXML markup. Each carries an XML-dangerous
+# open/close tag, a CDATA terminator (``]]>``), a bare ``&``, and (for some) a
+# spreadsheet-style formula leader, so a single field can be traced to exactly one
+# place in the file and checked both as live-tag absence and as escaped presence.
+_PPTX_PAYLOADS = {
+    "xssHEAD": "<xssHEAD>z</xssHEAD> =1+2 ]]>&",  # cluster head -> table cell
+    "xssINTENT": "<xssINTENT>z</xssINTENT> =cmd|x ]]>&",  # dominant intent -> cell
+    "xssLABEL": "<xssLABEL>z</xssLABEL> =3+3 ]]>&",  # header label -> title + core
+    "xssSPLIT": "<xssSPLIT>z</xssSPLIT> ]]>&",  # intent split -> overview textbox
+    "xssNAME": "<xssNAME>z</xssNAME> ]]>&",  # brand name -> subtitle
+    "xssTAG": "<xssTAG>z</xssTAG> ]]>&",  # brand tagline -> subtitle
+    "xssAUTH": "<xssAUTH>z</xssAUTH> ]]>&",  # brand author -> core.xml only
+}
+# Every field except the author surfaces as visible shape or table-cell text; the
+# author lands only in docProps/core.xml, so it is checked in the archive scan.
+_PPTX_VISIBLE = ("xssHEAD", "xssINTENT", "xssLABEL", "xssSPLIT", "xssNAME", "xssTAG")
+
+
 def test_pptx_is_deterministic_and_safe_with_hostile_text(tmp_path: Path) -> None:
-    # The pptx format was the one deliverable without an explicit determinism /
-    # text-injection test. With python-pptx in CI: two renders are byte-identical
-    # after archive normalisation, and a hostile cluster head is stored as literal
-    # text in a valid file (python-pptx escapes it; pptx has no formula concept).
+    # The pptx was the one deliverable without an explicit determinism / injection
+    # test. The earlier version of this test only scanned shapes whose
+    # ``has_text_frame`` is true, which excludes the clusters TABLE (a GraphicFrame),
+    # the very place the cluster head renders, so the pptx injection surface was never
+    # actually exercised. This version injects a distinct payload into every
+    # input-derived field the deck consumes and checks them at three levels:
+    # (a) decoded text of textboxes AND table cells, (b) the escaped form across the
+    # whole unpacked archive (slides, notes, docProps), (c) no active element
+    # (``a:hlinkClick``, ``a:fld``) generated from input in the slide XML. The test
+    # self-verifies that it actually saw the table surface, and the byte-determinism
+    # assertion stays.
     pytest.importorskip("pptx")
     from datetime import datetime, timezone
 
@@ -491,10 +517,18 @@ def test_pptx_is_deterministic_and_safe_with_hostile_text(tmp_path: Path) -> Non
         generated_at=FIXED_TIMESTAMP,
     )
     view = build_view(state)
-    hostile = "<script>alert(1)</script> =1+2 ]]>&"
-    if view["top_clusters"]:
-        view["top_clusters"][0]["head"] = hostile
+
+    # Inject one payload per input-derived field the renderer reads.
+    assert view["top_clusters"], "no clusters available to inject into"
+    view["top_clusters"][0]["head"] = _PPTX_PAYLOADS["xssHEAD"]
+    view["top_clusters"][0]["dominant_intent"] = _PPTX_PAYLOADS["xssINTENT"]
+    view["header"]["label"] = _PPTX_PAYLOADS["xssLABEL"]
+    assert view["corpus"]["intent_split"], "no intent split available to inject into"
+    view["corpus"]["intent_split"][0]["intent"] = _PPTX_PAYLOADS["xssSPLIT"]
     brand = resolve_brand(None)
+    brand["name"] = _PPTX_PAYLOADS["xssNAME"]
+    brand["tagline"] = _PPTX_PAYLOADS["xssTAG"]
+    brand["author"] = _PPTX_PAYLOADS["xssAUTH"]
     ts = datetime(2026, 6, 8, tzinfo=timezone.utc)
 
     a, b = tmp_path / "a.pptx", tmp_path / "b.pptx"
@@ -503,16 +537,55 @@ def test_pptx_is_deterministic_and_safe_with_hostile_text(tmp_path: Path) -> Non
         ooxml.normalize_zip(path, core_timestamp=ts)
     assert a.read_bytes() == b.read_bytes(), "pptx is not byte-deterministic"
 
-    # The file is valid and the hostile text is present as literal text (escaped by
-    # python-pptx into the XML, not breaking it).
+    # Level (a): scan textboxes AND table cells, and prove the table surface was seen.
     prs = Presentation(str(a))
-    seen = any(
-        hostile in shape.text_frame.text
-        for slide in prs.slides
-        for shape in slide.shapes
-        if shape.has_text_frame
-    )
-    assert seen, "hostile cluster head not found as literal text in the deck"
+    texts: list[str] = []
+    tables_seen = 0
+    cells_scanned = 0
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                texts.append(shape.text_frame.text)
+            if getattr(shape, "has_table", False):
+                tables_seen += 1
+                table = shape.table
+                for r in range(len(table.rows)):
+                    for c in range(len(table.columns)):
+                        cells_scanned += 1
+                        texts.append(table.cell(r, c).text_frame.text)
+    assert tables_seen >= 1, "no table found in the deck: injection surface not seen"
+    assert cells_scanned > 0, "table had no cells to scan"
+    visible_blob = "\n".join(texts)
+    for marker in _PPTX_VISIBLE:
+        payload = _PPTX_PAYLOADS[marker]
+        assert payload in visible_blob, (
+            f"{marker} payload not found as inert text in shapes/cells"
+        )
+
+    # Level (b): unpack the whole archive and check every payload is present only in
+    # its escaped form (``<`` is always serialised to ``&lt;``), with the live tag
+    # absent. This covers the author, which lives only in docProps/core.xml.
+    with zipfile.ZipFile(io.BytesIO(a.read_bytes())) as zf:
+        members = {name: zf.read(name) for name in zf.namelist()}
+    archive_blob = b"".join(members.values())
+    for marker in _PPTX_PAYLOADS:
+        assert f"<{marker}>".encode() not in archive_blob, (
+            f"live injectable tag <{marker}> leaked unescaped into the archive"
+        )
+        assert f"&lt;{marker}".encode() in archive_blob, (
+            f"escaped form of {marker} not found in the archive"
+        )
+
+    # Level (c): no active element generated from input in the slide XML.
+    slide_members = [
+        data
+        for name, data in members.items()
+        if name.startswith("ppt/slides/slide") and name.endswith(".xml")
+    ]
+    assert slide_members, "no slide XML found in the deck"
+    for data in slide_members:
+        assert b"<a:hlinkClick" not in data, "input produced an active hyperlink"
+        assert b"<a:fld" not in data, "input produced an active field"
 
 
 def test_normalize_zip_without_timestamp_leaves_dates(tmp_path: Path) -> None:

@@ -62,23 +62,33 @@ class OutputForgeError(Exception):
 def _parse_timestamp(value: str) -> datetime:
     """Parse the pinned run timestamp for the Office core properties.
 
-    Normalises a trailing ``Z`` (Zulu/UTC) to ``+00:00`` before parsing, because
-    ``datetime.fromisoformat`` rejects the ``Z`` suffix before Python 3.11. Without
-    this, the same pinned timestamp parsed on Python 3.10 (a supported platform) and
-    on 3.11+ would disagree, so the document dates, and therefore the rendered bytes,
-    would differ between supported Pythons.
+    Normalises a single trailing ``Z`` (Zulu/UTC) to ``+00:00`` before parsing,
+    because ``datetime.fromisoformat`` rejects the ``Z`` suffix before Python 3.11.
+    Without this, the same pinned timestamp parsed on Python 3.10 (a supported
+    platform) and on 3.11+ would disagree, so the document dates, and therefore the
+    rendered bytes, would differ between supported Pythons.
 
-    An unparsable or empty value raises rather than falling back silently: a pinned
-    timestamp the run-state could not honour must surface, not be replaced by an
-    invented date that would put the wrong year on every delivered document.
+    Parsing is strict and identical across versions. After normalising the one
+    trailing Zulu marker, no ``Z`` may remain: a malformed value like ``...ZZ`` is
+    rejected on every supported Python, rather than parsing on 3.10 (which is lenient
+    about a stray ``Z``) and failing on 3.11+. An unparsable or empty value raises
+    rather than falling back silently: a pinned timestamp the run-state could not
+    honour must surface, not be replaced by an invented date that would put the wrong
+    year on every delivered document.
     """
     text = (value or "").strip()
     if not text:
         raise OutputForgeError(
             "run-state has no 'generated_at' timestamp to pin the documents to"
         )
-    if text.endswith(("Z", "z")):
+    if text[-1] in ("Z", "z"):
         text = text[:-1] + "+00:00"
+    if "z" in text.lower():
+        # A second Zulu marker survived the single-suffix normalisation above, so the
+        # value is malformed. Reject it here so 3.10 cannot accept what 3.11+ refuses.
+        raise OutputForgeError(
+            f"'generated_at' is not a valid ISO 8601 timestamp: {value!r}"
+        )
     try:
         return datetime.fromisoformat(text)
     except (ValueError, TypeError) as exc:

@@ -82,6 +82,21 @@ def test_parse_timestamp_rejects_unparsable_value() -> None:
         _parse_timestamp("")
 
 
+def test_parse_timestamp_rejects_double_zulu() -> None:
+    # B-2: a malformed value with two Zulu markers ('...ZZ') used to parse on Python
+    # 3.10 (lenient) but raise on 3.11+, so the same pinned timestamp could render
+    # different document dates across supported Pythons. It must be rejected on every
+    # version. The well-formed single-Z and offset forms still parse to the same instant.
+    from modules.output_forge import OutputForgeError, _parse_timestamp
+
+    for malformed in ("2026-06-08T00:00:00ZZ", "2026-06-08T00:00:00Zz", "2026Z06Z08"):
+        with pytest.raises(OutputForgeError):
+            _parse_timestamp(malformed)
+    assert _parse_timestamp("2026-06-08T00:00:00Z") == _parse_timestamp(
+        "2026-06-08T00:00:00+00:00"
+    )
+
+
 def test_xlsx_core_dates_pinned_not_1980(tmp_path: Path) -> None:
     # End-to-end guard for A1: with a 'Z'-suffixed pinned timestamp, the rendered
     # workbook's core.xml dates must be the pinned 2026 date, not the 1980 fallback.

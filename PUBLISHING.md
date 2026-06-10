@@ -45,7 +45,7 @@ before the next.
    third-party dependencies to audit.
 
 4. **Tests.** `pytest -q`
-   The full suite must be green. As of this writing that is 73 tests across all
+   The full suite must be green; `pytest -q` reports the current count across all
    sprints, with a deterministic sample run included.
 
 ## Content checks (by hand)

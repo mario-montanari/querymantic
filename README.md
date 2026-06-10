@@ -16,7 +16,7 @@ inside AI search instead of ten blue links.
 
 Version 0.1.0. Early, and honest about it. The pipeline works end to end:
 ingestion, the vendored keyword-intelligence engine, seven analysis modules, an
-Italian language layer, and branded deliverables. The suite carries 115 tests,
+Italian language layer, and branded deliverables. The suite carries 119 tests,
 green on Python 3.10 and 3.12 in CI. What is documented here works. Anything
 still planned lives in [ARCHITECTURE.md](ARCHITECTURE.md) as a roadmap item, not
 dressed up as a feature.

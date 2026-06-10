@@ -1,0 +1,28 @@
+name: Feature request or question
+description: Propose an improvement or ask how something works.
+title: "[idea]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Feature request
+        - Question
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: What you want
+      description: The improvement you propose, or the question you have. For features, say what problem it solves in a real keyword workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Anything that helps. Which module it touches, which tool exports you work with, what you tried already.
+    validations:
+      required: false

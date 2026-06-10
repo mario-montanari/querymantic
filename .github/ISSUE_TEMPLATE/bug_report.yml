@@ -1,0 +1,50 @@
+name: Bug report
+description: Something broke or produced a wrong result.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+      placeholder: I ran the pipeline on a Semrush export and ...
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command and full output
+      description: Paste the command you ran and the complete output, error included. Strip anything confidential from your data first.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.12.4"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11 / macOS 15 / Ubuntu 24.04"
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Querymantic version
+      description: The version field in .claude-plugin/plugin.json, or the commit you installed from.
+      placeholder: "0.1.0"
+    validations:
+      required: false
+  - type: textarea
+    id: input-shape
+    attributes:
+      label: Input shape (if relevant)
+      description: Which tool exported the CSV (Semrush, Ahrefs, GSC, Moz, Ubersuggest, generic) and its column headers. Never paste client data.
+    validations:
+      required: false

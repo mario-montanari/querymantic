@@ -43,6 +43,36 @@ def _safe_cell(value: Any) -> Any:
     return value
 
 
+# Decimals and Excel number format per metric kind, declared once. The view already
+# rounds most figures, but the workbook is the last gate: every numeric cell is
+# rounded again at write time AND carries the matching number format, so a binary
+# float tail (70.90000000000001 was seen on a real corpus) can never surface, not in
+# the grid and not in the formula bar. Counts (keywords, volumes, clicks, click
+# bands, demand) show whole numbers; 0-100 scores show one decimal; 0-1 ratios show
+# two. Rounding is round-half-even (Python's built-in ``round``), the same
+# convention the view uses in ``model.py``.
+_COUNT = ("#,##0", 0)
+_SCORE = ("0.0", 1)
+_RATIO = ("0.00", 2)
+
+
+def _style_numbers(ws, kinds: list[tuple[str, int] | None]) -> None:
+    """Round and format the numeric cells of the last appended row, by kind.
+
+    ``kinds`` aligns with the row's columns; ``None`` leaves a column untouched
+    (text columns). Non-numeric values (strings, ``None``) pass through.
+    """
+    for cell, kind in zip(ws[ws.max_row], kinds):
+        if kind is None:
+            continue
+        value = cell.value
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            continue
+        fmt, decimals = kind
+        cell.value = round(float(value), decimals) if decimals else round(value)
+        cell.number_format = fmt
+
+
 def _header_row(ws, headers: list[str], brand: dict[str, Any]) -> None:
     from openpyxl.styles import Font, PatternFill
 
@@ -76,17 +106,23 @@ def render_workbook(
     corpus = view["corpus"]
     ws.append([])
     _header_row(ws, ["Metric", "Value"], brand)
-    for label, value in (
-        ("Keywords analysed", corpus["total_keywords"]),
-        ("AI Overview eligibility share", corpus["aio_eligibility_share"]),
-        ("Generative-engine opportunity share", corpus["geo_opportunity_share"]),
-        ("Demand opportunity score", corpus["demand_opportunity_score"]),
+    for label, value, kind in (
+        ("Keywords analysed", corpus["total_keywords"], _COUNT),
+        ("AI Overview eligibility share", corpus["aio_eligibility_share"], _RATIO),
+        (
+            "Generative-engine opportunity share",
+            corpus["geo_opportunity_share"],
+            _RATIO,
+        ),
+        ("Demand opportunity score", corpus["demand_opportunity_score"], _SCORE),
     ):
         ws.append([label, value])
+        _style_numbers(ws, [None, kind])
     ws.append([])
     _header_row(ws, ["Search intent", "Keywords"], brand)
     for row in corpus["intent_split"]:
         ws.append([_safe_cell(row["intent"].replace("_", " ")), row["count"]])
+        _style_numbers(ws, [None, _COUNT])
 
     # Clusters sheet.
     cs = wb.create_sheet("Clusters")
@@ -106,6 +142,20 @@ def render_workbook(
     if has_obs:
         cols += ["Observed clicks", "Observed citation share"]
     _header_row(cs, cols, brand)
+    cluster_kinds: list[tuple[str, int] | None] = [
+        None,
+        _COUNT,
+        _COUNT,
+        None,
+        _RATIO,
+        _RATIO,
+        _SCORE,
+        _SCORE,
+        _COUNT,
+        _COUNT,
+    ]
+    if has_obs:
+        cluster_kinds += [_COUNT, _RATIO]
     for c in view["clusters"]:
         band = c.get("winnable_band") or [None, None]
         row = [
@@ -123,6 +173,7 @@ def render_workbook(
         if has_obs:
             row += [c.get("observed_current_clicks"), c.get("observed_citation_share")]
         cs.append(row)
+        _style_numbers(cs, cluster_kinds)
     cs.freeze_panes = "A2"
 
     # Winnable sheet.
@@ -130,6 +181,7 @@ def render_workbook(
     if winnable:
         ws2 = wb.create_sheet("Winnable")
         _header_row(ws2, ["Intent", "Winnable low", "Winnable high"], brand)
+        band_kinds: list[tuple[str, int] | None] = [None, _COUNT, _COUNT]
         for r in winnable["by_intent"]:
             ws2.append(
                 [
@@ -138,9 +190,11 @@ def render_workbook(
                     r["winnable_band"][1],
                 ]
             )
+            _style_numbers(ws2, band_kinds)
         ws2.append([])
         band = winnable.get("portfolio_winnable_band") or [None, None]
         ws2.append(["Portfolio", band[0], band[1]])
+        _style_numbers(ws2, band_kinds)
 
     # Gaps sheet.
     gaps = view.get("gaps") or []
@@ -155,6 +209,7 @@ def render_workbook(
                     _safe_cell(g.get("suggested_cluster_head")),
                 ]
             )
+            _style_numbers(gs, [None, _COUNT, None])
 
     props = wb.properties
     props.creator = brand["author"]

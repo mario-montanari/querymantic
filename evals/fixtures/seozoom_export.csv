@@ -1,0 +1,13 @@
+Keyword,Intent,Vol,Concorrenza,CPC,Gen,Feb,Mar,Apr,Mag,Giu,Lug,Ago,Set,Ott,Nov,Dic
+impastatrice planetaria dosi,Informational,2400,0.08,0.35,1300,1350,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600
+lievitazione lenta frigo,Informational,1900,0.45,0.22,1000,1050,1100,1150,1250,1350,1450,1550,1650,1750,1850,1950
+forno statico ventilato,,880,0.5,0.18,500,520,540,560,600,640,680,720,760,800,840,880
+sacchi pellet bancale,Transactional,720,0.9,0.5,400,420,440,460,500,520,560,600,620,660,700,720
+concime biologico pomodori,Commercial,590,1,0.41,300,320,340,360,380,420,440,460,500,520,560,590
+portale assistenza irrigatori,Navigational,480,0,0.12,260,270,280,300,310,330,350,370,390,410,440,480
+tagliasiepi telescopico leggero,"Transactional,Informational",390,0.66,0.28,200,210,220,240,250,270,280,300,320,340,360,390
+pacciamatura corteccia spessore,Informational,320,0.08642,0.15,170,180,190,200,210,220,240,250,260,280,300,320
+vasi terracotta drenaggio,,260,0.3,0.1,140,150,160,170,180,190,200,210,220,230,250,260
+semine autunnali balcone,Informational,210,0.12,0.08,110,120,130,140,150,160,170,180,190,200,200,210
+compostiera domestica odori,Informational,170,0.25,0.09,,,100,110,120,130,140,150,160,170,170,170
+potatura limone vaso,Informational,140,0.7,0.3,70,80,90,100,110,120,130,140,140,150,160,170

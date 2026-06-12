@@ -5,6 +5,31 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 
 ## [Unreleased]
 
+### Changed (language layer)
+- Corpus prior for Italian detection. On realistic Italian corpora (short
+  content keywords, no function words, almost no accents) the engine finds no
+  signal and the per-keyword Italian vote scores zero, so Italian recall
+  collapsed; a synthetic labeled eval (`evals/test_language_layer_eval.py`,
+  corpora in `evals/fixtures/language_eval_corpora.json`) pins the failure and
+  the recovery. A second, corpus-level pass now runs when the Italian share of
+  evidence-bearing keywords reaches a declared threshold: exact vote ties break
+  to Italian, and zero-signal keywords inherit the prior only on positive
+  Italian form evidence (a morphological suffix or the Italian orthographic
+  shape, both declared as data in `data/gazetteer/it.json`, now version 1.1
+  with common oo-bearing Italian words as cues). The prior never overrides a
+  contrary engine vote, never touches a declared language, and leaves
+  foreign-shaped zero-signal keywords (brand names, bare English queries)
+  untouched, so they survive an Italian-majority corpus. Thresholds and the
+  prior confidence are surfaced in the audit slot `params` with provenance and
+  are overridable; every prior decision is recorded in `language_changes` with
+  its reason, and the slot's new `prior` block declares the share arithmetic.
+  On the synthetic monolingual corpus recall rises from 18/80 to 71/80 with
+  Italian precision 1.0 and every non-Italian baseline unchanged.
+  `expected_outputs/` regenerated: the trimmed run.json gains the new audit
+  keys (prior off on the committed sample, share 0.0333), and the dashboard
+  xlsx manifest entry catches up with the number-format change shipped earlier
+  in 4f06de2, which had not been folded into the committed proof.
+
 ### Added (interactive dashboard)
 - Optional interactive HTML dashboard for Output Forge, opt-in via
   `--forge-interactive` (on both `run` and `forge`). It renders the same dashboard

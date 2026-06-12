@@ -23,6 +23,25 @@ language and intent rather than retrofitting each one. Per keyword it:
   When no Italian marker fires the engine's intent is kept, because it may carry
   a signal from a provided intent column.
 
+A second, corpus-level pass then corrects what no per-keyword vote can see:
+realistic Italian corpora are dominated by short content keywords with no
+function words and no accents, where the engine falls back to English at
+confidence 0.4 and the Italian vote scores zero. The pass works on a corpus
+prior: when the Italian share of evidence-bearing keywords (an Italian cue or a
+real engine vote) reaches a declared threshold, the corpus is treated as
+Italian-majority and two narrow classes inherit the prior. (1) Exact vote ties,
+which the strictly-greater rule alone must concede to the engine. (2)
+Zero-signal keywords that carry positive Italian form evidence: a declared
+Italian morphological suffix, or the Italian orthographic shape (every token
+vowel-final, no letter or sequence foreign to Italian orthography). The prior
+NEVER overrides a contrary engine vote, however weak: a keyword the engine
+scored higher than the Italian vote keeps the engine's language. Zero-signal
+keywords with a foreign shape (brand names, bare English queries) are left
+untouched, so an Italian site's legitimate foreign keywords survive an
+Italian-majority corpus. Thresholds and confidence are declared, surfaced in
+the audit slot with provenance, and overridable through ``params``; every
+prior decision is recorded in ``language_changes`` with its reason.
+
 It then recomputes the corpus language and intent counts and each cluster's
 dominant intent in the produced state, and records every change in its own audit
 slot so nothing is silent. The vendored engine package is never edited; only the
@@ -52,6 +71,27 @@ _GAZETTEER_PATH = (
 
 # A char vote, mirroring the engine's diacritic weight (a present cue counts 2).
 _DIACRITIC_VOTE = 2
+
+# The engine emits confidence 0.5 + score * 0.15, so 0.65 is its weakest REAL
+# vote (score 1); anything below is the no-signal English fallback (0.4).
+_ENGINE_EVIDENCE_CONFIDENCE = 0.65
+
+# Corpus-prior defaults. Project parameters, not search-engine facts; surfaced
+# in the audit slot with provenance and overridable through ``params``.
+_PRIOR_DEFAULTS: dict[str, Any] = {
+    # Master switch for the corpus-level second pass.
+    "prior_enabled": True,
+    # Italian share of evidence-bearing keywords needed to call the corpus
+    # Italian-majority.
+    "prior_share_threshold": 0.5,
+    # Minimum evidence-bearing keywords before the share means anything; a
+    # micro-corpus must not switch the prior on.
+    "prior_min_evidence": 10,
+    # Confidence assigned to prior-inherited detections. Deliberately below
+    # 0.65 (the engine's weakest real vote) so downstream consumers can tell
+    # prior-inherited from evidence-detected.
+    "prior_confidence": 0.55,
+}
 
 # Map a winning intent axis to the engine's funnel stage, identical to the engine.
 _FUNNEL_MAP = {
@@ -139,6 +179,67 @@ def _italian_confidence(score: int) -> float:
     return round(min(1.0, 0.5 + score * 0.15), 4)
 
 
+def _resolve_params(params: dict[str, Any] | None) -> dict[str, Any]:
+    """Merge caller overrides over the declared prior defaults, type-checked."""
+    cfg = dict(_PRIOR_DEFAULTS)
+    if not params:
+        return cfg
+    if isinstance(params.get("prior_enabled"), bool):
+        cfg["prior_enabled"] = params["prior_enabled"]
+    for key in ("prior_share_threshold", "prior_confidence"):
+        value = params.get(key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            cfg[key] = float(value)
+    value = params.get("prior_min_evidence")
+    if isinstance(value, int) and not isinstance(value, bool):
+        cfg["prior_min_evidence"] = value
+    return cfg
+
+
+def _italian_shape(
+    keyword: str,
+    vowels: frozenset[str],
+    foreign_letters: str,
+    foreign_sequences: tuple[str, ...],
+) -> bool:
+    """True when every alphabetic token has the Italian orthographic shape.
+
+    Native Italian words end in a vowel and never contain the foreign letters
+    or sequences declared in the gazetteer. Digit tokens are neutral. This is
+    deliberately a SHAPE test, not a dictionary: it admits unknown content
+    words while rejecting brand names and bare foreign queries.
+    """
+    tokens = [tok for tok in keyword.split() if not tok.isdigit()]
+    if not tokens:
+        return False
+    for tok in tokens:
+        if any(ch in foreign_letters for ch in tok):
+            return False
+        if any(seq in tok for seq in foreign_sequences):
+            return False
+        if tok[-1] not in vowels:
+            return False
+    return True
+
+
+def _morphology_cue(
+    keyword: str, suffixes: tuple[str, ...], foreign_letters: str
+) -> str | None:
+    """First Italian morphological suffix carried by a token, or None.
+
+    A token bearing a foreign letter cannot carry Italian morphology, and the
+    token must extend the suffix by at least two characters so short foreign
+    words cannot match by accident.
+    """
+    for tok in keyword.split():
+        if any(ch in foreign_letters for ch in tok):
+            continue
+        for suffix in suffixes:
+            if len(tok) >= len(suffix) + 2 and tok.endswith(suffix):
+                return suffix
+    return None
+
+
 def _italian_intent(
     keyword: str,
     markers: dict[str, list[str]],
@@ -195,8 +296,84 @@ def _italian_intent(
     return query_type, confidence, fired_cue
 
 
+def _flip_to_italian(
+    record: dict[str, Any],
+    index: int,
+    keyword: str,
+    engine_lang: str,
+    new_conf: float,
+    it_score: int,
+    engine_score: int,
+    reason: str,
+    markers: dict[str, list[str]],
+    pronouns: frozenset[str],
+    language_changes: list[dict[str, Any]],
+    intent_changes: list[dict[str, Any]],
+) -> None:
+    """Set a record to Italian, then apply the evidence-gated intent override."""
+    record["language"] = "it"
+    record["language_confidence"] = new_conf
+    enrichment = record.get("enrichment")
+    if isinstance(enrichment, dict):
+        enrichment["language_confidence"] = new_conf
+    language_changes.append(
+        {
+            "index": index,
+            "keyword": record.get("keyword", ""),
+            "from": engine_lang,
+            "to": "it",
+            "italian_score": it_score,
+            "engine_score": engine_score,
+            "confidence": new_conf,
+            "reason": reason,
+        }
+    )
+
+    # Recompute intent only on positive Italian lexical evidence.
+    serp_features = (record.get("metrics") or {}).get("serp_features") or []
+    if not isinstance(serp_features, list):
+        serp_features = []
+    new_intent, new_intent_conf, fired_cue = _italian_intent(
+        keyword, markers, pronouns, serp_features
+    )
+    if fired_cue is None:
+        return  # no Italian marker fired; keep the engine intent
+
+    vec = (
+        (enrichment or {}).get("intent_vector")
+        if isinstance(enrichment, dict)
+        else None
+    )
+    if not isinstance(vec, dict):
+        return
+    old_intent = vec.get("query_type")
+    old_conf = (
+        enrichment.get("intent_confidence") if isinstance(enrichment, dict) else None
+    )
+    vec["query_type"] = new_intent
+    vec["funnel_stage"] = _FUNNEL_MAP[new_intent]
+    if isinstance(enrichment, dict):
+        enrichment["intent_confidence"] = new_intent_conf
+    intent_changes.append(
+        {
+            "index": index,
+            "keyword": record.get("keyword", ""),
+            "from": old_intent,
+            "to": new_intent,
+            "confidence_from": round(float(old_conf), 4)
+            if isinstance(old_conf, (int, float))
+            else None,
+            "confidence_to": new_intent_conf,
+            "cue": fired_cue,
+        }
+    )
+
+
 def language_layer(
-    state: dict[str, Any], *, gazetteer: dict[str, Any] | None = None
+    state: dict[str, Any],
+    *,
+    gazetteer: dict[str, Any] | None = None,
+    params: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Correct Italian language and intent in the run-state and write the audit slot."""
     engine = state.get("engine")
@@ -213,11 +390,18 @@ def language_layer(
     pronouns = frozenset(w.lower() for w in gaz["question_pronouns"])
     markers = gaz["intent_markers"]
     diacritics = gaz.get("diacritics", "")
+    suffixes = tuple(gaz.get("morphological_suffixes") or ())
+    foreign_letters = str(gaz.get("foreign_letters") or "")
+    foreign_sequences = tuple(gaz.get("foreign_sequences") or ())
+    vowels = frozenset("aeiou") | frozenset(diacritics)
+    cfg = _resolve_params(params)
 
     language_changes: list[dict[str, Any]] = []
     intent_changes: list[dict[str, Any]] = []
     detected_italian = 0
+    rows: list[dict[str, Any]] = []
 
+    # Pass 1: the per-keyword strictly-greater vote, exactly as before.
     for index, record in enumerate(keywords):
         if not isinstance(record, dict):
             continue
@@ -233,78 +417,127 @@ def language_layer(
 
         # A declared language (engine confidence 1.0) is authoritative; leave it.
         if engine_conf >= 1.0:
+            rows.append(
+                {
+                    "index": index,
+                    "record": record,
+                    "keyword": keyword,
+                    "engine_lang": engine_lang,
+                    "declared": True,
+                    "it_score": 0,
+                    "engine_score": _engine_vote_score(engine_conf),
+                    "engine_conf": engine_conf,
+                }
+            )
             continue
 
         it_score = _italian_language_score(keyword, vocab, diacritics)
         engine_score = _engine_vote_score(engine_conf)
+        rows.append(
+            {
+                "index": index,
+                "record": record,
+                "keyword": keyword,
+                "engine_lang": engine_lang,
+                "declared": False,
+                "it_score": it_score,
+                "engine_score": engine_score,
+                "engine_conf": engine_conf,
+            }
+        )
 
         # Conservative, strictly-greater: Italian must beat the engine's vote.
         if it_score <= 0 or it_score <= engine_score:
             continue
 
-        # Re-detect as Italian.
         detected_italian += 1
-        new_conf = _italian_confidence(it_score)
-        record["language"] = "it"
-        record["language_confidence"] = new_conf
-        enrichment = record.get("enrichment")
-        if isinstance(enrichment, dict):
-            enrichment["language_confidence"] = new_conf
-        language_changes.append(
-            {
-                "index": index,
-                "keyword": record.get("keyword", ""),
-                "from": engine_lang,
-                "to": "it",
-                "italian_score": it_score,
-                "engine_score": engine_score,
-                "confidence": new_conf,
-            }
+        _flip_to_italian(
+            record,
+            index,
+            keyword,
+            engine_lang,
+            _italian_confidence(it_score),
+            it_score,
+            engine_score,
+            "lexical_vote",
+            markers,
+            pronouns,
+            language_changes,
+            intent_changes,
         )
 
-        # Recompute intent only on positive Italian lexical evidence.
-        serp_features = (record.get("metrics") or {}).get("serp_features") or []
-        if not isinstance(serp_features, list):
-            serp_features = []
-        new_intent, new_intent_conf, fired_cue = _italian_intent(
-            keyword, markers, pronouns, serp_features
-        )
-        if fired_cue is None:
-            continue  # no Italian marker fired; keep the engine intent
+    # The corpus prior. Evidence: an Italian cue (it_score >= 1) or a real
+    # engine vote (confidence >= 0.65; a declared language counts as engine
+    # evidence, never as Italian evidence). The no-signal English fallback
+    # (0.4) bears no evidence at all.
+    italian_evidence = sum(1 for r in rows if not r["declared"] and r["it_score"] >= 1)
+    engine_evidence = sum(
+        1
+        for r in rows
+        if r["declared"] or r["engine_conf"] >= _ENGINE_EVIDENCE_CONFIDENCE
+    )
+    bearing = sum(
+        1
+        for r in rows
+        if (not r["declared"] and r["it_score"] >= 1)
+        or r["declared"]
+        or r["engine_conf"] >= _ENGINE_EVIDENCE_CONFIDENCE
+    )
+    share = round(italian_evidence / bearing, 4) if bearing else 0.0
+    prior_active = (
+        cfg["prior_enabled"]
+        and bearing >= cfg["prior_min_evidence"]
+        and share >= cfg["prior_share_threshold"]
+    )
 
-        vec = (
-            (enrichment or {}).get("intent_vector")
-            if isinstance(enrichment, dict)
-            else None
-        )
-        if not isinstance(vec, dict):
-            continue
-        old_intent = vec.get("query_type")
-        old_conf = (
-            enrichment.get("intent_confidence")
-            if isinstance(enrichment, dict)
-            else None
-        )
-        vec["query_type"] = new_intent
-        vec["funnel_stage"] = _FUNNEL_MAP[new_intent]
-        if isinstance(enrichment, dict):
-            enrichment["intent_confidence"] = new_intent_conf
-        intent_changes.append(
-            {
-                "index": index,
-                "keyword": record.get("keyword", ""),
-                "from": old_intent,
-                "to": new_intent,
-                "confidence_from": round(float(old_conf), 4)
-                if isinstance(old_conf, (int, float))
-                else None,
-                "confidence_to": new_intent_conf,
-                "cue": fired_cue,
-            }
-        )
+    # Pass 2: the prior bites ONLY on exact vote ties and on zero-signal
+    # keywords with positive Italian form evidence (morphology or shape).
+    # Never against a contrary engine vote, however weak; never on a
+    # declared language.
+    tie_breaks = morphology_hits = shape_hits = 0
+    if prior_active:
+        for row in rows:
+            record = row["record"]
+            if row["declared"] or record.get("language") == "it":
+                continue
+            it_score, engine_score = row["it_score"], row["engine_score"]
+            if it_score >= 1 and it_score == engine_score:
+                reason = "corpus_prior:tie_break"
+                tie_breaks += 1
+            elif it_score == 0 and engine_score == 0:
+                suffix = _morphology_cue(row["keyword"], suffixes, foreign_letters)
+                if suffix is not None:
+                    reason = f"corpus_prior:morphology:{suffix}"
+                    morphology_hits += 1
+                elif _italian_shape(
+                    row["keyword"], vowels, foreign_letters, foreign_sequences
+                ):
+                    reason = "corpus_prior:italian_shape"
+                    shape_hits += 1
+                else:
+                    continue
+            else:
+                continue  # a contrary engine vote, however weak, always holds
+
+            detected_italian += 1
+            _flip_to_italian(
+                record,
+                row["index"],
+                row["keyword"],
+                row["engine_lang"],
+                cfg["prior_confidence"],
+                it_score,
+                engine_score,
+                reason,
+                markers,
+                pronouns,
+                language_changes,
+                intent_changes,
+            )
 
     _recompute_aggregates(engine)
 
+    reclassified_by_prior = tie_breaks + morphology_hits + shape_hits
     state["modules"]["language_layer"] = {
         "language": "it",
         "summary": {
@@ -312,16 +545,47 @@ def language_layer(
             "detected_italian": detected_italian,
             "language_reclassified": len(language_changes),
             "intent_reclassified": len(intent_changes),
+            "reclassified_by_prior": reclassified_by_prior,
             "by_language": dict(sorted(_counter_by_language(keywords).items())),
             "by_intent": dict(sorted(_counter_by_intent(keywords).items())),
         },
         "language_changes": language_changes,
         "intent_changes": intent_changes,
+        "prior": {
+            "enabled": prior_active,
+            "share": share,
+            "evidence": {
+                "italian": italian_evidence,
+                "engine": engine_evidence,
+                "bearing": bearing,
+            },
+            "tie_breaks": tie_breaks,
+            "morphology": morphology_hits,
+            "italian_shape": shape_hits,
+        },
+        "params": {
+            "prior_enabled": cfg["prior_enabled"],
+            "prior_share_threshold": cfg["prior_share_threshold"],
+            "prior_min_evidence": cfg["prior_min_evidence"],
+            "prior_confidence": cfg["prior_confidence"],
+            "engine_evidence_confidence": _ENGINE_EVIDENCE_CONFIDENCE,
+            "provenance": (
+                "The corpus prior and its thresholds are project parameters, "
+                "not search-engine facts. The prior fires only when the "
+                "Italian share of evidence-bearing keywords reaches the "
+                "threshold, and only on exact vote ties or zero-signal "
+                "keywords with positive Italian form evidence (morphology or "
+                "orthographic shape from the gazetteer). It never overrides "
+                "a contrary engine vote. Override any value through 'params'."
+            ),
+        },
         "rules": {
             "detection": "strictly-greater Italian vote over the engine vote; declared language (confidence 1.0) untouched",
             "intent_override": "only on positive Italian lexical evidence (marker or question pronoun); otherwise the engine intent is kept",
+            "corpus_prior": "zero-signal keywords need Italian morphology or shape; exact ties break to Italian; a contrary engine vote always holds",
             "diacritic_vote": _DIACRITIC_VOTE,
             "gazetteer": _GAZETTEER_PATH.name,
+            "gazetteer_version": str(gaz.get("version", "")),
         },
     }
     return state

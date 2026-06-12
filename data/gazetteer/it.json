@@ -1,8 +1,18 @@
 {
   "language": "it",
-  "version": "1.0",
-  "description": "Italian lexical resource for the language_layer module. language_cues and question_pronouns feed the Italian language-detection vote; intent_markers and question_pronouns drive the Italian intent classification. The structure mirrors the engine's in-code tables (STOP_WORDS, QUESTION_PRONOUNS, INTENT_MARKERS) but lives as data so a sixth language is a file drop, not a code change.",
+  "version": "1.1",
+  "description": "Italian lexical resource for the language_layer module. language_cues and question_pronouns feed the Italian language-detection vote; intent_markers and question_pronouns drive the Italian intent classification. morphological_suffixes, foreign_letters and foreign_sequences feed the corpus-prior second pass: a suffix match is weak positive Italian evidence, while a foreign letter or sequence in a token marks a shape no native Italian word has. The structure mirrors the engine's in-code tables (STOP_WORDS, QUESTION_PRONOUNS, INTENT_MARKERS) but lives as data so a sixth language is a file drop, not a code change.",
   "diacritics": "àèéìíîòóùú",
+  "foreign_letters": "jkwxy",
+  "foreign_sequences": ["oo"],
+  "morphological_suffixes": [
+    "zione", "zioni", "mento", "menti", "tura", "ture", "aggio", "aggi",
+    "ezza", "ezze", "eria", "erie", "anza", "anze", "enza", "enze",
+    "atore", "atori", "atrice", "atrici", "abile", "abili", "ibile", "ibili",
+    "ista", "iste", "isti", "ario", "aria", "arie",
+    "oso", "osa", "osi", "ose", "ale", "ali", "ile", "ivo", "iva", "ive",
+    "ico", "ica", "ici", "iche"
+  ],
   "language_cues": [
     "il", "lo", "la", "le", "gli", "un", "uno", "una",
     "di", "del", "dello", "della", "dei", "degli", "delle",
@@ -21,7 +31,9 @@
     "migliori", "migliore", "recensione", "recensioni", "confronto", "paragone",
     "alternativa", "alternative", "opinioni", "guida", "significato", "scegliere",
     "differenza", "differenze", "esempi", "esempio", "tutorial",
-    "accedi", "accesso", "registrati", "clienti", "sito"
+    "accedi", "accesso", "registrati", "clienti", "sito",
+    "coordinamento", "coordinatore", "cooperativa", "cooperazione",
+    "zoologico", "microonde"
   ],
   "question_pronouns": [
     "come", "cosa", "cos'è", "cos'e", "perché", "perche",

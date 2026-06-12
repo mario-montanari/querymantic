@@ -15621,10 +15621,32 @@
       "intent_changes": [],
       "language": "it",
       "language_changes": [],
+      "params": {
+        "engine_evidence_confidence": 0.65,
+        "prior_confidence": 0.55,
+        "prior_enabled": true,
+        "prior_min_evidence": 10,
+        "prior_share_threshold": 0.5,
+        "provenance": "The corpus prior and its thresholds are project parameters, not search-engine facts. The prior fires only when the Italian share of evidence-bearing keywords reaches the threshold, and only on exact vote ties or zero-signal keywords with positive Italian form evidence (morphology or orthographic shape from the gazetteer). It never overrides a contrary engine vote. Override any value through 'params'."
+      },
+      "prior": {
+        "enabled": false,
+        "evidence": {
+          "bearing": 60,
+          "engine": 60,
+          "italian": 2
+        },
+        "italian_shape": 0,
+        "morphology": 0,
+        "share": 0.0333,
+        "tie_breaks": 0
+      },
       "rules": {
+        "corpus_prior": "zero-signal keywords need Italian morphology or shape; exact ties break to Italian; a contrary engine vote always holds",
         "detection": "strictly-greater Italian vote over the engine vote; declared language (confidence 1.0) untouched",
         "diacritic_vote": 2,
         "gazetteer": "it.json",
+        "gazetteer_version": "1.1",
         "intent_override": "only on positive Italian lexical evidence (marker or question pronoun); otherwise the engine intent is kept"
       },
       "summary": {
@@ -15640,7 +15662,8 @@
         "detected_italian": 0,
         "intent_reclassified": 0,
         "keywords_total": 170,
-        "language_reclassified": 0
+        "language_reclassified": 0,
+        "reclassified_by_prior": 0
       }
     },
     "live_wire": null,
@@ -15659,10 +15682,10 @@
           "sha256": "1ee06e19ec8b278f73545dd6f9313f1f2025a1a687c186d79823cf4dd973d7cf"
         },
         {
-          "bytes": 10012,
+          "bytes": 10203,
           "filename": "dashboard.xlsx",
           "format": "xlsx",
-          "sha256": "0aed26dbd7a9fa042f6c80987f00b4865af88c51f6265d26508c24257ceab27b"
+          "sha256": "79e902098f0a90eb73f3f0871e546c013be6c79d10f4e1ef7dcf0ca35358a2cb"
         }
       ],
       "backends": {

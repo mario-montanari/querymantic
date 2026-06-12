@@ -182,6 +182,8 @@ def test_audit_slot_contract(tmp_path: Path) -> None:
         "summary",
         "language_changes",
         "intent_changes",
+        "prior",
+        "params",
         "rules",
     }
     assert slot["language"] == "it"
@@ -190,6 +192,7 @@ def test_audit_slot_contract(tmp_path: Path) -> None:
         "detected_italian",
         "language_reclassified",
         "intent_reclassified",
+        "reclassified_by_prior",
         "by_language",
         "by_intent",
     }
@@ -198,7 +201,16 @@ def test_audit_slot_contract(tmp_path: Path) -> None:
         assert ":" in change["cue"]
     for change in slot["language_changes"]:
         assert change["to"] == "it"
-        assert change["italian_score"] > change["engine_score"]
+        if change["reason"] == "lexical_vote":
+            # The first pass stays strictly greater than the engine vote.
+            assert change["italian_score"] > change["engine_score"]
+        else:
+            # A prior decision never beats the engine vote; it names why.
+            assert change["reason"].startswith("corpus_prior:")
+            assert change["italian_score"] <= change["engine_score"]
+    # The prior block always declares its arithmetic and the params their provenance.
+    assert set(slot["prior"]) >= {"enabled", "share", "evidence"}
+    assert "provenance" in slot["params"]
 
 
 # --- contract and determinism ----------------------------------------------

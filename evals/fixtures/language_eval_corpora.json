@@ -1,5 +1,5 @@
 {
-  "description": "Synthetic labeled corpora for the language detection eval. Every keyword is invented for this fixture; none is taken from any real export or client corpus. The Italian set mirrors the difficulty profile observed in real Italian keyword exports: short content keywords of two to four tokens, almost no function words, almost no accented characters, and function words shared with Spanish and French. Each Italian keyword carries a family tag so the eval can report where detection stands per difficulty class.",
+  "description": "Synthetic labeled corpora for the language detection eval. Every keyword is invented for this fixture; none is taken from any real export or client corpus. The Italian set mirrors the difficulty profile observed in real Italian keyword exports: short content keywords of two to four tokens, almost no function words, almost no accented characters, and function words shared with Spanish and French. Each Italian keyword carries a family tag so the eval can report where detection stands per difficulty class. The foreign_in_italian_corpus set holds the danger case for any corpus-level correction: zero-signal brand and English keywords that a real Italian site legitimately has; they are appended to the monolingual Italian corpus and must never be claimed as Italian.",
   "families": {
     "bare_content": "Content-only tokens, no function words, no accents. The engine finds no signal (en at 0.4) and the Italian vote scores zero.",
     "shared_stopword_trap": "The only function words are shared with Spanish or French stop words, so the engine votes es or fr and the strictly-greater Italian rule cannot win the tie.",
@@ -150,5 +150,17 @@
     {"keyword": "freidora de aire sin aceite", "language": "es"},
     {"keyword": "yoga en casa para principiantes", "language": "es"},
     {"keyword": "señales de que tu perro está enfermo", "language": "es"}
+  ],
+  "foreign_in_italian_corpus": [
+    {"keyword": "nike running", "language": "en"},
+    {"keyword": "best crm", "language": "en"},
+    {"keyword": "cloud storage", "language": "en"},
+    {"keyword": "gaming chair", "language": "en"},
+    {"keyword": "google workspace", "language": "en"},
+    {"keyword": "windows 11 pro", "language": "en"},
+    {"keyword": "playstation 5 slim", "language": "en"},
+    {"keyword": "iphone 15 pro max", "language": "en"},
+    {"keyword": "excel pivot table", "language": "en"},
+    {"keyword": "linkedin ads manager", "language": "en"}
   ]
 }

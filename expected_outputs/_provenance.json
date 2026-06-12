@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "sample_dashboard.html": "43612913e7594a1e4c4fdbe83b831074531f28bbcf65ec50e1f86cd8b3d46a09",
+    "sample_run.trimmed.json": "99f6b1b2d37918a4f80a9290686c5bdef8efd8c95b8ad9cc5e8c28c09382818e"
+  },
+  "perimeter": {
+    "excluded": {
+      "interpreter_and_os": "A different OS or Python build can reproduce the same numbers with last-bit float differences; that is why this manifest hashes sources, not cross-platform output bytes.",
+      "schemas": "schemas/ validate the run-state; they do not shape the proof bytes.",
+      "third_party_runtime": "openpyxl, python-docx, python-pptx and statsmodels render bytes but are runtime code, not project sources. The perimeter hashes their DECLARED pins (requirements-optional.txt), so a pin bump trips the wire; an environment whose installed versions diverge from the pins can still change bytes without moving any source hash. Residual gap covered opt-in by --check-committed in the pinned local environment.",
+      "vendor_plotly": "vendor/plotly is consumed only by the opt-in interactive dashboard, which is not one of the proof formats."
+    },
+    "included": [
+      "scripts/regenerate_expected_outputs.py (this script: fixed inputs and trim shape)",
+      "modules/**/*.py (the module code that fills every slot and renders the artifacts)",
+      "querymantic/**/*.py (pipeline, run-state, adapters, ports)",
+      "engine/keyword-intelligence/scripts/*.py (the vendored engine the slots derive from)",
+      "assets/samples/*.csv|*.tsv (the proof inputs, non-recursive, as the pipeline expands them)",
+      "data/gazetteer/it.json (read by language_layer)",
+      "forge/templates/brand.json (the brand the proof renders with)",
+      "requirements-optional.txt (the declared third-party pins; see excluded)"
+    ]
+  },
+  "sources": {
+    "assets/samples/ahrefs_export.csv": "a0935678d664f5a469bf4eee8cf5d0a31281e9edda3bb1ff534aa0ba10fd7d1b",
+    "assets/samples/generic_export.csv": "da3334ef406985e381721ca57225053b94db7ddcffdfeaf1f915c317675269f2",
+    "assets/samples/gsc_export.csv": "e160e1f3a2bfe08d859a0e68dc50f57623724a3054eb059a4967d04d3fddeb93",
+    "assets/samples/moz_export.csv": "70ee2c8c76892f8cc06013f60126539a23a8794a1a64e4d4f089596eb13783aa",
+    "assets/samples/semrush_export.csv": "e0a1c8f5c0748f810e04de01c50bcac2bb544e089982a704652bf803f0d6cd95",
+    "assets/samples/ubersuggest_export.csv": "dc41be43ceebc3df2d6f79a6b9821102c2a6c08d452a795238df7ebd731242dc",
+    "data/gazetteer/it.json": "3ba96b2374a47ecf36027bf33b9d73b9a1e68127244dbbe8bfbb0c330268190a",
+    "engine/keyword-intelligence/scripts/analyze.py": "4b572bfa5c24f3aa9f96fcac974f9bcd09150a38b7590498dd310e444894d5da",
+    "engine/keyword-intelligence/scripts/audit.py": "d0f7ad310a4958dd03b7d86b6d1f80dec015b6800346cfcb2b259e2e4c86c6e1",
+    "engine/keyword-intelligence/scripts/compare.py": "e076e2a06894f96a73a2eb2b89eb659a4d465369c7324ed88d1b5411b531e99b",
+    "engine/keyword-intelligence/scripts/report.py": "19726904a45bf770c9204df1c619a6bf7804e86c31055280ad96eb2ba993335a",
+    "forge/templates/brand.json": "67b239d5555b4e18645cbd7083661b090b7822307fc96f775ef42bce38e1bfd7",
+    "modules/__init__.py": "64f8042ad83c210e2331f12974db2b6b5436c0029cbb8c8e26c059f9afd3bc01",
+    "modules/citation_grid.py": "00719d3068a50773271b2ecc23baa68d06c69ed7de4c801b87296850b060d9c2",
+    "modules/click_ceiling.py": "22f8db52795a8a30d58d541c95696414d1837ad0834e395ab9e46fb25401a509",
+    "modules/demand_pulse.py": "437434fd2ab9bc23b0e77974c413f416ad5342a4d9eddb5621a3effc01637e10",
+    "modules/entity_web.py": "b5d584833ed89040d0704033d8c32866c5a0bd311ca0d7ad03dc0e6e7050f258",
+    "modules/fan_out_radar.py": "e05abe141ac08086edc42948e4575b16cddb62aa154637c28055277e3fd25af7",
+    "modules/language_layer.py": "05f32327f7840129df1527af49531ede5ce4b9eb1d5fceb6df0394d2b207ddcf",
+    "modules/live_wire.py": "b54370e62766d8cec01b819be19c7e069f62bc11e20c4ec8879be989354ac784",
+    "modules/output_forge/__init__.py": "a5422e955083723126bb25496e0e296e0aed36930b1d2457330d79263bdd4dfd",
+    "modules/output_forge/audit_docx.py": "f097ccbcdb952acc02fbd3626f514233b781721df252e969e46c8eb3f395b6f8",
+    "modules/output_forge/brand.py": "ca0032e6d82a10a0b8ac27da217d8c9e838d75616d26aed33c9ff81b16813d1b",
+    "modules/output_forge/dashboard_html.py": "c051b0ee869806229a79c06b59262e00e9d96eb5d26edb7f4b5fed7a40c6e563",
+    "modules/output_forge/dashboard_interactive.py": "b4b63a1c6928ebde7c04f16ecd8aa71377a380d1b7f2cb5f288a873b23e062e0",
+    "modules/output_forge/dashboard_xlsx.py": "2dd552c2ae41f679d23c1b32e46aefaf6297646112fceca2cd4982799bf2771c",
+    "modules/output_forge/deck.py": "f4d08c56110432edafa4ce29748eae44219ae3eeb9dd3c720bfd2fc0d2a9fb72",
+    "modules/output_forge/model.py": "00e99ccd6b2164b24c828d202b0afd0d2974d3ff65439893ed1e8ed5d7960f93",
+    "querymantic/__about__.py": "bf3302d3eb29ec87fa860acf41e35d8c7e3b802c7beffca48f30df804dc94088",
+    "querymantic/__init__.py": "73250d22dc3b7586e3f4275f2ff3f5687e5236999bdf8eaadb325305245e6948",
+    "querymantic/engine_adapter.py": "30b194bcb0bd68d76845a82a9290e152262eb47f4f3e97fc77610319707a7ec2",
+    "querymantic/entity_extractor.py": "5426d854298dbed18017f4b610b435a6c0facffc69073573a1e50703eafe32a8",
+    "querymantic/pipeline.py": "4ef6b83c4bacdd05e6848b268c4ab5d645bebf9688640aa7b4b095683e4981cc",
+    "querymantic/ports/__init__.py": "0706934f2b416d9a9302a88ebd8e5523e9be0063f2a7b4b4e04ef1fb1ee93a0b",
+    "querymantic/ports/ooxml.py": "d64f6f1335977837414fb867cdc7cabbe67f94a34358ea9a040793454e966d0d",
+    "querymantic/ports/stats.py": "04d591d4f260d99fe037509d5a3a057b791d34c778cc9dd103b4b41b5270495a",
+    "querymantic/run_state.py": "fb92e26772a194ea702e842e707e8157b03d08a34f79d166c2a6e442e50856cd",
+    "querymantic/text/__init__.py": "8ce1bc3215ce5b23b72e9fbe29429c5fa669ca3202fada9471c67e1943193a8d",
+    "querymantic/text/bm25.py": "b2763efa1adbfc0a8dce3057a20f6f411d472fcfeb837a2b87b808cb397d9f15",
+    "querymantic/text/stopwords.py": "13975ea4241c5d8645c090f8b540abe7b2ceca2760fecc6529c6fad2d89d6576",
+    "querymantic/text/tokenize.py": "d6c23d188392e399a4890a93cd37c77b454865a87985b2fa5247110d8110ea88",
+    "requirements-optional.txt": "40d9fa9f69abf690c101ca36cb313a4d800392a156f6aa0c208ce55150577d88",
+    "scripts/regenerate_expected_outputs.py": "c5876cc43bdc3ddef840d2e44b7f380db5eadc5e60330ff9be9470234cc3e60a"
+  },
+  "written_by": "scripts/regenerate_expected_outputs.py. Never edit by hand: the path for a conscious update is regeneration, not retouching a hash."
+}

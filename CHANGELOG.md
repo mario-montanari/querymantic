@@ -5,6 +5,43 @@ Keep a Changelog, and the project aims to follow semantic versioning.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.2.0] - 2026-06-12
+
+### Added (SEOZoom exports)
+- Dedicated SEOZoom export support. A SEOZoom keyword export (Keyword, Intent,
+  Vol, Concorrenza, CPC, the twelve Gen-Dic month columns) used to fall to the
+  engine's generic mapping, which silently dropped the Concorrenza column, the
+  declared Intent labels and the whole monthly series. The export is now
+  detected from its header signature; the engine receives the SEOZoom column
+  map through its own mapping override, so the original file stays the engine
+  input and hashes plus per-row traceability keep pointing at it. Concorrenza
+  travels verbatim and the engine's column-level 0-1 normalization scales it
+  to the 0-100 difficulty; the Intent labels reach the engine under its own
+  label semantics, the same treatment a Semrush or Ahrefs export gets; the
+  month columns feed Demand Pulse automatically when it runs without an
+  explicit series (an explicit `--series` always wins). Periods default to the
+  neutral m01-m12 labels because the export carries no year; the new
+  `--seozoom-year` flag labels them YYYY-MM. The eval in
+  `evals/test_seozoom_parser_eval.py` pins both the old loss (in its first
+  committed version) and the recovered values, including the documented
+  engine-semantics limits for Commercial and multi-label cells.
+
+### Added (provenance tripwire)
+- The committed determinism proof can no longer go stale silently.
+  Regeneration writes `expected_outputs/_provenance.json` with the sha256 of
+  every source file that determines the proof bytes plus the sha256 of the two
+  written artifacts; only the regenerate script writes the manifest, and the
+  perimeter is declared inside it, including what is explicitly out and why
+  (third-party renderers are covered through their declared pins; the residual
+  gap of an environment drifting from the pins is named and covered opt-in by
+  the new `--check-committed` flag for the pinned local environment, never
+  wired into CI for the cross-platform float reason stated in the docstring).
+  Three eval tests recompute everything and fail on the first divergence in
+  any direction, closing the blind spot that let an earlier renderer change
+  leave the committed proof stale under a green CI.
+
 ### Changed (language layer)
 - Corpus prior for Italian detection. On realistic Italian corpora (short
   content keywords, no function words, almost no accents) the engine finds no
@@ -29,6 +66,11 @@ Keep a Changelog, and the project aims to follow semantic versioning.
   keys (prior off on the committed sample, share 0.0333), and the dashboard
   xlsx manifest entry catches up with the number-format change shipped earlier
   in 4f06de2, which had not been folded into the committed proof.
+
+## [0.1.0] - 2026-06-11
+
+Everything below shipped with the v0.1.0 tag; the sections were written while
+the work landed and are kept verbatim.
 
 ### Added (interactive dashboard)
 - Optional interactive HTML dashboard for Output Forge, opt-in via

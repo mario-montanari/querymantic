@@ -12,4 +12,4 @@ from __future__ import annotations
 
 PRODUCT_NAME = "Querymantic"
 TAGLINE = "Offline keyword and demand intelligence"
-__version__ = "0.1.0"
+__version__ = "0.2.0"

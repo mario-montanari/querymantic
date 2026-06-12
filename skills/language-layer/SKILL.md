@@ -6,7 +6,7 @@ argument-hint: "[inputs] [output] (list language_layer first in --modules)"
 license: MIT
 metadata:
   author: Mario Montanari
-  version: "0.1.0"
+  version: "0.2.0"
   category: marketing
 ---
 

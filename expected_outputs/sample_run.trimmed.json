@@ -15673,7 +15673,7 @@
           "bytes": 10970,
           "filename": "dashboard.html",
           "format": "html",
-          "sha256": "43612913e7594a1e4c4fdbe83b831074531f28bbcf65ec50e1f86cd8b3d46a09"
+          "sha256": "c8a3ca32cf6f7ef682911b126aabb16f7fb0a23f1e4acb47d5647e61753b0b30"
         },
         {
           "bytes": 38412,
@@ -15734,7 +15734,7 @@
       "click_ceiling",
       "output_forge"
     ],
-    "plugin_version": "0.1.0",
+    "plugin_version": "0.2.0",
     "schema_version": "0.2.0"
   }
 }

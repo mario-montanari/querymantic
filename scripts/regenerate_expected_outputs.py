@@ -87,6 +87,7 @@ PROVENANCE_INCLUDED = [
     "assets/samples/*.csv|*.tsv (the proof inputs, non-recursive, as the pipeline expands them)",
     "data/gazetteer/it.json (read by language_layer)",
     "forge/templates/brand.json (the brand the proof renders with)",
+    ".claude-plugin/plugin.json (the version source recorded in the run-state)",
     "requirements-optional.txt (the declared third-party pins; see excluded)",
 ]
 PROVENANCE_EXCLUDED = {
@@ -131,6 +132,7 @@ def _provenance_sources() -> list[Path]:
     )
     sources.append(PLUGIN_ROOT / "data" / "gazetteer" / "it.json")
     sources.append(PLUGIN_ROOT / "forge" / "templates" / "brand.json")
+    sources.append(PLUGIN_ROOT / ".claude-plugin" / "plugin.json")
     sources.append(PLUGIN_ROOT / "requirements-optional.txt")
     return sorted(set(sources), key=lambda p: p.relative_to(PLUGIN_ROOT).as_posix())
 

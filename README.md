@@ -14,7 +14,7 @@ inside AI search instead of ten blue links.
 
 ## Status
 
-Version 0.1.0. Early, and honest about it. The pipeline works end to end:
+Version 0.2.0. Early, and honest about it. The pipeline works end to end:
 ingestion, the vendored keyword-intelligence engine, seven analysis modules, an
 Italian language layer, and branded deliverables. The full test suite is green
 on Python 3.10 and 3.12 in CI. What is documented here works. Anything

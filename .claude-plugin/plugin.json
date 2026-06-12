@@ -1,6 +1,6 @@
 {
   "name": "querymantic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Offline keyword and demand intelligence suite for Claude Code and Claude Cowork. Vendors the keyword-intelligence engine and adds modules for entity coverage, query fan-out, demand trend, AI-citation readiness, winnable-click bands, and branded output. Use when analyzing keyword exports (Semrush, Ahrefs, Google Search Console, Moz, Ubersuggest) for SEO, GEO, and AI-search strategy without external API calls.",
   "author": {
     "name": "Mario Montanari",

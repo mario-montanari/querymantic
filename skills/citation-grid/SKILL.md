@@ -6,7 +6,7 @@ argument-hint: "[inputs] [output]"
 license: MIT
 metadata:
   author: Mario Montanari
-  version: "0.1.0"
+  version: "0.2.0"
   category: marketing
 ---
 

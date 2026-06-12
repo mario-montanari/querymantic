@@ -1,7 +1,7 @@
 {
   "artifacts": {
-    "sample_dashboard.html": "43612913e7594a1e4c4fdbe83b831074531f28bbcf65ec50e1f86cd8b3d46a09",
-    "sample_run.trimmed.json": "99f6b1b2d37918a4f80a9290686c5bdef8efd8c95b8ad9cc5e8c28c09382818e"
+    "sample_dashboard.html": "c8a3ca32cf6f7ef682911b126aabb16f7fb0a23f1e4acb47d5647e61753b0b30",
+    "sample_run.trimmed.json": "ca80b5802ece5c46d4a85caa331fc8f998826ce2d124213b86db8695f7427814"
   },
   "perimeter": {
     "excluded": {
@@ -18,10 +18,12 @@
       "assets/samples/*.csv|*.tsv (the proof inputs, non-recursive, as the pipeline expands them)",
       "data/gazetteer/it.json (read by language_layer)",
       "forge/templates/brand.json (the brand the proof renders with)",
+      ".claude-plugin/plugin.json (the version source recorded in the run-state)",
       "requirements-optional.txt (the declared third-party pins; see excluded)"
     ]
   },
   "sources": {
+    ".claude-plugin/plugin.json": "7a6432bcfae318e8c6886562ac1ea310a5d27685979f0a11b5aba200386174a2",
     "assets/samples/ahrefs_export.csv": "a0935678d664f5a469bf4eee8cf5d0a31281e9edda3bb1ff534aa0ba10fd7d1b",
     "assets/samples/generic_export.csv": "da3334ef406985e381721ca57225053b94db7ddcffdfeaf1f915c317675269f2",
     "assets/samples/gsc_export.csv": "e160e1f3a2bfe08d859a0e68dc50f57623724a3054eb059a4967d04d3fddeb93",
@@ -50,7 +52,7 @@
     "modules/output_forge/dashboard_xlsx.py": "2dd552c2ae41f679d23c1b32e46aefaf6297646112fceca2cd4982799bf2771c",
     "modules/output_forge/deck.py": "f4d08c56110432edafa4ce29748eae44219ae3eeb9dd3c720bfd2fc0d2a9fb72",
     "modules/output_forge/model.py": "00e99ccd6b2164b24c828d202b0afd0d2974d3ff65439893ed1e8ed5d7960f93",
-    "querymantic/__about__.py": "bf3302d3eb29ec87fa860acf41e35d8c7e3b802c7beffca48f30df804dc94088",
+    "querymantic/__about__.py": "d296cf5ced6ce89c102be6f300a2c9e023f7c8cf7bcf7dbcf0eabb24ea265550",
     "querymantic/__init__.py": "73250d22dc3b7586e3f4275f2ff3f5687e5236999bdf8eaadb325305245e6948",
     "querymantic/engine_adapter.py": "d5dc598741fc4e14d1c93a668167a909e6ad50248658cb6a467bad206af7d736",
     "querymantic/entity_extractor.py": "5426d854298dbed18017f4b610b435a6c0facffc69073573a1e50703eafe32a8",
@@ -65,7 +67,7 @@
     "querymantic/text/stopwords.py": "13975ea4241c5d8645c090f8b540abe7b2ceca2760fecc6529c6fad2d89d6576",
     "querymantic/text/tokenize.py": "d6c23d188392e399a4890a93cd37c77b454865a87985b2fa5247110d8110ea88",
     "requirements-optional.txt": "40d9fa9f69abf690c101ca36cb313a4d800392a156f6aa0c208ce55150577d88",
-    "scripts/regenerate_expected_outputs.py": "c5876cc43bdc3ddef840d2e44b7f380db5eadc5e60330ff9be9470234cc3e60a"
+    "scripts/regenerate_expected_outputs.py": "46cd117370d23af50e4fd6c6149fd097d30fd749f683494b05343bdf378240b4"
   },
   "written_by": "scripts/regenerate_expected_outputs.py. Never edit by hand: the path for a conscious update is regeneration, not retouching a hash."
 }

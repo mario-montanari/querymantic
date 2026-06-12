@@ -70,7 +70,21 @@ def _build_parser() -> argparse.ArgumentParser:
     run_p.add_argument(
         "--series",
         default=None,
-        help="optional monthly-series CSV for demand_pulse (wide: keyword + YYYY-MM columns)",
+        help=(
+            "optional monthly-series CSV for demand_pulse (wide: keyword + "
+            "YYYY-MM columns); when given it wins over the series extracted "
+            "from a SEOZoom export's month columns"
+        ),
+    )
+    run_p.add_argument(
+        "--seozoom-year",
+        default=None,
+        metavar="YYYY",
+        help=(
+            "calendar year to label the month columns of a SEOZoom export "
+            "(Gen-Dic carry no year); without it the extracted series uses "
+            "the neutral labels m01 to m12"
+        ),
     )
     run_p.add_argument(
         "--livewire",
@@ -148,6 +162,12 @@ def _cmd_run(args: argparse.Namespace) -> int:
     inputs = [Path(p) for p in args.inputs]
     output = Path(args.output)
 
+    if args.seozoom_year is not None and not (
+        len(args.seozoom_year) == 4 and args.seozoom_year.isdigit()
+    ):
+        _fail("--seozoom-year must be a four-digit year", as_json=args.json)
+        return 1
+
     module_kwargs: dict[str, dict] = {}
     if args.series and "demand_pulse" in args.modules:
         from modules.demand_pulse import DemandPulseError, load_series
@@ -216,6 +236,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             modules_to_run=tuple(args.modules),
             generated_at=args.deterministic_timestamp,
             module_kwargs=module_kwargs,
+            seozoom_year=args.seozoom_year,
         )
     except (pipeline.PipelineError, run_state.RunStateError) as exc:
         _fail(str(exc), as_json=args.json)

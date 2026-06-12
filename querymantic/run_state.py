@@ -188,6 +188,11 @@ def make_portable(state: dict[str, Any], plugin_root: Path) -> None:
             # plugin root, and carrying the local home path. It has no portable form
             # and nothing reads it, so it is dropped rather than recorded.
             params["output"] = ""
+        if params.get("mapping"):
+            # The column-mapping override the suite writes for SEOZoom inputs
+            # lives in that same temp directory; keep the bare file name so the
+            # run records THAT a mapping was applied without leaking the path.
+            params["mapping"] = _portable_input(params["mapping"], plugin_root)
 
     manifest = engine.get("input_manifest")
     if isinstance(manifest, dict) and isinstance(manifest.get("files"), list):

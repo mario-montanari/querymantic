@@ -63,12 +63,16 @@ def run_engine(
     client_domain: str = "",
     brand_list: str = "",
     work_dir: Path | None = None,
+    column_mapping: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run the engine on ``inputs`` and return the parsed ``analysis.json``.
 
     A temporary output directory is used unless ``work_dir`` is given. Only
     ``analysis.json`` is read back; the engine is invoked with ``--json-only`` so
-    it does not write the human-facing artifacts.
+    it does not write the human-facing artifacts. ``column_mapping``, when given,
+    is written as a JSON file in the output directory and handed to the engine
+    through its ``--mapping`` override, so a tool the engine does not know (the
+    SEOZoom export) is read without rewriting the user's file.
     """
     if not inputs:
         raise EngineError("no input files provided to the engine")
@@ -86,10 +90,26 @@ def run_engine(
     if work_dir is None:
         with tempfile.TemporaryDirectory(prefix="querymantic-engine-") as tmp:
             return _invoke(
-                root, analyze_py, inputs, Path(tmp), label, client_domain, brand_list
+                root,
+                analyze_py,
+                inputs,
+                Path(tmp),
+                label,
+                client_domain,
+                brand_list,
+                column_mapping,
             )
     work_dir.mkdir(parents=True, exist_ok=True)
-    return _invoke(root, analyze_py, inputs, work_dir, label, client_domain, brand_list)
+    return _invoke(
+        root,
+        analyze_py,
+        inputs,
+        work_dir,
+        label,
+        client_domain,
+        brand_list,
+        column_mapping,
+    )
 
 
 def _invoke(
@@ -100,6 +120,7 @@ def _invoke(
     label: str,
     client_domain: str,
     brand_list: str,
+    column_mapping: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run analyze.py once and parse the resulting analysis.json."""
     cmd: list[str] = [
@@ -118,6 +139,14 @@ def _invoke(
         cmd += ["--client-domain", client_domain]
     if brand_list:
         cmd += ["--brand-list", brand_list]
+    if column_mapping:
+        mapping_path = out_dir.resolve() / "column_mapping.json"
+        mapping_path.write_text(
+            json.dumps(column_mapping, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        cmd += ["--mapping", str(mapping_path)]
 
     try:
         completed = subprocess.run(

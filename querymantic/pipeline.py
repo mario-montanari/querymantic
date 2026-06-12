@@ -19,7 +19,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from . import engine_adapter, run_state
+from . import engine_adapter, run_state, seozoom
 
 # Input file extensions the suite accepts. The engine handles separator sniffing
 # inside these; other extensions are ignored when expanding a directory.
@@ -64,6 +64,7 @@ def run_pipeline(
     modules_to_run: tuple[str, ...] = (),
     generated_at: str | None = None,
     module_kwargs: dict[str, dict[str, Any]] | None = None,
+    seozoom_year: str | None = None,
 ) -> dict[str, Any]:
     """Run the full pipeline and write ``run.json`` to ``output``.
 
@@ -72,6 +73,15 @@ def run_pipeline(
     output. ``module_kwargs`` maps a module name to extra keyword arguments for it
     (for example ``{"demand_pulse": {"series": parsed}}``); modules that take no
     extra options simply receive none.
+
+    SEOZoom exports are detected from their header signature. For them the
+    engine receives the SEOZoom column mapping (so Concorrenza becomes the
+    difficulty column and the declared Intent labels are read), and when
+    ``demand_pulse`` is requested without an explicit series the monthly
+    columns are extracted into one. ``seozoom_year`` labels those extracted
+    periods as ``YYYY-MM``; without it the neutral ``m01`` to ``m12`` labels
+    are used, because the export carries no year and one is never invented.
+    An explicitly provided series always wins over the extracted one.
     """
     # Deferred and anchored to the plugin root on purpose. The modules package imports
     # back into querymantic, so importing it at module top would be circular; and a
@@ -94,6 +104,19 @@ def run_pipeline(
     input_hash = run_state.compute_input_hash(files)
     version = run_state.plugin_version(plugin_root)
 
+    seozoom_files = [f for f in files if seozoom.is_seozoom_export(f)]
+
+    module_kwargs = {name: dict(extra) for name, extra in (module_kwargs or {}).items()}
+    if seozoom_files and "demand_pulse" in modules_to_run:
+        demand_kwargs = module_kwargs.setdefault("demand_pulse", {})
+        if not demand_kwargs.get("series"):
+            try:
+                series = seozoom.extract_series(seozoom_files, year=seozoom_year)
+            except seozoom.SeozoomError as exc:
+                raise PipelineError(f"seozoom series extraction failed: {exc}") from exc
+            if series:
+                demand_kwargs["series"] = series
+
     try:
         analysis = engine_adapter.run_engine(
             plugin_root,
@@ -101,6 +124,7 @@ def run_pipeline(
             label=label,
             client_domain=client_domain,
             brand_list=brand_list,
+            column_mapping=seozoom.engine_mapping() if seozoom_files else None,
         )
     except engine_adapter.EngineError as exc:
         raise PipelineError(f"engine stage failed: {exc}") from exc

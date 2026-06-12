@@ -30,6 +30,7 @@ import subprocess
 import sys
 import unicodedata
 from dataclasses import dataclass, field, asdict
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
@@ -181,6 +182,8 @@ class KeywordRecord:
     language_confidence: float = 0.0
     country: Optional[str] = None
     volume: Optional[int] = None
+    # Holds a Decimal between map_row_to_canonical and
+    # normalize_difficulty_column, an int afterwards.
     difficulty: Optional[int] = None
     cpc: Optional[float] = None
     position: Optional[int] = None
@@ -495,6 +498,30 @@ def coerce_float(value: Any) -> Optional[float]:
         return None
 
 
+def coerce_difficulty(value: Any) -> Optional[Decimal]:
+    """Parse one difficulty cell, keeping the decimal point meaningful.
+
+    Difficulty is the one metric exported both as a 0-100 integer and as
+    a 0-1 decimal, so the thousands-separator stripping of coerce_int
+    would corrupt it ("0.5" must stay 0.5, never become 5). This
+    dedicated path parses the cell as an exact decimal value; a trailing
+    percent sign is dropped. The 0-1 versus 0-100 decision is NOT taken
+    here: it belongs to normalize_difficulty_column, which sees the
+    whole column.
+    """
+    if value is None or value == "":
+        return None
+    if isinstance(value, (int, float)):
+        return Decimal(str(value))
+    s = str(value).strip().rstrip("%").strip()
+    if not s:
+        return None
+    try:
+        return Decimal(s)
+    except InvalidOperation:
+        return None
+
+
 def coerce_serp_features(value: Any) -> List[str]:
     """Normalize SERP feature labels to canonical lowercase snake_case."""
     if value is None or value == "":
@@ -558,7 +585,7 @@ def map_row_to_canonical(tool: str, row: Dict[str, str], path: Path,
         source_row=row_num,
         country=canonical_data.get("country"),
         volume=coerce_int(canonical_data.get("volume")),
-        difficulty=coerce_int(canonical_data.get("difficulty")),
+        difficulty=coerce_difficulty(canonical_data.get("difficulty")),
         cpc=coerce_float(canonical_data.get("cpc")),
         position=coerce_int(canonical_data.get("position")),
         serp_features=coerce_serp_features(canonical_data.get("serp_features")),
@@ -572,13 +599,44 @@ def map_row_to_canonical(tool: str, row: Dict[str, str], path: Path,
         domain_rank=coerce_int(canonical_data.get("domain_rank")),
     )
 
-    if record.difficulty is not None and record.difficulty > 100:
-        logger.warning("Row %d in %s has difficulty %d > 100, clamping",
-                       row_num, path.name, record.difficulty)
-        record.difficulty = 100
     if record.position is not None and record.position > 100:
         record.position = None
     return record
+
+
+def normalize_difficulty_column(records: List[KeywordRecord],
+                                path: Path) -> None:
+    """Bring one file's difficulty column onto the canonical 0-100 scale.
+
+    Scale detection is per column, never per value: when every valid
+    difficulty in the file is <= 1.0, the column is read as a 0-1 scale
+    and multiplied by 100. A column holding only the integers 0 and 1 is
+    ambiguous (it could be a flag); by design it is treated as a 0-1
+    scale too, so 0 maps to 0 and 1 maps to 100. Every value is then
+    rounded half-up on its exact decimal value (ROUND_HALF_UP,
+    deterministic: 45.5 becomes 46) and values above 100 are clamped
+    to 100.
+    """
+    values = [r.difficulty for r in records if r.difficulty is not None]
+    if not values:
+        return
+    if max(values) <= 1:
+        logger.info("Difficulty column in %s has every value <= 1.0: "
+                    "reading it as a 0-1 scale and multiplying by 100",
+                    path.name)
+        for r in records:
+            if r.difficulty is not None:
+                r.difficulty = r.difficulty * 100
+    for r in records:
+        if r.difficulty is None:
+            continue
+        d = int(r.difficulty.quantize(Decimal("1"),
+                                      rounding=ROUND_HALF_UP))
+        if d > 100:
+            logger.warning("Row %d in %s has difficulty %d > 100, clamping",
+                           r.source_row, path.name, d)
+            d = 100
+        r.difficulty = d
 
 
 # =====================================================================
@@ -1334,11 +1392,14 @@ def run_pipeline(args: argparse.Namespace) -> Dict[str, Any]:
         }
         input_manifest.append(manifest_entry)
 
+        file_records: List[KeywordRecord] = []
         for row_num, row in enumerate(rows, start=2):
             rec = map_row_to_canonical(tool, row, path, row_num,
                                        override_mapping)
             if rec is not None:
-                all_records.append(rec)
+                file_records.append(rec)
+        normalize_difficulty_column(file_records, path)
+        all_records.extend(file_records)
 
     logger.info("Stage 1-2 done: %d canonical records from %d files",
                 len(all_records), len(input_paths))

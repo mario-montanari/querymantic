@@ -65,6 +65,27 @@ library alone. The optional formats (.pptx, .docx, .xlsx, STL seasonality) each
 need one library, pinned in `requirements-optional.txt`. Skip them and the suite
 still runs: a missing format is skipped and recorded, never silently faked.
 
+## Talking to Querymantic
+
+You don't need to memorize commands. Once the plugin is installed, Claude
+Code and Claude Cowork both take plain requests. Put a keyword export in
+your workspace and describe what you want.
+
+Prompts that work:
+
+> Analyze keywords.csv with Querymantic and give me the demand picture.
+
+> Run the full Querymantic audit on this export: fan-out coverage, citation
+> readiness, entities, demand trend, and winnable clicks.
+
+> Build the client deliverables from the last run. HTML and Word are enough.
+
+Every run writes a run.json you can open and check. Each input file gets a
+sha256 hash, and every number traces back to its source. Modules with
+nothing reliable to say will tell you so instead of guessing: Demand Pulse
+declares when the history is too short, Click Ceiling reports bands rather
+than single numbers, and Live Wire stays off unless you bring observed data.
+
 ## Use
 
 From the plugin root:

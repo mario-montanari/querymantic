@@ -14,4 +14,4 @@ python-docx==1.2.0     # MIT  -- .docx audit document
 openpyxl==3.1.5        # MIT  -- .xlsx workbook
 
 # Demand Pulse optional STL seasonal path (querymantic/ports/stats.py)
-statsmodels==0.14.6    # BSD-3-Clause -- STL decomposition
+statsmodels==0.15.0    # BSD-3-Clause -- STL decomposition
